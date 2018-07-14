@@ -1,0 +1,36 @@
+#+TITLE: Clojure, lein, and org mode static website
+#+DATE: 2018-07-14
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :eval never-export
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+#+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+#+LATEX_HEADER: \usepackage[round]{natbib}
+#+LATEX_HEADER: \renewcommand{\bibsection}
+* Maven or Leiningen?
+
+  I have started to get up and running with rewriting my static website using Clojure Stasis, and now I am thinking about build tools. Ideally, I was to be able to run a =make= like command to build and push changes to my website up to github or gitlab with minimal fuss. My old system used =org-publish= which worked fine, but I structured my project such that there was a source repo where I wrote in org mode and a website repo elsewhere where =org-publish= would process and copy my files to when I wanted to make changes. Whenever I moved something around, or changed the theme I had to look up how to run a bunch or commands and I ended up not updating my website much because of this. 
+Now I am re-doing it in Clojure and I want a one-button solution to re-build whenever I add a page or something. To do this, I am looking at using build tools from the Clojure/Java ecosystem. For me, the choice is between [[https://maven.apache.org/][Apache Maven]] or [[https://leiningen.org/][Leiningen]]. Maven is a mature, well used build tool in the Java echosystem and it can definitely be used to build Clojure projects. However, Leiningen is the Clojure build tool I got started with-- and I don't think I know enough to configure Maven to work with Clojure... It would definitely be a good project to learn Maven, but I think it would probably be better to actually understand how Leiningen (Lein/lein) works since I am dedicated to learning Clojure before learning the useful Java build tools like Maven.
+* Approach
+
+I think I will try to run this via clojure using [[https://github.com/clojure-cookbook/clojure-cookbook/blob/master/04_local-io/4-03_exec-system-command.asciidoc][clj-commons-exec]] to execute shell commands. The following tasks need to be automated:
+1) Compile =.org= file to =.html= files.
+   - Includes copying image files and modifying links so they are accessible. 
+2) Run the main =Stasis= project.
+   - build static website
+3) Deploy static website.
+   - =git add .= and =git commit -m "generic message here"= 
+
+Below, I will break up the problem and attack these issues one at a time before integrating it with lein using the =:aliases= in my =project.clj=. The command =lein run= should then build and deploy the website. 
+
+* Resources
+- [[http://www.flyingmachinestudios.com/programming/how-clojure-babies-are-made-the-java-cycle/][How Clojure babies are made part 1]]
+  - [[http://www.flyingmachinestudios.com/programming/how-clojure-babies-are-made-lein-run/][Part 2]] (these are both excellent guides for understanding Java and Lein for non-Java people)
+- [[http://www.flyingmachinestudios.com/programming/learn-programming-languages-efficiently/][Techniques for efficiently learning programming languages]] is another great post by Daniel Higginbotham
+- annotated [[https://github.com/technomancy/leiningen/blob/stable/sample.project.clj][Project.clj]] example
+
+
+* References
+  bibliographystyle:apalike
+  bibliography:~/Dropbox/bibliography/library.bib
+
+

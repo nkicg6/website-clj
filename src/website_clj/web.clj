@@ -2,7 +2,12 @@
 ;; based on https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
 
 (ns website-clj.web
-  (:require [clojure.java.io :as io]
+  (:require [optimus.assets :as assets]
+            [optimus.link :as link]
+            [optimus.optimizations :as optimizations]      
+            [optimus.prime :as optimus]                    
+            [optimus.strategies :refer [serve-live-assets]]
+            [clojure.java.io :as io]
             [clojure.string :as str]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer (link-to)]
@@ -40,6 +45,10 @@
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
 
+(defn get-assets []
+  (assets/load-assets "static" [#".*"]))
+
+
 (def pegdown-options ;; https://github.com/sirthias/pegdown
   [:autolinks :fenced-code-blocks :strikethrough])
 
@@ -72,6 +81,15 @@
     :partials (partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
     :markdown (markdown-pages (stasis/slurp-directory "resources/md" #".*\.md$"))}))
 
-(def app (stasis/serve-pages get-pages))
+
+
+
+(def app
+  (optimus/wrap (stasis/serve-pages get-pages)
+                get-assets
+                optimizations/all
+                serve-live-assets))
+
+
 
 

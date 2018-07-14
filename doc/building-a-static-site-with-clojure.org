@@ -21,7 +21,7 @@ My original website was written with python and the Flask framework and made int
 * Building the website: basics
   /Disclaimer/ 
 I am still very new to Clojure, so my custom code will likely be very beginner-ish and rough, but hopefully it will improve as I go!
-Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/ 
+ Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/ 
 
 ** Style
    After following most of the Christian Johansen's awesome tutorial, the first thing I wanted to do was add [[https://getbootstrap.com/docs/3.3/getting-started/][Twitter Bootstrap]] CSS. I know there is a [[https://github.com/weavejester/hiccup-bootstrap][Hiccup wrapper]] for bootstrap, but since I write in Emacs Org-mode and export to HTML directly, I don't think it is necessary for me. Hiccup looks like simplified HTML, so I changed the name of the function from =layout-page= to =layout-base-header= and added the links from the Bootstrap home page. The function now looks like this:
@@ -310,7 +310,46 @@ I changed the section names and added dummy links for now, but the rest is a pre
 
 ** Images and relative links
 *** Images
+Adding images is important to any site, and links too for that matter. How well do they work in this format?
+I'll start with a sample screenshot of my part of my landing page with an annotation. 
+The first thing I did was make a new directory in my =resources/= directory called =img=, since I want all my pages to live here. The structure looks like this:
+#+BEGIN_EXAMPLE
+resources/
+├── home
+│   └── index.html
+├── img
+│   └── sample-img.png
+├── md
+│   └── my-first-md.md
+├── partials
+│   └── about.html
+└── posts
+    └── test-post.html
+#+END_EXAMPLE
+
+Now I will test it by adding a simple html tag for image to the source for my langing page. 
+
+#+BEGIN_EXAMPLE
+<h1>This is the landing page</h1>
+<p>
+ Welcome to it.
+
+Here is a test image:
+
+ <img src="../img/sample-img.png" alt="sample img!" />
+</p>
+
+#+END_EXAMPLE
+
+This doesnt work. Changing the source to =<img src ="sample-img.png"/>= and copying the image to the same folder as the landing page doesn't help... 
+
+**** Optimus  
+     Christian Johansen's blog post uses =optimus= to wrap static folders. I'll start by trying to serve bootstrap locally rather than linking to the CDN. 
+
+
+
 *** Links
+
 use (link-to)
 ** Publish
 ** Org-mode to html workflow
