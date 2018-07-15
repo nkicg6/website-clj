@@ -18,6 +18,10 @@ They are simple and very useful. I don't need anything more complicated for my p
 ** Why Stasis?
 My original website was written with python and the Flask framework and made into a static site with [[https://pythonhosted.org/Frozen-Flask/][Frozen-flask]] and [[https://pythonhosted.org/Flask-FlatPages/][Flask-FlatPages]] for hosting on github pages. I was originally going to port it to Clojure using the Clojure static site generator [[https://github.com/cryogen-project/cryogen][Cryogen]], a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult. In the spirit of Clojure (and Tim Ewald's excellent talk [[https://www.youtube.com/watch?v=ShEez0JkOFw][Programming with hand tools]]), I choose to use the [[https://github.com/magnars/stasis][Stasis]], the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go. 
 
+* Org-mode to html workflow
+
+  I write in Org-mode markup and plan to publish with org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading =org-workflow= 
+
 * Building the website: basics
   /Disclaimer/ 
 I am still very new to Clojure, so my custom code will likely be very beginner-ish and rough, but hopefully it will improve as I go!
@@ -308,6 +312,63 @@ I changed the section names and added dummy links for now, but the rest is a pre
 
 [[file:img/with-header-footer.png]]
 
+** org-workflow: basic HTML export
+   Christian Johansen's workshop tells you how to build the site if you were to write your posts in markdown. I write in =org-mode= markup and export to html. Org-mode provides excellent publishing and file export support (explained well in this [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][tutorial]]), so I will use it to edit my files. The first step is to setup a directory in =resources= called org-posts that contains my org files. I will add a file to it called =test_post.org= that looks like so:
+
+#+BEGIN_EXAMPLE
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+HTML_CONTAINER: div
+
+
+
+;* This is a test post
+
+Here is a test post 
+
+
+
+
+#+END_EXAMPLE
+
+Next, I will add the following to my =config.org= file (or =init.el= file if you arent using an org-mode config file) that says the following:
+
+#+BEGIN_SRC emacs-lisp 
+(setq org-publish-project-alist
+        '(
+          ("posts" ;; name of this function
+           :base-directory "~/personal_projects/website-clj/resources/org-posts" ;; where the orgs are
+           :base-extension "org" ;; file ending to look for
+           :publishing-directory "~/personal_projects/website-clj/resources/posts" ;; where to put the new one
+           :publishing-function org-html-publish-to-html ;;function to run
+           :headline-levels 4 ;; headline stuff
+           :html-extension "html" ;; new file ending
+           :body-only t) ;; don't add extra html formatting
+          ("clj-site" :components ("posts")))) ;; project name
+#+END_SRC
+
+Now, if i run =M-x org-publish-project= then select =clj-site=, I get a nicely exported html file in my =posts directory= 
+
+#+BEGIN_EXAMPLE
+resources/
+├── home
+│   └── index.html
+├── md
+│   └── my-first-md.md
+├── org-posts
+│   └── test_post.org
+├── partials
+│   └── about.html
+├── posts
+│   └── test_post.html
+└── public
+    ├── css
+    ├── img
+    │   └── test-img.png
+    └── js
+
+#+END_EXAMPLE
+Which is visible when I render the site (it is handled by the =html-posts= function)
+
 ** Images and relative links
 *** Images
 Adding images is important to any site, and links too for that matter. How well do they work in this format?
@@ -345,18 +406,92 @@ This doesnt work. Changing the source to =<img src ="sample-img.png"/>= and copy
      Christian Johansen's blog post uses =optimus= to wrap static folders. I'll start by trying to serve bootstrap locally rather than linking to the CDN. 
      I played around with this for a few hours yesterday and couldn't figure it out. I understood things reasonably well until =Optimus=, which doesn't make much sense to me because I do not have a background in web development so I really cant understand what it is doing or why it is doing it. This is likely because I did not spend much time with the docs, but they use a lot of web-jargon and I don't have the time or will to jump into that now. 
 
-     Luckily, I explored Christian Johansen's website a little more and came across /exactly/ what I needed ([[https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/][here]]). 
+     Luckily, I explored Christian Johansen's website a little more and came across something that seemed quite useful ([[https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/][here]]). But I didn't make much progress with this. 
+...
+Finally, after a few hours today I figured out how to add links. My directory structure now looks like so:
+#+BEGIN_EXAMPLE
+resources/
+├── home
+├── md
+├── org-posts
+├── partials
+├── posts
+└── public
+    ├── css
+    ├── img
+    └── js
+
+#+END_EXAMPLE
+images can be added by referring to them relative to public. For example:
+#+BEGIN_EXAMPLE
+[:div.test [:img {:src "/img/test-img.png"}]] ; img test in the hiccup function layout-base-header
+#+END_EXAMPLE
+
+inserts the image stored in public/img/test-img.png
+I haven't tried this in export yet, but it seems to work so far. 
+
+*** org-workflow: Handling images
+Back to my original org-export example file, I'll add an image in org-markup manner. 
+
+#+BEGIN_EXAMPLE
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+HTML_CONTAINER: div
+
+
+
+=* This is a test post
+Here is a test post and a link to an image. 
+
+
+[[file:~/personal_projects/website-clj/resources/public/img/test-img.png]]
+
+#+END_EXAMPLE
+
+Exporting this to html gives the following link structure:
+
+#+BEGIN_EXAMPLE
+<img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/test-img.png" alt="test-img.png" />
+#+END_EXAMPLE
+Which definitely wont work when I export the static site. Since all images are referred to via =img/=, I think I can easily write a string replace and put it in my =html-posts= function to fix this formatting. 
+
+#+BEGIN_SRC clojure 
+;; main pages function. 
+(defn html-pages [pages]
+  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+          (map #(fn [req] (layout-base-header req %))
+               (map #(str/replace % #"file:///Users/Nick/personal_projects/website-clj/resources/public" "") ;; this fixes links to images
+                    (vals pages)))))
+#+END_SRC
+
+Now I can start up my server and check out the link formatting when I =view-source= on =http://localhost:3000/test_post=:
+
+#+BEGIN_EXAMPLE
+<img src="/img/test-img.png" alt="test-img.png" />
+#+END_EXAMPLE
+Perfect! I will factor out this function so it is more readable like so:
+
+#+BEGIN_SRC clojure 
+(defn format-images [html]
+  (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" ""))
+
+;; main pages function.
+(defn html-pages [pages]
+  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+          (map #(fn [req] (layout-base-header req %))
+               (map format-images (vals pages)))))
+
+#+END_SRC
+
+I will likely need to add a similar helper when linking between pages in a post, but this =key value= handling of all the pages makes it very easy to add formatting fixes to my exported html pages. very cool. 
 
 *** Links
 
 use (link-to)
 ** Publish
-** Org-mode to html workflow
-
-I write in Org-mode markup and plan to publish with org-publish, so I here I will figure out my workflow for this type of posting. 
 
 ** Git workflow
 ** One push publishing
+
 * References
 - [[https://github.com/magnars/stasis][Stasis]]
 - [[https://github.com/yokolet/hiccup-samples][hiccup samples]]

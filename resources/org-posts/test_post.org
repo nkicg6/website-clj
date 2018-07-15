@@ -1,0 +1,10 @@
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+HTML_CONTAINER: div
+
+
+
+* This is a test post
+Here is a test post and a link to an image. 
+
+
+[[file:~/personal_projects/website-clj/resources/public/img/test-img.png]]
