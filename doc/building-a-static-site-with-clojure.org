@@ -430,7 +430,7 @@ images can be added by referring to them relative to public. For example:
 inserts the image stored in public/img/test-img.png
 I haven't tried this in export yet, but it seems to work so far. 
 
-*** org-workflow: Handling images
+** org-workflow: Handling images
 Back to my original org-export example file, I'll add an image in org-markup manner. 
 
 #+BEGIN_EXAMPLE
@@ -487,12 +487,10 @@ I will likely need to add a similar helper when linking between pages in a post,
 *** Links
 
 use (link-to)
-** Publish
-
-** Git workflow
-** One push publishing
+** One push publishing with :alias
 
 * References
 - [[https://github.com/magnars/stasis][Stasis]]
 - [[https://github.com/yokolet/hiccup-samples][hiccup samples]]
 - Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
+  - Also his post here is similar with some (useful) differences https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md
