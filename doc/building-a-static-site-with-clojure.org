@@ -1,6 +1,6 @@
 #+TITLE: Clojure static site: why and how
 #+DATE: 2018-07-07
-#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+OPTIONS: toc:1 author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
 #+PROPERTY: header-args :eval never-export
 #+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
 #+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
