@@ -491,6 +491,11 @@ use (link-to)
 
 * References
 - [[https://github.com/magnars/stasis][Stasis]]
+- [[https://github.com/magnars/optimus][Optimus links]]
+- [[https://github.com/ring-clojure/ring/wiki/Static-Resources][Ring static middleware]]
+- 
 - [[https://github.com/yokolet/hiccup-samples][hiccup samples]]
 - Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
+  - handling links https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/
   - Also his post here is similar with some (useful) differences https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md
+- [[https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html][Clojure namespaces]]
