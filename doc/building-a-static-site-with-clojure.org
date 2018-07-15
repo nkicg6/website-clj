@@ -312,19 +312,17 @@ I changed the section names and added dummy links for now, but the rest is a pre
 *** Images
 Adding images is important to any site, and links too for that matter. How well do they work in this format?
 I'll start with a sample screenshot of my part of my landing page with an annotation. 
-The first thing I did was make a new directory in my =resources/= directory called =img=, since I want all my pages to live here. The structure looks like this:
+The first thing I did was make a new directory in my =resources/= directory called static, which will contain =img=, =css=, and =js= directories. The directory structure now looks like this:
 #+BEGIN_EXAMPLE
 resources/
 ├── home
-│   └── index.html
-├── img
-│   └── sample-img.png
 ├── md
-│   └── my-first-md.md
 ├── partials
-│   └── about.html
-└── posts
-    └── test-post.html
+├── posts
+└── static
+    ├── css
+    ├── img
+    └── js
 #+END_EXAMPLE
 
 Now I will test it by adding a simple html tag for image to the source for my langing page. 
@@ -336,7 +334,7 @@ Now I will test it by adding a simple html tag for image to the source for my la
 
 Here is a test image:
 
- <img src="../img/sample-img.png" alt="sample img!" />
+ <img src="../static/img/sample-img.png" alt="sample img!" />
 </p>
 
 #+END_EXAMPLE
@@ -345,8 +343,9 @@ This doesnt work. Changing the source to =<img src ="sample-img.png"/>= and copy
 
 **** Optimus  
      Christian Johansen's blog post uses =optimus= to wrap static folders. I'll start by trying to serve bootstrap locally rather than linking to the CDN. 
+     I played around with this for a few hours yesterday and couldn't figure it out. I understood things reasonably well until =Optimus=, which doesn't make much sense to me because I do not have a background in web development so I really cant understand what it is doing or why it is doing it. This is likely because I did not spend much time with the docs, but they use a lot of web-jargon and I don't have the time or will to jump into that now. 
 
-
+     Luckily, I explored Christian Johansen's website a little more and came across /exactly/ what I needed ([[https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/][here]]). 
 
 *** Links
 

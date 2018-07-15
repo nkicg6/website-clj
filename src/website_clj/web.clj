@@ -17,13 +17,13 @@
 
 
 
-(defn layout-base-header [page]
+(defn layout-base-header [request page]
   (html5
    [:head
     [:meta {:charset "utf-8"}]
     [:meta {:name "viewport"
             :content "width=device-width, initial-scale=1.0"}]
-    [:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" :integrity "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" :crossorigin "anonymous"}]
+    [:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
     [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}]
     [:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" :integrity "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" :crossorigin "anonymous"}]]
    [:body
@@ -35,6 +35,7 @@
        [:li {:class "inactive"} (link-to "/" "Science")]
        [:li {:class "inactive"} (link-to "/" "Programming")]
        [:li {:class "inactive"} (link-to "/" "About")]
+       [:li {:class "inactive"} (link-to "/my-first-md" "Post")]
        [:li [:a {:href "https://github.com/nkicg6"}
              [:span {:class "fa fa-github" :style "font-size:24px"}]]]
        [:li [:a {:href "https://twitter.com/NicholasMG"}
@@ -45,8 +46,11 @@
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
 
+(defn prepare-page [page req]
+  (if (string? page) page (page req)))
+
 (defn get-assets []
-  (assets/load-assets "static" [#".*"]))
+  (assets/load-assets "public" [#".*"]))
 
 
 (def pegdown-options ;; https://github.com/sirthias/pegdown
@@ -55,21 +59,28 @@
 
 (defn markdown-pages [pages]
   (zipmap (map #(str/replace % #"\.md$" "") (keys pages))
-          (map #(layout-base-header (md/to-html %)) (vals pages))))
+          (map #(fn [req] (layout-base-header req  (md/to-html %))) (vals pages))))
 
+;;![test](/public/img/test-img.png)
+
+(defn format-str [ps]
+  (str/replace ps #"/public/img/test-img.png"  (link-to "/public/img/test-img.png" "test")))
+
+(str (link-to "/public/img/test-img.png" "test"))
+(format-str "![test](/public/img/test-img.png)")
 
 (defn html-pages [pages]
   (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
-          (map #(layout-base-header %) (vals pages))))
+          (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
 
 (defn partial-pages [pages]
   (zipmap (keys pages)
-          (map layout-base-header (vals pages))))
+          (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
 (defn home-page [pages]
   (zipmap (keys pages)
-          (map #(layout-base-header %) (vals pages))))
+          (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
 (home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
 
@@ -79,7 +90,10 @@
    {:landing (home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
     :posts  (html-pages (stasis/slurp-directory "resources/posts" #".*\.html$"))
     :partials (partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
-    :markdown (markdown-pages (stasis/slurp-directory "resources/md" #".*\.md$"))}))
+    :markdown (markdown-pages (stasis/slurp-directory "resources/md" #".*\.md$"))
+    :static (home-page (stasis/slurp-directory "resources/static" #".*\.(html|css|js)$"))
+    :public
+    (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
 
 
 
@@ -87,7 +101,7 @@
 (def app
   (optimus/wrap (stasis/serve-pages get-pages)
                 get-assets
-                optimizations/all
+                optimizations/none
                 serve-live-assets))
 
 
