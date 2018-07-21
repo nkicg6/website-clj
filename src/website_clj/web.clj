@@ -42,8 +42,8 @@
              [:span {:class "fa fa-github" :style "font-size:24px"}]]]
        [:li [:a {:href "https://twitter.com/NicholasMG"}
              [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]
-    [:div.logo "website-clj"]
-    [:div.body page]
+    [:div {:class "container"}
+     [:div.body page]]
     ;;[:div.test [:img {:src "/img/test-img.png"}]] ; img test
     [:footer {:class "footer"}
      [:div {:class "text-center"}
@@ -54,18 +54,6 @@
 
 (defn get-assets []
   (assets/load-assets "public" [#".*"]))
-
-;; (defn get-assets []
-;;   (concat 
-;;    (assets/load-bundle "public"
-;;                        "styles.css"
-;;                        ["/css/bootstrap.min.css"])
-;;    (assets/load-bundle "public"
-;;                        "scripts.js"
-;;                        ["/js/bootstrap.bundle.min.js"
-;;                         "/js/bootstrap.min.js"])
-;;    (assets/load-assets "public"
-;;                        [#"/img/.*\.(jpeg|jpg|png)$"])))
 
 
 (def pegdown-options ;; https://github.com/sirthias/pegdown
@@ -121,7 +109,7 @@
   (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
 
 
-(def export-dir "build")
+(def export-dir "target/nickgeorge.net")
 
 
 (defn export []
