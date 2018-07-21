@@ -90,7 +90,8 @@
   (zipmap (keys pages)
           (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
-(home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+(home-page
+ (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
 
 
 (defn get-pages []

@@ -6,5 +6,20 @@
 * This is a test post
 Here is a test post and a link to an image. 
 
-
 [[file:~/personal_projects/website-clj/resources/public/img/test-img.png]]
+
+And below is a test code block. 
+
+#+BEGIN_SRC clojure 
+(defn format-images [html]
+  (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" ""))
+
+;; main pages function.
+(defn html-pages [pages]
+  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+          (map #(fn [req] (layout-base-header req %))
+               (map format-images (vals pages)))))
+
+#+END_SRC
+
+How does it look

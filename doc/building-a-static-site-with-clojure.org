@@ -76,7 +76,7 @@ But when I refreshed my webpage, I got this horrible error:
 ...
 #+END_EXAMPLE
 
-and on and on. Well, looks like I have to figure out what these functions are doing. 
+and on and on. Well, looks like I have to figure out what these functions are actually doing. 
 
 First, I'll run one that I know works to see what the output looks like:
 
@@ -126,7 +126,7 @@ But when I navigate to =/index=, it is right there and working.
 
 [[file:img/working-index.png]]
 
-hmm, I will have to see how the home page will be rendered. When I return to Christian's blog, and re-read the explanation of =get-pages=, I see the only thing I changed was replacing the .html with a blank string. When i make the following change to teh =html-pages= file, it works fine!
+hmm, I will have to see how the home page will be rendered. When I return to Christian's blog, and re-read the explanation of =get-pages=, I see the only thing I changed was replacing the .html with a blank string. When i make the following change to the =html-pages= file, it works fine!
 
 #+BEGIN_SRC clojure 
 (defn html-pages [pages]
@@ -373,14 +373,14 @@ Which is visible when I render the site (it is handled by the =html-posts= funct
 *** Images
 Adding images is important to any site, and links too for that matter. How well do they work in this format?
 I'll start with a sample screenshot of my part of my landing page with an annotation. 
-The first thing I did was make a new directory in my =resources/= directory called static, which will contain =img=, =css=, and =js= directories. The directory structure now looks like this:
+The first thing I did was make a new directory in my =resources/= directory called =public=, which will contain =img=, =css=, and =js= directories. The directory structure now looks like this:
 #+BEGIN_EXAMPLE
 resources/
 ├── home
 ├── md
 ├── partials
 ├── posts
-└── static
+└── public
     ├── css
     ├── img
     └── js
@@ -395,7 +395,7 @@ Now I will test it by adding a simple html tag for image to the source for my la
 
 Here is a test image:
 
- <img src="../static/img/sample-img.png" alt="sample img!" />
+ <img src="../public/img/sample-img.png" alt="sample img!" />
 </p>
 
 #+END_EXAMPLE
@@ -428,7 +428,6 @@ images can be added by referring to them relative to public. For example:
 #+END_EXAMPLE
 
 inserts the image stored in public/img/test-img.png
-I haven't tried this in export yet, but it seems to work so far. 
 
 ** org-workflow: Handling images
 Back to my original org-export example file, I'll add an image in org-markup manner. 
@@ -447,12 +446,14 @@ Here is a test post and a link to an image.
 
 #+END_EXAMPLE
 
-Exporting this to html gives the following link structure:
+Exporting this to html gives the following link structure in HTML:
 
 #+BEGIN_EXAMPLE
 <img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/test-img.png" alt="test-img.png" />
 #+END_EXAMPLE
-Which definitely wont work when I export the static site. Since all images are referred to via =img/=, I think I can easily write a string replace and put it in my =html-posts= function to fix this formatting. 
+Which definitely wont work when I export the static site. Since all images are referred to via =img/=, I think I can easily write a string replace in Clojure and put it in my =html-posts= function to fix this formatting. 
+/Note/
+I know that I could use =enliven= to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it. 
 
 #+BEGIN_SRC clojure 
 ;; main pages function. 
@@ -482,12 +483,56 @@ Perfect! I will factor out this function so it is more readable like so:
 
 #+END_SRC
 
-I will likely need to add a similar helper when linking between pages in a post, but this =key value= handling of all the pages makes it very easy to add formatting fixes to my exported html pages. very cool. 
+I will likely need to add a similar helper when linking between pages in a post, but this =key value= handling of all the pages as simple html strings makes it very easy to add formatting fixes to my exported html pages. I am starting to feel the value and power of Clojure's emphasis on simplicity already--very cool!
+
+** org-workflow: syntax highlighting
+   [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/%20][Christian Johnson]] has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing =org-mode= takes care of syntax highlighting for me when I add =(setq org-src-fontify-natively t)= to my =config.org=. So here I will just test it real quick and see how it looks. 
+In my HTML file, I will add a clojure code block like so:
+
+#+BEGIN_EXAMPLE
+
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+HTML_CONTAINER: div
+
+
+
+
+;* This is a test post
+Here is a test post and a link to an image. 
+
+
+[[file:~/personal_projects/website-clj/resources/public/img/test-img.png]]
+
+And below is a test code block. 
+
+#+BEGIN_SRC clojure 
+(defn format-images [html]
+  (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" ""))
+
+;; main pages function.
+(defn html-pages [pages]
+  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+          (map #(fn [req] (layout-base-header req %))
+               (map format-images (vals pages)))))
+
+#+END_SRC
+
+How does it look?
+
+#+END_EXAMPLE
+
+This renders upon =M-x org-publish-project clj-site= to look like this:
+
+[[file:img/syntax-highlighting.png]]
+
+=org-src-fontify-natively= uses the currently active theme to highlight your source code. I just exported this using the [[https://github.com/fniessen/emacs-leuven-theme][Leuven theme]] (great for org-mode) and I like the way it looks. However, if I wanted to change it and use =enliven= with =pygments=, I would probably use some emacs-lisp code and packages such as those described here: https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e , but for right now I dont think this is necessary for me so I will go with the raw html formatting from org-export. 
 
 *** Links
-
+Will update when I need it. 
 use (link-to)
-** One push publishing with :alias
+** publishing
+From =lein=, Christian gives some nice instructions, so I followed those to see how the export looks. 
+*** one push publishing with Leiningen :alias
 
 * References
 - [[https://github.com/magnars/stasis][Stasis]]
