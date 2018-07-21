@@ -92,16 +92,29 @@
    optimizations/none
    serve-live-assets))
 
+(def export-dir "target/nickgeorge.net")
+
+(def safe-dir "target")
+
 (defn cp-cname [export-dir]
   (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
 
+(defn cp-gitignore [export-dir]
+  (shell/sh "cp" "target/.gitignore" (str export-dir "/.gitignore")))
 
-(def export-dir "target/nickgeorge.net")
+(defn save-git [safe-dir export-dir] 
+  (shell/sh "mv" (str export-dir "/.git") (str safe-dir "/.git")))
+
+(defn replace-git [safe-dir export-dir]
+  (shell/sh "mv" (str safe-dir "/t.test") (str export-dir "/t.test")))
 
 
 (defn export []
+  (save-git safe-dir export-dir)
   (let [assets (optimizations/all (get-assets) {})]
     (stasis/empty-directory! export-dir)
     (optimus.export/save-assets assets export-dir)
     (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
-  (cp-cname export-dir))
+  (cp-cname export-dir)
+  (cp-gitignore export-dir)
+  (replace-git safe-dir export-dir))
