@@ -531,7 +531,37 @@ This renders upon =M-x org-publish-project clj-site= to look like this:
 Will update when I need it. 
 use (link-to)
 ** publishing
-From =lein=, Christian gives some nice instructions, so I followed those to see how the export looks. 
+   From =lein=, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like to start testing on-line and I hosted my previous site on GithubPages, so I need a few config things to occur on export.  The first is the =CNAME= file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in =(stasis/empy-directory!)=), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my =CNAME= in the =resources directory=:
+
+#+BEGIN_SRC clojure 
+  ;; Christian's original:
+  ;;
+  ;; (def export-dir "build")
+  ;; (defn export []
+  ;;   (let [assets (optimizations/all (get-assets) {})]
+  ;;     (stasis/empty-directory! export-dir)
+  ;;     (optimus.export/save-assets assets export-dir)
+  ;;     (stasis/export-pages (get-pages) export-dir {:optimus-assets assets})))
+  ;;   
+  ;; my edits to include the copy after export. 
+  (defn cp-cname [export-dir]
+    (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
+
+
+  (def export-dir "build")
+
+
+  (defn export []
+    (let [assets (optimizations/all (get-assets) {})]
+      (stasis/empty-directory! export-dir)
+      (optimus.export/save-assets assets export-dir)
+      (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
+    (cp-cname export-dir))
+
+#+END_SRC
+
+Now I can keep CNAME where it is supposed to be the whole time. time for a test upload to see how it looks. 
+
 *** one push publishing with Leiningen :alias
 
 * References

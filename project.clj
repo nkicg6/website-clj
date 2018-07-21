@@ -10,4 +10,5 @@
                  [me.raynes/cegdown "0.1.1"]
                  [optimus "0.14.2"]]
   :ring {:handler website-clj.web/app}
-  :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}})
+  :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}
+  :aliases {"build-site" ["run" "-m" "website-clj.web/export"]})

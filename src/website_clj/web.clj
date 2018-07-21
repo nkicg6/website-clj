@@ -3,11 +3,13 @@
 
 (ns website-clj.web
   (:require [optimus.assets :as assets]
-            [optimus.link :as link]
+            [optimus.export]
+            [optimus.link :as link] 
             [optimus.optimizations :as optimizations]      
             [optimus.prime :as optimus]                    
             [optimus.strategies :refer [serve-live-assets]]
             [clojure.java.io :as io]
+            [clojure.java.shell :as shell]
             [clojure.string :as str]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer (link-to image)]
@@ -51,16 +53,19 @@
   (if (string? page) page (page req)))
 
 (defn get-assets []
-  (concat 
-   (assets/load-bundle "public"
-                       "styles.css"
-                       ["/css/bootstrap.min.css"])
-   (assets/load-bundle "public"
-                       "scripts.js"
-                       ["/js/bootstrap.bundle.min.js"
-                        "/js/bootstrap.min.js"])
-   (assets/load-assets "public"
-                       [#"/img/.*\.(jpeg|jpg|png)$"])))
+  (assets/load-assets "public" [#".*"]))
+
+;; (defn get-assets []
+;;   (concat 
+;;    (assets/load-bundle "public"
+;;                        "styles.css"
+;;                        ["/css/bootstrap.min.css"])
+;;    (assets/load-bundle "public"
+;;                        "scripts.js"
+;;                        ["/js/bootstrap.bundle.min.js"
+;;                         "/js/bootstrap.min.js"])
+;;    (assets/load-assets "public"
+;;                        [#"/img/.*\.(jpeg|jpg|png)$"])))
 
 
 (def pegdown-options ;; https://github.com/sirthias/pegdown
@@ -112,6 +117,16 @@
    optimizations/none
    serve-live-assets))
 
+(defn cp-cname [export-dir]
+  (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
 
 
+(def export-dir "build")
 
+
+(defn export []
+  (let [assets (optimizations/all (get-assets) {})]
+    (stasis/empty-directory! export-dir)
+    (optimus.export/save-assets assets export-dir)
+    (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
+  (cp-cname export-dir))
