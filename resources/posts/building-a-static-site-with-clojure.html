@@ -2,103 +2,112 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgf94d304">1. Static sites</a></li>
-<li><a href="#org5db5e5b">2. Why?</a>
+<li><a href="#orgf94d304">Static sites</a></li>
+<li><a href="#org5db5e5b">Why?</a>
 <ul>
-<li><a href="#orgab1f290">2.1. Why Clojure?</a></li>
-<li><a href="#org57ddc8a">2.2. Why Stasis?</a></li>
+<li><a href="#orgab1f290">Why Clojure?</a></li>
+<li><a href="#org57ddc8a">Why Stasis?</a></li>
 </ul>
 </li>
-<li><a href="#org8d4c2ca">3. Org-mode to html workflow</a></li>
-<li><a href="#org57bb195">4. Building the website: basics</a>
+<li><a href="#org8d4c2ca">Org-mode to html workflow</a></li>
+<li><a href="#org57bb195">Building the website: basics</a>
 <ul>
-<li><a href="#orge3ec381">4.1. Style</a></li>
-<li><a href="#org1ff106a">4.2. My header and footer</a></li>
-<li><a href="#org7dbb018">4.3. org-workflow: basic HTML export</a></li>
-<li><a href="#orgc686904">4.4. Images and relative links</a>
+<li><a href="#orge3ec381">Style</a></li>
+<li><a href="#org1ff106a">My header and footer</a></li>
+<li><a href="#org7dbb018">org-workflow: basic HTML export</a></li>
+<li><a href="#orgc686904">Images and relative links</a>
 <ul>
-<li><a href="#org7a30a32">4.4.1. Images</a>
+<li><a href="#org7a30a32">Images</a>
 <ul>
-<li><a href="#orgca490da">4.4.1.1. Optimus</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org2da4c7c">4.5. org-workflow: Handling images</a></li>
-<li><a href="#orgb0bc528">4.6. org-workflow: syntax highlighting</a>
-<ul>
-<li><a href="#org9ed2460">4.6.1. Links</a></li>
-</ul>
-</li>
-<li><a href="#orgcd73e37">4.7. publishing</a>
-<ul>
-<li><a href="#orgc82ba68">4.7.1. Hosting on Github Pages</a></li>
-<li><a href="#orgc528355">4.7.2. one push publishing with Leiningen :alias</a></li>
+<li><a href="#orgca490da">Optimus</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org8d83df3">5. References</a></li>
+<li><a href="#org2da4c7c">org-workflow: Handling images</a></li>
+<li><a href="#orgb0bc528">org-workflow: syntax highlighting</a>
+<ul>
+<li><a href="#org9ed2460">Links</a></li>
+</ul>
+</li>
+<li><a href="#orgcd73e37">publishing</a>
+<ul>
+<li><a href="#orgc82ba68">Hosting on Github Pages</a></li>
+<li><a href="#orgc528355">one push publishing with Leiningen :alias</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org2344fef">References</a></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgf94d304" class="outline-2">
-<h2 id="orgf94d304"><span class="section-number-2">1</span> Static sites</h2>
-<div class="outline-text-2" id="text-1">
 <p>
-These are static collections of HTML, CSS, and JavaScript files that make up simple, fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, etc. files that make up the website.
+<i>TODO!</i><br />
+</p>
+
+<p>
+Use <code>enliven</code> to format images. Your find and replace stuff is messing up the code examples.<br />
+</p>
+
+
+<div id="outline-container-orgf94d304" class="outline-2">
+<h2 id="orgf94d304">Static sites</h2>
+<div class="outline-text-2" id="text-orgf94d304">
+<p>
+These are static collections of HTML, CSS, and JavaScript files that make up simple, fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, etc. files that make up the website.<br />
 </p>
 </div>
 </div>
 <div id="outline-container-org5db5e5b" class="outline-2">
-<h2 id="org5db5e5b"><span class="section-number-2">2</span> Why?</h2>
-<div class="outline-text-2" id="text-2">
+<h2 id="org5db5e5b">Why?</h2>
+<div class="outline-text-2" id="text-org5db5e5b">
 <p>
-They are simple and very useful. I don't need anything more complicated for my personal website, and static sites are low maintenance and easy to customize and extend. 
+They are simple and very useful. I don't need anything more complicated for my personal website, and static sites are low maintenance and easy to customize and extend.<br />
 </p>
 </div>
 <div id="outline-container-orgab1f290" class="outline-3">
-<h3 id="orgab1f290"><span class="section-number-3">2.1</span> Why Clojure?</h3>
-<div class="outline-text-3" id="text-2-1">
+<h3 id="orgab1f290">Why Clojure?</h3>
+<div class="outline-text-3" id="text-orgab1f290">
 <p>
-I am currently learning Clojure, mostly because I wanted to learn functional programming and Rich Hickey gives <a href="https://github.com/tallesl/Rich-Hickey-fanclub">amazing talks</a>, but also because it is an functional programming language hosted on both the web with clojurescript (javascript) and the JVM (regular Clojure). Since clojurescript is a clojure trans-piler for javascript, that means that I can use one language to leverage all of javascript and non-web programming or backend web tasks with clojure!
+I am currently learning Clojure, mostly because I wanted to learn functional programming and Rich Hickey gives <a href="https://github.com/tallesl/Rich-Hickey-fanclub">amazing talks</a>, but also because it is an functional programming language hosted on both the web with clojurescript (javascript) and the JVM (regular Clojure). Since clojurescript is a clojure trans-piler for javascript, that means that I can use one language to leverage all of javascript and non-web programming or backend web tasks with clojure!<br />
 </p>
 </div>
 </div>
 <div id="outline-container-org57ddc8a" class="outline-3">
-<h3 id="org57ddc8a"><span class="section-number-3">2.2</span> Why Stasis?</h3>
-<div class="outline-text-3" id="text-2-2">
+<h3 id="org57ddc8a">Why Stasis?</h3>
+<div class="outline-text-3" id="text-org57ddc8a">
 <p>
-My original website was written with python and the Flask framework and made into a static site with <a href="https://pythonhosted.org/Frozen-Flask/">Frozen-flask</a> and <a href="https://pythonhosted.org/Flask-FlatPages/">Flask-FlatPages</a> for hosting on github pages. I was originally going to port it to Clojure using the Clojure static site generator <a href="https://github.com/cryogen-project/cryogen">Cryogen</a>, a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult. In the spirit of Clojure (and Tim Ewald's excellent talk <a href="https://www.youtube.com/watch?v=ShEez0JkOFw">Programming with hand tools</a>), I choose to use the <a href="https://github.com/magnars/stasis">Stasis</a>, the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go. 
+My original website was written with python and the Flask framework and made into a static site with <a href="https://pythonhosted.org/Frozen-Flask/">Frozen-flask</a> and <a href="https://pythonhosted.org/Flask-FlatPages/">Flask-FlatPages</a> for hosting on github pages. I was originally going to port it to Clojure using the Clojure static site generator <a href="https://github.com/cryogen-project/cryogen">Cryogen</a>, a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult. In the spirit of Clojure (and Tim Ewald's excellent talk <a href="https://www.youtube.com/watch?v=ShEez0JkOFw">Programming with hand tools</a>), I choose to use the <a href="https://github.com/magnars/stasis">Stasis</a>, the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go.<br />
 </p>
 </div>
 </div>
 </div>
 
 <div id="outline-container-org8d4c2ca" class="outline-2">
-<h2 id="org8d4c2ca"><span class="section-number-2">3</span> Org-mode to html workflow</h2>
-<div class="outline-text-2" id="text-3">
+<h2 id="org8d4c2ca">Org-mode to html workflow</h2>
+<div class="outline-text-2" id="text-org8d4c2ca">
 <p>
-I write in Org-mode markup and plan to publish with org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading <code>org-workflow</code> 
+I write in Org-mode markup and plan to publish with org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading <code>org-workflow</code> <br />
 </p>
 </div>
 </div>
 
 <div id="outline-container-org57bb195" class="outline-2">
-<h2 id="org57bb195"><span class="section-number-2">4</span> Building the website: basics</h2>
-<div class="outline-text-2" id="text-4">
+<h2 id="org57bb195">Building the website: basics</h2>
+<div class="outline-text-2" id="text-org57bb195">
 <p>
-  <i>Disclaimer</i> 
-I am still very new to Clojure, so my custom code will likely be very beginner-ish and rough, but hopefully it will improve as I go!
- Christian Johansen's post on Building static sites in Clojure with Stasis <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/">https://cjohansen.no/building-static-sites-in-clojure-with-stasis/</a> 
+  <i>Disclaimer</i> <br />
+I am still very new to Clojure, so my custom code will likely be very beginner-ish and rough, but hopefully it will improve as I go!<br />
+ Christian Johansen's post on Building static sites in Clojure with Stasis <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/">https://cjohansen.no/building-static-sites-in-clojure-with-stasis/</a> <br />
 </p>
 </div>
 
 <div id="outline-container-orge3ec381" class="outline-3">
-<h3 id="orge3ec381"><span class="section-number-3">4.1</span> Style</h3>
-<div class="outline-text-3" id="text-4-1">
+<h3 id="orge3ec381">Style</h3>
+<div class="outline-text-3" id="text-orge3ec381">
 <p>
-After following most of the Christian Johansen's awesome tutorial, the first thing I wanted to do was add <a href="https://getbootstrap.com/docs/3.3/getting-started/">Twitter Bootstrap</a> CSS. I know there is a <a href="https://github.com/weavejester/hiccup-bootstrap">Hiccup wrapper</a> for bootstrap, but since I write in Emacs Org-mode and export to HTML directly, I don't think it is necessary for me. Hiccup looks like simplified HTML, so I changed the name of the function from <code>layout-page</code> to <code>layout-base-header</code> and added the CDN links from the Bootstrap home page. The function now looks like this:
+After following most of the Christian Johansen's awesome tutorial, the first thing I wanted to do was add <a href="https://getbootstrap.com/docs/3.3/getting-started/">Twitter Bootstrap</a> CSS. I know there is a <a href="https://github.com/weavejester/hiccup-bootstrap">Hiccup wrapper</a> for bootstrap, but since I write in Emacs Org-mode and export to HTML directly, I don't think it is necessary for me. Hiccup looks like simplified HTML, so I changed the name of the function from <code>layout-page</code> to <code>layout-base-header</code> and added the CDN links from the Bootstrap home page. The function now looks like this:<br />
 </p>
 
 <div class="org-src-container">
@@ -118,7 +127,7 @@ After following most of the Christian Johansen's awesome tutorial, the first thi
 </div>
 
 <p>
-This seems to work great for my <code>.md</code> rendered page, but the base page didn't inherit this styling. Looking through the functions I copied from the tutorial, I am betting it is due to the <code>get-pages</code> function. When it declares the <code>:public</code> map, it doesn't wrap the <code>stasis/slurp-directory</code> call in another function. I assume this just renders them raw. So I will modify <code>markdown-pages</code> function for HTML pages to see if this takes care of it. 
+This seems to work great for my <code>.md</code> rendered page, but the base page didn't inherit this styling. Looking through the functions I copied from the tutorial, I am betting it is due to the <code>get-pages</code> function. When it declares the <code>:public</code> map, it doesn't wrap the <code>stasis/slurp-directory</code> call in another function. I assume this just renders them raw. So I will modify <code>markdown-pages</code> function for HTML pages to see if this takes care of it.<br />
 </p>
 
 <div class="org-src-container">
@@ -134,7 +143,7 @@ This seems to work great for my <code>.md</code> rendered page, but the base pag
 </div>
 
 <p>
-and then I will change <code>get-pages</code> to add this function. 
+and then I will change <code>get-pages</code> to add this function.<br />
 </p>
 
 <div class="org-src-container">
@@ -147,7 +156,7 @@ and then I will change <code>get-pages</code> to add this function.
 </pre>
 </div>
 <p>
-But when I refreshed my webpage, I got this horrible error:
+But when I refreshed my webpage, I got this horrible error:<br />
 </p>
 
 <pre class="example">
@@ -157,11 +166,11 @@ But when I refreshed my webpage, I got this horrible error:
 </pre>
 
 <p>
-and on and on. Well, looks like I have to figure out what these functions are actually doing. 
+and on and on. Well, looks like I have to figure out what these functions are actually doing.<br />
 </p>
 
 <p>
-First, I'll run one that I know works to see what the output looks like:
+First, I'll run one that I know works to see what the output looks like:<br />
 </p>
 
 <div class="org-src-container">
@@ -175,7 +184,7 @@ First, I'll run one that I know works to see what the output looks like:
 </pre>
 
 <p>
-Cool. but running the following fails:
+Cool. but running the following fails:<br />
 </p>
 
 <div class="org-src-container">
@@ -190,7 +199,7 @@ Cool. but running the following fails:
 </pre>
 
 <p>
-That tells me we are returning a function. And now I see we obviously are with the bottom <code>map</code> function! <code>#()</code> is an anonymous function, so I need to add the argument <code>%</code>! 
+That tells me we are returning a function. And now I see we obviously are with the bottom <code>map</code> function! <code>#()</code> is an anonymous function, so I need to add the argument <code>%</code>!<br />
 </p>
 
 <div class="org-src-container">
@@ -208,27 +217,27 @@ That tells me we are returning a function. And now I see we obviously are with t
 </pre>
 
 <p>
-Excellent! Now I will start the app up again and see what happens. 
+Excellent! Now I will start the app up again and see what happens.<br />
 </p>
 
 <p>
-weird! The landing page can't find it. 
-<img src="img/not-found-index.png" alt="not-found-index.png" />
+weird! The landing page can't find it.<br />
+<img src="img/not-found-index.png" alt="not-found-index.png" /><br />
 </p>
 
 
 <p>
-But when I navigate to <code>/index</code>, it is right there and working. 
+But when I navigate to <code>/index</code>, it is right there and working.<br />
 </p>
 
 
 <div class="figure">
-<p><img src="img/working-index.png" alt="working-index.png" />
+<p><img src="img/working-index.png" alt="working-index.png" /><br />
 </p>
 </div>
 
 <p>
-hmm, I will have to see how the home page will be rendered. When I return to Christian's blog, and re-read the explanation of <code>get-pages</code>, I see the only thing I changed was replacing the .html with a blank string. When i make the following change to the <code>html-pages</code> file, it works fine!
+hmm, I will have to see how the home page will be rendered. When I return to Christian's blog, and re-read the explanation of <code>get-pages</code>, I see the only thing I changed was replacing the .html with a blank string. When i make the following change to the <code>html-pages</code> file, it works fine!<br />
 </p>
 
 <div class="org-src-container">
@@ -241,7 +250,7 @@ hmm, I will have to see how the home page will be rendered. When I return to Chr
 </div>
 
 <p>
-Cool! so I will make a new folder called "home", and rename the folder "public" to "posts" so that it makes sense for me. After fixing the directory structure, my resources file looks like this:
+Cool! so I will make a new folder called "home", and rename the folder "public" to "posts" so that it makes sense for me. After fixing the directory structure, my resources file looks like this:<br />
 </p>
 
 <pre class="example">
@@ -257,7 +266,7 @@ resources/
 </pre>
 
 <p>
-I then added a <code>home-page</code> function and modified <code>get-pages</code> to properly render. The relevant code (all of it) looks like this now:
+I then added a <code>home-page</code> function and modified <code>get-pages</code> to properly render. The relevant code (all of it) looks like this now:<br />
 </p>
 
 <div class="org-src-container">
@@ -320,16 +329,16 @@ I then added a <code>home-page</code> function and modified <code>get-pages</cod
 </div>
 
 <p>
-and the website is working now!
+and the website is working now!<br />
 </p>
 </div>
 </div>
 
 <div id="outline-container-org1ff106a" class="outline-3">
-<h3 id="org1ff106a"><span class="section-number-3">4.2</span> My header and footer</h3>
-<div class="outline-text-3" id="text-4-2">
+<h3 id="org1ff106a">My header and footer</h3>
+<div class="outline-text-3" id="text-org1ff106a">
 <p>
-On my old Python-flask based static blog, I made a nav bar that I really liked. The source looks like this:
+On my old Python-flask based static blog, I made a nav bar that I really liked. The source looks like this:<br />
 </p>
 
 <div class="org-src-container">
@@ -392,8 +401,8 @@ On my old Python-flask based static blog, I made a nav bar that I really liked. 
 </div>
 
 <p>
-I'll translate that to hiccup and add it to my base. This was relatively straightforward to translate to hiccup. I just had to figure out the nested list structure, but once you do it isn't so bad. 
-Here is my new <code>layout-base-header</code> function with the hiccup. 
+I'll translate that to hiccup and add it to my base. This was relatively straightforward to translate to hiccup. I just had to figure out the nested list structure, but once you do it isn't so bad.<br />
+Here is my new <code>layout-base-header</code> function with the hiccup.<br />
 </p>
 
 <div class="org-src-container">
@@ -428,22 +437,22 @@ Here is my new <code>layout-base-header</code> function with the hiccup.
 </div>
 
 <p>
-I changed the section names and added dummy links for now, but the rest is a pretty straightforward translation. I am sure I am writing it in a non-compact way (i.e. it looks like classes under tags can be indicated as <code>.</code> attributes such as <code>[:div.logo "website-clj"]</code> expanding to <code>&lt;div class</code>"logo"&gt; "website-clj"&lt;/div&gt;), but this is working for me and it now renders like so:
+I changed the section names and added dummy links for now, but the rest is a pretty straightforward translation. I am sure I am writing it in a non-compact way (i.e. it looks like classes under tags can be indicated as <code>.</code> attributes such as <code>[:div.logo "website-clj"]</code> expanding to <code>&lt;div class</code>"logo"&gt; "website-clj"&lt;/div&gt;), but this is working for me and it now renders like so:<br />
 </p>
 
 
 <div class="figure">
-<p><img src="img/with-header-footer.png" alt="with-header-footer.png" />
+<p><img src="img/with-header-footer.png" alt="with-header-footer.png" /><br />
 </p>
 </div>
 </div>
 </div>
 
 <div id="outline-container-org7dbb018" class="outline-3">
-<h3 id="org7dbb018"><span class="section-number-3">4.3</span> org-workflow: basic HTML export</h3>
-<div class="outline-text-3" id="text-4-3">
+<h3 id="org7dbb018">org-workflow: basic HTML export</h3>
+<div class="outline-text-3" id="text-org7dbb018">
 <p>
-Christian Johansen's workshop tells you how to build the site if you were to write your posts in markdown. I write in <code>org-mode</code> markup and export to html. Org-mode provides excellent publishing and file export support (explained well in this <a href="https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html">tutorial</a>), so I will use it to edit my files. The first step is to setup a directory in <code>resources</code> called org-posts that contains my org files. I will add a file to it called <code>test_post.org</code> that looks like so:
+Christian Johansen's workshop tells you how to build the site if you were to write your posts in markdown. I write in <code>org-mode</code> markup and export to html. Org-mode provides excellent publishing and file export support (explained well in this <a href="https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html">tutorial</a>), so I will use it to edit my files. The first step is to setup a directory in <code>resources</code> called org-posts that contains my org files. I will add a file to it called <code>test_post.org</code> that looks like so:<br />
 </p>
 
 <pre class="example">
@@ -462,7 +471,7 @@ Here is a test post
 </pre>
 
 <p>
-Next, I will add the following to my <code>config.org</code> file (or <code>init.el</code> file if you arent using an org-mode config file) that says the following:
+Next, I will add the following to my <code>config.org</code> file (or <code>init.el</code> file if you arent using an org-mode config file) that says the following:<br />
 </p>
 
 <div class="org-src-container">
@@ -481,7 +490,7 @@ Next, I will add the following to my <code>config.org</code> file (or <code>init
 </div>
 
 <p>
-Now, if i run <code>M-x org-publish-project</code> then select <code>clj-site</code>, I get a nicely exported html file in my <code>posts directory</code> 
+Now, if i run <code>M-x org-publish-project</code> then select <code>clj-site</code>, I get a nicely exported html file in my <code>posts directory</code> <br />
 </p>
 
 <pre class="example">
@@ -504,21 +513,21 @@ resources/
 
 </pre>
 <p>
-Which is visible when I render the site (it is handled by the <code>html-posts</code> function)
+Which is visible when I render the site (it is handled by the <code>html-posts</code> function)<br />
 </p>
 </div>
 </div>
 
 <div id="outline-container-orgc686904" class="outline-3">
-<h3 id="orgc686904"><span class="section-number-3">4.4</span> Images and relative links</h3>
-<div class="outline-text-3" id="text-4-4">
+<h3 id="orgc686904">Images and relative links</h3>
+<div class="outline-text-3" id="text-orgc686904">
 </div><div id="outline-container-org7a30a32" class="outline-4">
-<h4 id="org7a30a32"><span class="section-number-4">4.4.1</span> Images</h4>
-<div class="outline-text-4" id="text-4-4-1">
+<h4 id="org7a30a32">Images</h4>
+<div class="outline-text-4" id="text-org7a30a32">
 <p>
-Adding images is important to any site, and links too for that matter. How well do they work in this format?
-I'll start with a sample screenshot of my part of my landing page with an annotation. 
-The first thing I did was make a new directory in my <code>resources/</code> directory called <code>public</code>, which will contain <code>img</code>, <code>css</code>, and <code>js</code> directories. The directory structure now looks like this:
+Adding images is important to any site, and links too for that matter. How well do they work in this format?<br />
+I'll start with a sample screenshot of my part of my landing page with an annotation.<br />
+The first thing I did was make a new directory in my <code>resources/</code> directory called <code>public</code>, which will contain <code>img</code>, <code>css</code>, and <code>js</code> directories. The directory structure now looks like this:<br />
 </p>
 <pre class="example">
 resources/
@@ -533,7 +542,7 @@ resources/
 </pre>
 
 <p>
-Now I will test it by adding a simple html tag for image to the source for my langing page. 
+Now I will test it by adding a simple html tag for image to the source for my langing page.<br />
 </p>
 
 <pre class="example">
@@ -549,22 +558,22 @@ Here is a test image:
 </pre>
 
 <p>
-This doesnt work. Changing the source to <code>&lt;img src ="sample-img.png"/&gt;</code> and copying the image to the same folder as the landing page doesn't help&#x2026; 
+This doesnt work. Changing the source to <code>&lt;img src ="sample-img.png"/&gt;</code> and copying the image to the same folder as the landing page doesn't help&#x2026;<br />
 </p>
 </div>
 
 <div id="outline-container-orgca490da" class="outline-5">
-<h5 id="orgca490da"><span class="section-number-5">4.4.1.1</span> Optimus</h5>
-<div class="outline-text-5" id="text-4-4-1-1">
+<h5 id="orgca490da">Optimus</h5>
+<div class="outline-text-5" id="text-orgca490da">
 <p>
-Christian Johansen's blog post uses <code>optimus</code> to wrap static folders. I'll start by trying to serve bootstrap locally rather than linking to the CDN. 
-I played around with this for a few hours yesterday and couldn't figure it out. I understood things reasonably well until <code>Optimus</code>, which doesn't make much sense to me because I do not have a background in web development so I really cant understand what it is doing or why it is doing it. This is likely because I did not spend much time with the docs, but they use a lot of web-jargon and I don't have the time or will to jump into that now. 
+Christian Johansen's blog post uses <code>optimus</code> to wrap static folders. I'll start by trying to serve bootstrap locally rather than linking to the CDN.<br />
+I played around with this for a few hours yesterday and couldn't figure it out. I understood things reasonably well until <code>Optimus</code>, which doesn't make much sense to me because I do not have a background in web development so I really cant understand what it is doing or why it is doing it. This is likely because I did not spend much time with the docs, but they use a lot of web-jargon and I don't have the time or will to jump into that now.<br />
 </p>
 
 <p>
-     Luckily, I explored Christian Johansen's website a little more and came across something that seemed quite useful (<a href="https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/">here</a>). But I didn't make much progress with this. 
-&#x2026;
-Finally, after a few hours today I figured out how to add links. My directory structure now looks like so:
+     Luckily, I explored Christian Johansen's website a little more and came across something that seemed quite useful (<a href="https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/">here</a>). But I didn't make much progress with this.<br />
+&#x2026;<br />
+Finally, after a few hours today I figured out how to add links. My directory structure now looks like so:<br />
 </p>
 <pre class="example">
 resources/
@@ -580,14 +589,14 @@ resources/
 
 </pre>
 <p>
-images can be added by referring to them relative to public. For example:
+images can be added by referring to them relative to public. For example:<br />
 </p>
 <pre class="example">
 [:div.test [:img {:src "/img/test-img.png"}]] ; img test in the hiccup function layout-base-header
 </pre>
 
 <p>
-inserts the image stored in public/img/test-img.png
+inserts the image stored in public/img/test-img.png<br />
 </p>
 </div>
 </div>
@@ -595,10 +604,10 @@ inserts the image stored in public/img/test-img.png
 </div>
 
 <div id="outline-container-org2da4c7c" class="outline-3">
-<h3 id="org2da4c7c"><span class="section-number-3">4.5</span> org-workflow: Handling images</h3>
-<div class="outline-text-3" id="text-4-5">
+<h3 id="org2da4c7c">org-workflow: Handling images</h3>
+<div class="outline-text-3" id="text-org2da4c7c">
 <p>
-Back to my original org-export example file, I'll add an image in org-markup manner. 
+Back to my original org-export example file, I'll add an image in org-markup manner.<br />
 </p>
 
 <pre class="example">
@@ -616,16 +625,18 @@ Here is a test post and a link to an image.
 </pre>
 
 <p>
-Exporting this to html gives the following link structure in HTML:
+Exporting this to html gives the following link structure in HTML:<br />
 </p>
 
 <pre class="example">
 &lt;img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/test-img.png" alt="test-img.png" /&gt;
 </pre>
+
 <p>
-Which definitely wont work when I export the static site. Since all images are referred to via <code>img/</code>, I think I can easily write a string replace in Clojure and put it in my <code>html-posts</code> function to fix this formatting. 
-<i>Note</i>
-I know that I could use <code>enliven</code> to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it. 
+Which definitely wont work when I export the static site. Since all images are referred to via <code>img/</code>, I think I can easily write a string replace in Clojure and put it in my <code>html-posts</code> function to fix this formatting.<br />
+<i>Note</i><br />
+I know that I could use <code>enliven</code> to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it.<br />
+<b>A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace&#x2026; I'll have to use <code>enliven</code> after all!</b><br />
 </p>
 
 <div class="org-src-container">
@@ -638,15 +649,22 @@ I know that I could use <code>enliven</code> to do pretty much the same thing, b
 </pre>
 </div>
 
+
 <p>
-Now I can start up my server and check out the link formatting when I <code>view-source</code> on <code>http://localhost:3000/test_post</code>:
+Now I can start up my server and check out the link formatting when I <code>view-source</code> on <code>http://localhost:3000/test_post</code>:<br />
 </p>
 
-<pre class="example">
-&lt;img src="/img/test-img.png" alt="test-img.png" /&gt;
-</pre>
+
 <p>
-Perfect! I will factor out this function so it is more readable like so:
+<code>&lt;img src</code>"/img/test-img.png" alt="test-img.png" /&gt;=<br />
+</p>
+
+<p>
+Perfect! I will factor out this function so it is more readable like so:<br />
+</p>
+
+<p>
+<b>A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace&#x2026; I'll have to use <code>enliven</code> after all!</b><br />
 </p>
 
 <div class="org-src-container">
@@ -663,17 +681,17 @@ Perfect! I will factor out this function so it is more readable like so:
 </div>
 
 <p>
-I will likely need to add a similar helper when linking between pages in a post, but this <code>key value</code> handling of all the pages as simple html strings makes it very easy to add formatting fixes to my exported html pages. I am starting to feel the value and power of Clojure's emphasis on simplicity already&#x2013;very cool!
+I will likely need to add a similar helper when linking between pages in a post, but this <code>key value</code> handling of all the pages as simple html strings makes it very easy to add formatting fixes to my exported html pages. I am starting to feel the value and power of Clojure's emphasis on simplicity already&#x2013;very cool!<br />
 </p>
 </div>
 </div>
 
 <div id="outline-container-orgb0bc528" class="outline-3">
-<h3 id="orgb0bc528"><span class="section-number-3">4.6</span> org-workflow: syntax highlighting</h3>
-<div class="outline-text-3" id="text-4-6">
+<h3 id="orgb0bc528">org-workflow: syntax highlighting</h3>
+<div class="outline-text-3" id="text-orgb0bc528">
 <p>
-   <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/%20">Christian Johnson</a> has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing <code>org-mode</code> takes care of syntax highlighting for me when I add <code>(setq org-src-fontify-natively t)</code> to my <code>config.org</code>. So here I will just test it real quick and see how it looks. 
-In my HTML file, I will add a clojure code block like so:
+   <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/%20">Christian Johnson</a> has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing <code>org-mode</code> takes care of syntax highlighting for me when I add <code>(setq org-src-fontify-natively t)</code> to my <code>config.org</code>. So here I will just test it real quick and see how it looks.<br />
+In my HTML file, I will add a clojure code block like so:<br />
 </p>
 
 <pre class="example">
@@ -709,35 +727,35 @@ How does it look?
 </pre>
 
 <p>
-This renders upon <code>M-x org-publish-project clj-site</code> to look like this:
+This renders upon <code>M-x org-publish-project clj-site</code> to look like this:<br />
 </p>
 
 
 <div class="figure">
-<p><img src="img/syntax-highlighting.png" alt="syntax-highlighting.png" />
+<p><img src="img/syntax-highlighting.png" alt="syntax-highlighting.png" /><br />
 </p>
 </div>
 
 <p>
-<code>org-src-fontify-natively</code> uses the currently active theme to highlight your source code. I just exported this using the <a href="https://github.com/fniessen/emacs-leuven-theme">Leuven theme</a> (great for org-mode) and I like the way it looks. However, if I wanted to change it and use <code>enliven</code> with <code>pygments</code>, I would probably use some emacs-lisp code and packages such as those described here: <a href="https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e">https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e</a> , but for right now I dont think this is necessary for me so I will go with the raw html formatting from org-export. 
+<code>org-src-fontify-natively</code> uses the currently active theme to highlight your source code. I just exported this using the <a href="https://github.com/fniessen/emacs-leuven-theme">Leuven theme</a> (great for org-mode) and I like the way it looks. However, if I wanted to change it and use <code>enliven</code> with <code>pygments</code>, I would probably use some emacs-lisp code and packages such as those described here: <a href="https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e">https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e</a> , but for right now I dont think this is necessary for me so I will go with the raw html formatting from org-export.<br />
 </p>
 </div>
 
 <div id="outline-container-org9ed2460" class="outline-4">
-<h4 id="org9ed2460"><span class="section-number-4">4.6.1</span> Links</h4>
-<div class="outline-text-4" id="text-4-6-1">
+<h4 id="org9ed2460">Links</h4>
+<div class="outline-text-4" id="text-org9ed2460">
 <p>
-Will update when I need it. 
-use (link-to)
+Will update when I need it.<br />
+use (link-to)<br />
 </p>
 </div>
 </div>
 </div>
 <div id="outline-container-orgcd73e37" class="outline-3">
-<h3 id="orgcd73e37"><span class="section-number-3">4.7</span> publishing</h3>
-<div class="outline-text-3" id="text-4-7">
+<h3 id="orgcd73e37">publishing</h3>
+<div class="outline-text-3" id="text-orgcd73e37">
 <p>
-From <code>lein</code>, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like to start testing on-line and I hosted my previous site on GithubPages, so I need a few config things to occur on export.  The first is the <code>CNAME</code> file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in <code>(stasis/empy-directory!)</code>), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my <code>CNAME</code> in the <code>resources directory</code>:
+From <code>lein</code>, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like to start testing on-line and I hosted my previous site on GithubPages, so I need a few config things to occur on export.  The first is the <code>CNAME</code> file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in <code>(stasis/empy-directory!)</code>), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my <code>CNAME</code> in the <code>resources directory</code>:<br />
 </p>
 
 <div class="org-src-container">
@@ -784,15 +802,15 @@ From <code>lein</code>, Christian gives some nice instructions, so I followed th
 </div>
 
 <p>
-Now I can keep CNAME where it is supposed to be the whole time. time for a test upload to see how it looks. 
+Now I can keep CNAME where it is supposed to be the whole time. time for a test upload to see how it looks.<br />
 </p>
 </div>
 
 <div id="outline-container-orgc82ba68" class="outline-4">
-<h4 id="orgc82ba68"><span class="section-number-4">4.7.1</span> Hosting on Github Pages</h4>
-<div class="outline-text-4" id="text-4-7-1">
+<h4 id="orgc82ba68">Hosting on Github Pages</h4>
+<div class="outline-text-4" id="text-orgc82ba68">
 <p>
-To host on github pages, you need the static files to be in a repo all by themselves. No problem, since <code>target</code> is already on my gitignore, I can ignore my static content subdirectory and start a new repo within the subdirectory. Unfortunately, with the previously mentioned problems with <code>(stasis/empty-directory!)</code>, my <code>.git</code> repo is deleted with every update. Looking in stasis, there doesn't seem to be a way to leave certain files in the target directory alone (There was with my Python Flask setup&#x2026;) while this may be a good and relatively easy use for a first pull request or something, for now I am going to do a very horribly inefficient thing and copy the <code>.git</code> directory around first. 
+To host on github pages, you need the static files to be in a repo all by themselves. No problem, since <code>target</code> is already on my gitignore, I can ignore my static content subdirectory and start a new repo within the subdirectory. Unfortunately, with the previously mentioned problems with <code>(stasis/empty-directory!)</code>, my <code>.git</code> repo is deleted with every update. Looking in stasis, there doesn't seem to be a way to leave certain files in the target directory alone (There was with my Python Flask setup&#x2026;) while this may be a good and relatively easy use for a first pull request or something, for now I am going to do a very horribly inefficient thing and copy the <code>.git</code> directory around first.<br />
 </p>
 
 <div class="org-src-container">
@@ -844,34 +862,43 @@ To host on github pages, you need the static files to be in a repo all by themse
 
 
 <div id="outline-container-orgc528355" class="outline-4">
-<h4 id="orgc528355"><span class="section-number-4">4.7.2</span> one push publishing with Leiningen :alias</h4>
-<div class="outline-text-4" id="text-4-7-2">
+<h4 id="orgc528355">one push publishing with Leiningen :alias</h4>
+<div class="outline-text-4" id="text-orgc528355">
 <p>
-I can already build my website with my current alias, now I will make another to deploy!
+<b>TODO: Use enliven to fix the image links.</b><br />
+I can already build my website with my current alias, now I will make another to deploy!<br />
+The steps I need to do are:<br />
 </p>
-</div>
-</div>
-</div>
-</div>
-
-
-
-<div id="outline-container-org8d83df3" class="outline-2">
-<h2 id="org8d83df3"><span class="section-number-2">5</span> References</h2>
-<div class="outline-text-2" id="text-5">
+<ol class="org-ol">
+<li>Command line build org-project<br />
 <ul class="org-ul">
-<li><a href="https://github.com/magnars/stasis">Stasis</a></li>
-<li><a href="https://github.com/magnars/optimus">Optimus links</a></li>
-<li><a href="https://github.com/ring-clojure/ring/wiki/Static-Resources">Ring static middleware</a></li>
-<li></li>
-
-<li><a href="https://github.com/yokolet/hiccup-samples">hiccup samples</a></li>
-<li>Christian Johansen's post on Building static sites in Clojure with Stasis <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/">https://cjohansen.no/building-static-sites-in-clojure-with-stasis/</a>
-<ul class="org-ul">
-<li>handling links <a href="https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/">https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/</a></li>
-<li>Also his post here is similar with some (useful) differences <a href="https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md">https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md</a></li>
+<li>remember to add a header to tell org to <i>not</i> evaluate code like this: <code>#+PROPERTY: header-args :eval never-export</code> <br /></li>
 </ul></li>
-<li><a href="https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html">Clojure namespaces</a></li>
+<li>Then run build-site<br /></li>
+<li><code>git add</code> and <code>git push</code> all changes.<br /></li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-org2344fef" class="outline-2">
+<h2 id="org2344fef">References</h2>
+<div class="outline-text-2" id="text-org2344fef">
+<ul class="org-ul">
+<li><a href="https://github.com/magnars/stasis">Stasis</a><br /></li>
+<li><a href="https://github.com/magnars/optimus">Optimus links</a><br /></li>
+<li><a href="https://github.com/ring-clojure/ring/wiki/Static-Resources">Ring static middleware</a><br /></li>
+<li><a href="https://github.com/yokolet/hiccup-samples">hiccup samples</a><br /></li>
+<li>Christian Johansen's post on Building static sites in Clojure with Stasis <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/">https://cjohansen.no/building-static-sites-in-clojure-with-stasis/</a><br />
+<ul class="org-ul">
+<li>handling links <a href="https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/">https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/</a><br /></li>
+<li>Also his post here is similar with some (useful) differences <a href="https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md">https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md</a><br /></li>
+</ul></li>
+<li><a href="https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html">Clojure namespaces</a><br /></li>
 </ul>
 </div>
 </div>

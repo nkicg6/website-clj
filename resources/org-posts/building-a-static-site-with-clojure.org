@@ -1,3 +1,10 @@
+#+OPTIONS: toc:t author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :eval never-export
+
+
+/TODO!/
+
+Use =enliven= to format images. Your find and replace stuff is messing up the code examples. 
 
  
 * Static sites
@@ -442,9 +449,11 @@ Exporting this to html gives the following link structure in HTML:
 #+BEGIN_EXAMPLE
 <img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/test-img.png" alt="test-img.png" />
 #+END_EXAMPLE
+
 Which definitely wont work when I export the static site. Since all images are referred to via =img/=, I think I can easily write a string replace in Clojure and put it in my =html-posts= function to fix this formatting. 
 /Note/
 I know that I could use =enliven= to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it. 
+*A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace... I'll have to use =enliven= after all!*
 
 #+BEGIN_SRC clojure 
 ;; main pages function. 
@@ -455,12 +464,15 @@ I know that I could use =enliven= to do pretty much the same thing, but with how
                     (vals pages)))))
 #+END_SRC
 
+
 Now I can start up my server and check out the link formatting when I =view-source= on =http://localhost:3000/test_post=:
 
-#+BEGIN_EXAMPLE
-<img src="/img/test-img.png" alt="test-img.png" />
-#+END_EXAMPLE
+
+=<img src="/img/test-img.png" alt="test-img.png" />=
+
 Perfect! I will factor out this function so it is more readable like so:
+
+*A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace... I'll have to use =enliven= after all!*
 
 #+BEGIN_SRC clojure 
 (defn format-images [html]
@@ -617,10 +629,11 @@ Now I can keep CNAME where it is supposed to be the whole time. time for a test 
 
 
 *** one push publishing with Leiningen :alias
-
+*TODO: Use enliven to fix the image links.*
 I can already build my website with my current alias, now I will make another to deploy!
 The steps I need to do are: 
 1. Command line build org-project
+   - remember to add a header to tell org to /not/ evaluate code like this: =#+PROPERTY: header-args :eval never-export= 
 2. Then run build-site
 3. =git add= and =git push= all changes. 
 
@@ -632,7 +645,6 @@ The steps I need to do are:
 - [[https://github.com/magnars/stasis][Stasis]]
 - [[https://github.com/magnars/optimus][Optimus links]]
 - [[https://github.com/ring-clojure/ring/wiki/Static-Resources][Ring static middleware]]
-- 
 - [[https://github.com/yokolet/hiccup-samples][hiccup samples]]
 - Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
   - handling links https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/
