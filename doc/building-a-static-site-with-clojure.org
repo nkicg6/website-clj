@@ -28,7 +28,7 @@ I am still very new to Clojure, so my custom code will likely be very beginner-i
  Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/ 
 
 ** Style
-   After following most of the Christian Johansen's awesome tutorial, the first thing I wanted to do was add [[https://getbootstrap.com/docs/3.3/getting-started/][Twitter Bootstrap]] CSS. I know there is a [[https://github.com/weavejester/hiccup-bootstrap][Hiccup wrapper]] for bootstrap, but since I write in Emacs Org-mode and export to HTML directly, I don't think it is necessary for me. Hiccup looks like simplified HTML, so I changed the name of the function from =layout-page= to =layout-base-header= and added the links from the Bootstrap home page. The function now looks like this:
+   After following most of the Christian Johansen's awesome tutorial, the first thing I wanted to do was add [[https://getbootstrap.com/docs/3.3/getting-started/][Twitter Bootstrap]] CSS. I know there is a [[https://github.com/weavejester/hiccup-bootstrap][Hiccup wrapper]] for bootstrap, but since I write in Emacs Org-mode and export to HTML directly, I don't think it is necessary for me. Hiccup looks like simplified HTML, so I changed the name of the function from =layout-page= to =layout-base-header= and added the CDN links from the Bootstrap home page. The function now looks like this:
 
 #+BEGIN_SRC clojure 
   (defn layout-base-header [page]
