@@ -1,14 +1,4 @@
-#+TITLE: Clojure static site: why and how
-#+DATE: 2018-07-07
-#+OPTIONS: toc:1 author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
-#+PROPERTY: header-args :eval never-export
-#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
-#+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
-#+LATEX_HEADER: \usepackage[round]{natbib}
-#+LATEX_HEADER: \renewcommand{\bibsection}
 
-/Note!/
-This post will eventually be part of the clojure website, but I am not done yet. This will track my progress as I go. This source directory will be different from the actual website directory. 
  
 * Static sites
 These are static collections of HTML, CSS, and JavaScript files that make up simple, fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, etc. files that make up the website.
@@ -629,6 +619,11 @@ Now I can keep CNAME where it is supposed to be the whole time. time for a test 
 *** one push publishing with Leiningen :alias
 
 I can already build my website with my current alias, now I will make another to deploy!
+The steps I need to do are: 
+1. Command line build org-project
+2. Then run build-site
+3. =git add= and =git push= all changes. 
+
 
 
 

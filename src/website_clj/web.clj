@@ -106,7 +106,7 @@
   (shell/sh "mv" (str export-dir "/.git") (str safe-dir "/.git")))
 
 (defn replace-git [safe-dir export-dir]
-  (shell/sh "mv" (str safe-dir "/t.test") (str export-dir "/t.test")))
+  (shell/sh "mv" (str safe-dir "/.git") (str export-dir "/.git")))
 
 
 (defn export []
