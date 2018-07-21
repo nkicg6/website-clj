@@ -13,9 +13,7 @@
             [clojure.string :as str]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer (link-to image)]
-            [me.raynes.cegdown :as md]
             [stasis.core :as stasis]))
-
 
 
 (defn layout-base-header [request page]
@@ -37,7 +35,7 @@
        [:li {:class "inactive"} (link-to "/" "Science")]
        [:li {:class "inactive"} (link-to "/" "Programming")]
        [:li {:class "inactive"} (link-to "/" "About")]
-       [:li {:class "inactive"} (link-to "/my-first-md" "Post")]
+       [:li {:class "inactive"} (link-to "/test_post" "Post")]
        [:li [:a {:href "https://github.com/nkicg6"}
              [:span {:class "fa fa-github" :style "font-size:24px"}]]]
        [:li [:a {:href "https://twitter.com/NicholasMG"}
@@ -56,14 +54,6 @@
   (assets/load-assets "public" [#".*"]))
 
 
-(def pegdown-options ;; https://github.com/sirthias/pegdown
-  [:autolinks :fenced-code-blocks :strikethrough])
-
-
-(defn markdown-pages [pages]
-  (zipmap (map #(str/replace % #"\.md$" "") (keys pages))
-          (map #(fn [req] (layout-base-header req  (md/to-html %))) (vals pages))))
-
 (defn format-images [html]
   (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" ""))
 
@@ -72,8 +62,6 @@
   (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
           (map #(fn [req] (layout-base-header req %))
                (map format-images (vals pages)))))
-
-(html-pages (stasis/slurp-directory "resources/posts" #".*\.html$"))
 
 (defn partial-pages [pages]
   (zipmap (keys pages)
@@ -92,7 +80,6 @@
    {:landing (home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
     :posts  (html-pages (stasis/slurp-directory "resources/posts" #".*\.html$"))
     :partials (partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
-    :markdown (markdown-pages (stasis/slurp-directory "resources/md" #".*\.md$"))
     :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
 
 
