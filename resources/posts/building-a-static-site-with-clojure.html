@@ -89,7 +89,7 @@ My original website was written with python and the Flask framework and made int
 <h2 id="org8d4c2ca">Org-mode to html workflow</h2>
 <div class="outline-text-2" id="text-org8d4c2ca">
 <p>
-<img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/org-mode-unicorn-logo.png" alt="org-mode-unicorn-logo.png" /><br />
+<img src="img/org-mode-unicorn-logo.png" alt="org-mode-unicorn-logo.png" /><br />
   I write in Emacs with <a href="https://orgmode.org/">Org-mode</a> markup and plan to publish with Org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading <code>org-workflow</code> <br />
 </p>
 </div>
@@ -453,8 +453,13 @@ I changed the section names and added dummy links for now, but the rest is a pre
 <div id="outline-container-org7dbb018" class="outline-3">
 <h3 id="org7dbb018">org-workflow: basic HTML export</h3>
 <div class="outline-text-3" id="text-org7dbb018">
+
+<div class="figure">
+<p><img src="img/org-mode-unicorn-logo.png" alt="org-mode-unicorn-logo.png" /><br />
+</p>
+</div>
+
 <p>
-<img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/org-mode-unicorn-logo.png" alt="org-mode-unicorn-logo.png" /><br />
    <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/">Christian Johanson's</a> excellent tutorial shows you how to build the site if you were to write your posts in markdown. However, as I wrote before, I write in emacs <a href="https://orgmode.org/">org-mode</a> markup and export to html. Org-mode provides excellent publishing and file export support (explained well in this <a href="https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html">tutorial</a>), so I will use it to edit my files (if you want other reasons to use org-mode and understand why it has taken over my life, see <a href="https://www.youtube.com/watch?v=SzA2YODtgK4">this</a> video, and why it works great for reproducible research <a href="https://www.youtube.com/watch?v=1-dUkyn_fZA&amp;t=16s">here</a> and especially <a href="https://www.youtube.com/watch?v=CGnt_PWoM5Y&amp;t=89s">here</a>).<br />
 The first step is to setup a directory in <code>resources</code> called org-posts that contains my org files. I will add a file to it called <code>test_post.org</code> that looks like so:<br />
 </p>

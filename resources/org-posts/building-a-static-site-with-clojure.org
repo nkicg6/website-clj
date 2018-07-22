@@ -19,7 +19,7 @@ My original website was written with python and the Flask framework and made int
 
 * Org-mode to html workflow
 
-file:~/personal_projects/website-clj/resources/public/img/org-mode-unicorn-logo.png
+[[file:img/org-mode-unicorn-logo.png]]
   I write in Emacs with [[https://orgmode.org/][Org-mode]] markup and plan to publish with Org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading =org-workflow= 
 
 * Building the website
@@ -313,7 +313,8 @@ I changed the section names and added dummy links for now, but the rest is a pre
 [[file:img/with-header-footer.png]]
 
 ** org-workflow: basic HTML export
-file:~/personal_projects/website-clj/resources/public/img/org-mode-unicorn-logo.png
+file:img/org-mode-unicorn-logo.png
+
    [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian Johanson's]] excellent tutorial shows you how to build the site if you were to write your posts in markdown. However, as I wrote before, I write in emacs [[https://orgmode.org/][org-mode]] markup and export to html. Org-mode provides excellent publishing and file export support (explained well in this [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][tutorial]]), so I will use it to edit my files (if you want other reasons to use org-mode and understand why it has taken over my life, see [[https://www.youtube.com/watch?v=SzA2YODtgK4][this]] video, and why it works great for reproducible research [[https://www.youtube.com/watch?v=1-dUkyn_fZA&t=16s][here]] and especially [[https://www.youtube.com/watch?v=CGnt_PWoM5Y&t=89s][here]]). 
 The first step is to setup a directory in =resources= called org-posts that contains my org files. I will add a file to it called =test_post.org= that looks like so:
 
