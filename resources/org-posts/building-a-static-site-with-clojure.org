@@ -18,8 +18,9 @@ They are simple and very useful. I don't need anything more complicated for my p
 My original website was written with python and the Flask framework and made into a static site with [[https://pythonhosted.org/Frozen-Flask/][Frozen-flask]] and [[https://pythonhosted.org/Flask-FlatPages/][Flask-FlatPages]] for hosting on github pages. I was originally going to port it to Clojure using the Clojure static site generator [[https://github.com/cryogen-project/cryogen][Cryogen]], a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult. In the spirit of Clojure (and Tim Ewald's excellent talk [[https://www.youtube.com/watch?v=ShEez0JkOFw][Programming with hand tools]]), I choose to use the [[https://github.com/magnars/stasis][Stasis]], the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go. 
 
 * Org-mode to html workflow
-  
-  I write in Org-mode markup and plan to publish with org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading =org-workflow= 
+
+file:~/personal_projects/website-clj/resources/public/img/org-mode-unicorn-logo.png
+  I write in Emacs with [[https://orgmode.org/][Org-mode]] markup and plan to publish with Org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading =org-workflow= 
 
 * Building the website
   /Disclaimer/ 
@@ -312,7 +313,9 @@ I changed the section names and added dummy links for now, but the rest is a pre
 [[file:img/with-header-footer.png]]
 
 ** org-workflow: basic HTML export
-   Christian Johansen's workshop tells you how to build the site if you were to write your posts in markdown. I write in =org-mode= markup and export to html. Org-mode provides excellent publishing and file export support (explained well in this [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][tutorial]]), so I will use it to edit my files. The first step is to setup a directory in =resources= called org-posts that contains my org files. I will add a file to it called =test_post.org= that looks like so:
+file:~/personal_projects/website-clj/resources/public/img/org-mode-unicorn-logo.png
+   [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian Johanson's]] excellent tutorial shows you how to build the site if you were to write your posts in markdown. However, as I wrote before, I write in emacs [[https://orgmode.org/][org-mode]] markup and export to html. Org-mode provides excellent publishing and file export support (explained well in this [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][tutorial]]), so I will use it to edit my files (if you want other reasons to use org-mode and understand why it has taken over my life, see [[https://www.youtube.com/watch?v=SzA2YODtgK4][this]] video, and why it works great for reproducible research [[https://www.youtube.com/watch?v=1-dUkyn_fZA&t=16s][here]] and especially [[https://www.youtube.com/watch?v=CGnt_PWoM5Y&t=89s][here]]). 
+The first step is to setup a directory in =resources= called org-posts that contains my org files. I will add a file to it called =test_post.org= that looks like so:
 
 #+BEGIN_EXAMPLE
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
@@ -453,7 +456,7 @@ Exporting this to html gives the following link structure in HTML:
 
 Which doesn't render properly wont work when I export the static site. Since all images are referred to =/img/=, I think I can easily write a string replace in Clojure and put it in my =html-posts= function to fix this formatting. 
 /Note/
-I know that I could use =enliven= to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it. 
+I know that I could use [[https://github.com/cgrand/enlive][enlive]] to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it. 
 
 #+BEGIN_SRC clojure 
 ;; main pages function. 
@@ -487,7 +490,7 @@ Perfect! I will factor out this function so it is more readable like so:
 I will likely need to add a similar helper when linking between pages in a post, but this =key value= handling of all the pages as simple html strings makes it very easy to add formatting fixes to my exported html pages. I am starting to feel the value and power of Clojure's emphasis on simplicity already--very cool!
 
 ** org-workflow: syntax highlighting
-   [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/%20][Christian Johnson]] has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing =org-mode= takes care of syntax highlighting for me when I add =(setq org-src-fontify-natively t)= to my =config.org=. So here I will just test it real quick and see how it looks. 
+   [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian Johanson]] has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing =org-mode= takes care of syntax highlighting for me when I add =(setq org-src-fontify-natively t)= to my =config.org=. So here I will just test it real quick and see how it looks. 
 In my HTML file, I will add a clojure code block like so:
 
 #+BEGIN_EXAMPLE
@@ -527,6 +530,8 @@ This renders upon =M-x org-publish-project clj-site= to look like this:
 [[file:img/syntax-highlighting.png]]
 
 =org-src-fontify-natively= uses the currently active theme to highlight your source code. I just exported this using the [[https://github.com/fniessen/emacs-leuven-theme][Leuven theme]] (great for org-mode) and I like the way it looks. However, if I wanted to change it and use =enliven= with =pygments=, I would probably use some emacs-lisp code and packages such as those described here: https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e , but for right now I dont think this is necessary for me so I will go with the raw html formatting from org-export. 
+
+At this point, I removed all the markdown file stuff from my project as I don't plan to write in markdown and I cleaned up some other stuff I probably wont use. You can see the source code for my project [[https://github.com/nkicg6/website-clj][here]], all the code that does any work is in the =web.clj= file. 
 
 *** Links
 Will update when I need it. 
@@ -654,3 +659,4 @@ The idea is that I just call build-site and it all happens automatically. I will
   - handling links https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/
   - Also his post here is similar with some (useful) differences https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md
 - [[https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html][Clojure namespaces]]
+- add more org-mode links!
