@@ -10,7 +10,7 @@
 </ul>
 </li>
 <li><a href="#org8d4c2ca">Org-mode to html workflow</a></li>
-<li><a href="#org57bb195">Building the website: basics</a>
+<li><a href="#org7aa8fec">Building the website</a>
 <ul>
 <li><a href="#orge3ec381">Style</a></li>
 <li><a href="#org1ff106a">My header and footer</a></li>
@@ -43,13 +43,14 @@
 </div>
 </div>
 <p>
-<i>TODO!</i><br />
+<b>TODO:</b><br />
 </p>
-
-<p>
-Use <code>enliven</code> to format images. Your find and replace stuff is messing up the code examples.<br />
-</p>
-
+<ol class="org-ol">
+<li>Update, condense, and clean these docs.<br /></li>
+<li>Set up publish commands (see bottom)<br /></li>
+<li>Port over useful posts from old site<br /></li>
+<li>Tests!!<br /></li>
+</ol>
 
 <div id="outline-container-orgf94d304" class="outline-2">
 <h2 id="orgf94d304">Static sites</h2>
@@ -93,9 +94,9 @@ I write in Org-mode markup and plan to publish with org-publish, so periodically
 </div>
 </div>
 
-<div id="outline-container-org57bb195" class="outline-2">
-<h2 id="org57bb195">Building the website: basics</h2>
-<div class="outline-text-2" id="text-org57bb195">
+<div id="outline-container-org7aa8fec" class="outline-2">
+<h2 id="org7aa8fec">Building the website</h2>
+<div class="outline-text-2" id="text-org7aa8fec">
 <p>
   <i>Disclaimer</i> <br />
 I am still very new to Clojure, so my custom code will likely be very beginner-ish and rough, but hopefully it will improve as I go!<br />
@@ -629,14 +630,13 @@ Exporting this to html gives the following link structure in HTML:<br />
 </p>
 
 <pre class="example">
-&lt;img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/test-img.png" alt="test-img.png" /&gt;
+&lt;img src="img/test-img.png" alt="test-img.png" /&gt;
 </pre>
 
 <p>
-Which definitely wont work when I export the static site. Since all images are referred to via <code>img/</code>, I think I can easily write a string replace in Clojure and put it in my <code>html-posts</code> function to fix this formatting.<br />
+Which doesn't render properly wont work when I export the static site. Since all images are referred to <code>/img/</code>, I think I can easily write a string replace in Clojure and put it in my <code>html-posts</code> function to fix this formatting.<br />
 <i>Note</i><br />
 I know that I could use <code>enliven</code> to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it.<br />
-<b>A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace&#x2026; I'll have to use <code>enliven</code> after all!</b><br />
 </p>
 
 <div class="org-src-container">
@@ -644,7 +644,7 @@ I know that I could use <code>enliven</code> to do pretty much the same thing, b
 <span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">html-pages</span> <span style="color: #7388D6;">[</span>pages<span style="color: #7388D6;">]</span>
   <span style="color: #7388D6;">(</span>zipmap <span style="color: #909183;">(</span>map #<span style="color: #709870;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> <span style="color: #BA36A5;">%</span> #<span style="color: #008000;">"</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000;">html$"</span> <span style="color: #008000;">""</span><span style="color: #709870;">)</span> <span style="color: #709870;">(</span><span style="color: #006FE0;">keys</span> pages<span style="color: #709870;">)</span><span style="color: #909183;">)</span>
           <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span><span style="color: #0000FF;">fn</span> <span style="color: #907373;">[</span>req<span style="color: #907373;">]</span> <span style="color: #907373;">(</span>layout-base-header req <span style="color: #BA36A5;">%</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
-               <span style="color: #709870;">(</span>map #<span style="color: #907373;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> <span style="color: #BA36A5;">%</span> #<span style="color: #008000;">"file:///Users/Nick/personal_projects/website-clj/resources/public"</span> <span style="color: #008000;">""</span><span style="color: #907373;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">this fixes links to images</span>
+               <span style="color: #709870;">(</span>map #<span style="color: #907373;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> <span style="color: #BA36A5;">%</span> #<span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">img"</span> <span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">/img"</span><span style="color: #907373;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">this fixes links to images</span>
                     <span style="color: #907373;">(</span><span style="color: #006FE0;">vals</span> pages<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
 </pre>
 </div>
@@ -663,13 +663,9 @@ Now I can start up my server and check out the link formatting when I <code>view
 Perfect! I will factor out this function so it is more readable like so:<br />
 </p>
 
-<p>
-<b>A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace&#x2026; I'll have to use <code>enliven</code> after all!</b><br />
-</p>
-
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">format-images</span> <span style="color: #7388D6;">[</span>html<span style="color: #7388D6;">]</span>
-  <span style="color: #7388D6;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> html #<span style="color: #008000;">"file:///Users/Nick/personal_projects/website-clj/resources/public"</span> <span style="color: #008000;">""</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+  <span style="color: #7388D6;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> html #<span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">img"</span> <span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">/img"</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
 
 <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">main pages function.</span>
 <span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">html-pages</span> <span style="color: #7388D6;">[</span>pages<span style="color: #7388D6;">]</span>
@@ -754,8 +750,11 @@ use (link-to)<br />
 <div id="outline-container-orgcd73e37" class="outline-3">
 <h3 id="orgcd73e37">publishing</h3>
 <div class="outline-text-3" id="text-orgcd73e37">
+</div><div id="outline-container-orgc82ba68" class="outline-4">
+<h4 id="orgc82ba68">Hosting on Github Pages</h4>
+<div class="outline-text-4" id="text-orgc82ba68">
 <p>
-From <code>lein</code>, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like to start testing on-line and I hosted my previous site on GithubPages, so I need a few config things to occur on export.  The first is the <code>CNAME</code> file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in <code>(stasis/empy-directory!)</code>), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my <code>CNAME</code> in the <code>resources directory</code>:<br />
+From <code>lein</code>, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like put my website on-line and I hosted my previous site on Github Pages, so I need a few config things to occur on export.  The first is the <code>CNAME</code> file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in <code>(stasis/empy-directory!)</code>), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my <code>CNAME</code> in the <code>resources directory</code>:<br />
 </p>
 
 <div class="org-src-container">
@@ -796,21 +795,18 @@ From <code>lein</code>, Christian gives some nice instructions, so I followed th
     <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>empty-directory! export-dir<span style="color: #909183;">)</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">optimus.export</span><span style="color: #333333; background-color: #FFFFFF;">/</span>save-assets assets export-dir<span style="color: #909183;">)</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>export-pages <span style="color: #709870;">(</span>get-pages<span style="color: #709870;">)</span> export-dir <span style="color: #709870;">{</span><span style="color: #006FE0;">:optimus-assets</span> assets<span style="color: #709870;">}</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span>
-  <span style="color: #7388D6;">(</span>cp-cname export-dir<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+  <span style="color: #7388D6;">(</span>cp-cname export-dir<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">after export, copy CNAME back to base. </span>
 
 </pre>
 </div>
 
 <p>
-Now I can keep CNAME where it is supposed to be the whole time. time for a test upload to see how it looks.<br />
+Now I can keep CNAME where it is supposed to be the whole time. This seems hacky&#x2026; but it also works without me messing up the awesome stasis code.<br />
 </p>
-</div>
 
-<div id="outline-container-orgc82ba68" class="outline-4">
-<h4 id="orgc82ba68">Hosting on Github Pages</h4>
-<div class="outline-text-4" id="text-orgc82ba68">
 <p>
-To host on github pages, you need the static files to be in a repo all by themselves. No problem, since <code>target</code> is already on my gitignore, I can ignore my static content subdirectory and start a new repo within the subdirectory. Unfortunately, with the previously mentioned problems with <code>(stasis/empty-directory!)</code>, my <code>.git</code> repo is deleted with every update. Looking in stasis, there doesn't seem to be a way to leave certain files in the target directory alone (There was with my Python Flask setup&#x2026;) while this may be a good and relatively easy use for a first pull request or something, for now I am going to do a very horribly inefficient thing and copy the <code>.git</code> directory around first.<br />
+To host on github pages, you also need the static files to be in a repo all by themselves. No problem, since <code>target</code> is already on my <code>.gitignore</code> from my Leiningen project, I can add my static content subdirectory (<code>nickgeorge.net</code>) and start a new repo in there.<br />
+Unfortunately, with the previously mentioned problems with <code>(stasis/empty-directory!)</code>, my <code>.git</code> repo is deleted with every <code>lein build-site</code>. Looking in the <a href="https://github.com/magnars/stasis">Stasis code</a>, there doesn't seem to be a way to leave certain files in the target directory alone (There was with my Python Flask setup&#x2026;) while this may be a good and relatively easy way to contribute to the library, for now I am going to do a very horribly inefficient thing and copy the <code>.git</code> directory to a safe space, then back after export. I'll have to do the same with the <code>.gitignore</code><br />
 </p>
 
 <div class="org-src-container">
@@ -846,14 +842,14 @@ To host on github pages, you need the static files to be in a repo all by themse
 
 
 <span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">export</span> <span style="color: #7388D6;">[]</span>
-  <span style="color: #7388D6;">(</span>save-git safe-dir export-dir<span style="color: #7388D6;">)</span>
+  <span style="color: #7388D6;">(</span>save-git safe-dir export-dir<span style="color: #7388D6;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">copy .git to a safe place</span>
   <span style="color: #7388D6;">(</span><span style="color: #0000FF;">let</span> <span style="color: #909183;">[</span>assets <span style="color: #709870;">(</span><span style="color: #6434A3;">optimizations</span><span style="color: #333333; background-color: #FFFFFF;">/</span>all <span style="color: #907373;">(</span>get-assets<span style="color: #907373;">)</span> <span style="color: #907373;">{}</span><span style="color: #709870;">)</span><span style="color: #909183;">]</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>empty-directory! export-dir<span style="color: #909183;">)</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">optimus.export</span><span style="color: #333333; background-color: #FFFFFF;">/</span>save-assets assets export-dir<span style="color: #909183;">)</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>export-pages <span style="color: #709870;">(</span>get-pages<span style="color: #709870;">)</span> export-dir <span style="color: #709870;">{</span><span style="color: #006FE0;">:optimus-assets</span> assets<span style="color: #709870;">}</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span>
-  <span style="color: #7388D6;">(</span>cp-cname export-dir<span style="color: #7388D6;">)</span>
-  <span style="color: #7388D6;">(</span>cp-gitignore export-dir<span style="color: #7388D6;">)</span>
-  <span style="color: #7388D6;">(</span>replace-git safe-dir export-dir<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+  <span style="color: #7388D6;">(</span>cp-cname export-dir<span style="color: #7388D6;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">preserve CNAME</span>
+  <span style="color: #7388D6;">(</span>cp-gitignore export-dir<span style="color: #7388D6;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">Put .gitignore in</span>
+  <span style="color: #7388D6;">(</span>replace-git safe-dir export-dir<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">put .git back</span>
 
 </pre>
 </div>
@@ -865,18 +861,26 @@ To host on github pages, you need the static files to be in a repo all by themse
 <h4 id="orgc528355">one push publishing with Leiningen :alias</h4>
 <div class="outline-text-4" id="text-orgc528355">
 <p>
-<b>TODO: Use enliven to fix the image links.</b><br />
 I can already build my website with my current alias, now I will make another to deploy!<br />
 The steps I need to do are:<br />
 </p>
 <ol class="org-ol">
 <li>Command line build org-project<br />
 <ul class="org-ul">
-<li>remember to add a header to tell org to <i>not</i> evaluate code like this: <code>#+PROPERTY: header-args :eval never-export</code> <br /></li>
+<li><code>org-publish-project clj-site</code> from the command line<br /></li>
+<li>remember to add a header to tell org to <i>not</i> evaluate code like this: <code>#+PROPERTY: header-args :eval never-export</code><br /></li>
+<li>This should be a clojure function called with <code>export</code> from <code>build-site</code> <br /></li>
 </ul></li>
 <li>Then run build-site<br /></li>
-<li><code>git add</code> and <code>git push</code> all changes.<br /></li>
+<li><code>git add</code> and <code>git push</code> all changes.<br />
+<ul class="org-ul">
+<li>This could also be a clojure function called with <code>export</code> from <code>build-site</code> <br /></li>
+</ul></li>
 </ol>
+
+<p>
+The idea is that I just call build-site and it all happens automatically. I will adopt Christian's tests as well though.<br />
+</p>
 </div>
 </div>
 </div>

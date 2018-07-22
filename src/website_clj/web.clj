@@ -55,7 +55,7 @@
 
 
 (defn format-images [html]
-  (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" "/"))
+  (str/replace html #"src=\"img" "src=\"/img"))
 
 ;; main pages function.
 (defn html-pages [pages]

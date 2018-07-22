@@ -7,8 +7,11 @@
 #+LATEX_HEADER: \usepackage[round]{natbib}
 #+LATEX_HEADER: \renewcommand{\bibsection}
 
+* No longer updated. the website is up at [[https://nickgeorge.net]]
+Updates will now me made here: http://nickgeorge.net/building-a-static-site-with-clojure/
+
 /Note!/
-This post will eventually be part of the clojure website, but I am not done yet. This will track my progress as I go. This source directory will be different from the actual website directory. 
++This post will eventually be part of the clojure website, but I am not done yet. This will track my progress as I go. This source directory will be different from the actual website directory.+
  
 * Static sites
 These are static collections of HTML, CSS, and JavaScript files that make up simple, fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, etc. files that make up the website.
@@ -637,7 +640,6 @@ I can already build my website with my current alias, now I will make another to
 - [[https://github.com/magnars/stasis][Stasis]]
 - [[https://github.com/magnars/optimus][Optimus links]]
 - [[https://github.com/ring-clojure/ring/wiki/Static-Resources][Ring static middleware]]
-- 
 - [[https://github.com/yokolet/hiccup-samples][hiccup samples]]
 - Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
   - handling links https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/

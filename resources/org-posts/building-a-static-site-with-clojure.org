@@ -2,11 +2,12 @@
 #+PROPERTY: header-args :eval never-export
 
 
-/TODO!/
+*TODO:*
+1. Update, condense, and clean these docs.
+2. Set up publish commands (see bottom)
+3. Port over useful posts from old site
+4. Tests!!
 
-Use =enliven= to format images. Your find and replace stuff is messing up the code examples. 
-
- 
 * Static sites
 These are static collections of HTML, CSS, and JavaScript files that make up simple, fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, etc. files that make up the website.
 * Why?
@@ -17,10 +18,10 @@ They are simple and very useful. I don't need anything more complicated for my p
 My original website was written with python and the Flask framework and made into a static site with [[https://pythonhosted.org/Frozen-Flask/][Frozen-flask]] and [[https://pythonhosted.org/Flask-FlatPages/][Flask-FlatPages]] for hosting on github pages. I was originally going to port it to Clojure using the Clojure static site generator [[https://github.com/cryogen-project/cryogen][Cryogen]], a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult. In the spirit of Clojure (and Tim Ewald's excellent talk [[https://www.youtube.com/watch?v=ShEez0JkOFw][Programming with hand tools]]), I choose to use the [[https://github.com/magnars/stasis][Stasis]], the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go. 
 
 * Org-mode to html workflow
-
+  
   I write in Org-mode markup and plan to publish with org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading =org-workflow= 
 
-* Building the website: basics
+* Building the website
   /Disclaimer/ 
 I am still very new to Clojure, so my custom code will likely be very beginner-ish and rough, but hopefully it will improve as I go!
  Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/ 
@@ -447,20 +448,19 @@ Here is a test post and a link to an image.
 Exporting this to html gives the following link structure in HTML:
 
 #+BEGIN_EXAMPLE
-<img src="file:///Users/Nick/personal_projects/website-clj/resources/public/img/test-img.png" alt="test-img.png" />
+<img src="img/test-img.png" alt="test-img.png" />
 #+END_EXAMPLE
 
-Which definitely wont work when I export the static site. Since all images are referred to via =img/=, I think I can easily write a string replace in Clojure and put it in my =html-posts= function to fix this formatting. 
+Which doesn't render properly wont work when I export the static site. Since all images are referred to =/img/=, I think I can easily write a string replace in Clojure and put it in my =html-posts= function to fix this formatting. 
 /Note/
 I know that I could use =enliven= to do pretty much the same thing, but with how my current workflow is, I dont think it is even necessary. I will add that in if I need to, but for now I just dont seem to need it. 
-*A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace... I'll have to use =enliven= after all!*
 
 #+BEGIN_SRC clojure 
 ;; main pages function. 
 (defn html-pages [pages]
   (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
           (map #(fn [req] (layout-base-header req %))
-               (map #(str/replace % #"file:///Users/Nick/personal_projects/website-clj/resources/public" "") ;; this fixes links to images
+               (map #(str/replace % #"src=\"img" "src=\"/img") ;; this fixes links to images
                     (vals pages)))))
 #+END_SRC
 
@@ -472,17 +472,15 @@ Now I can start up my server and check out the link formatting when I =view-sour
 
 Perfect! I will factor out this function so it is more readable like so:
 
-*A little meta, but the find/replace I am applying below is actually preventing me from showing you the find/replace... I'll have to use =enliven= after all!*
-
 #+BEGIN_SRC clojure 
-(defn format-images [html]
-  (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" ""))
+  (defn format-images [html]
+    (str/replace html #"src=\"img" "src=\"/img"))
 
-;; main pages function.
-(defn html-pages [pages]
-  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
-          (map #(fn [req] (layout-base-header req %))
-               (map format-images (vals pages)))))
+  ;; main pages function.
+  (defn html-pages [pages]
+    (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+            (map #(fn [req] (layout-base-header req %))
+                 (map format-images (vals pages)))))
 
 #+END_SRC
 
@@ -534,7 +532,9 @@ This renders upon =M-x org-publish-project clj-site= to look like this:
 Will update when I need it. 
 use (link-to)
 ** publishing
-   From =lein=, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like to start testing on-line and I hosted my previous site on GithubPages, so I need a few config things to occur on export.  The first is the =CNAME= file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in =(stasis/empy-directory!)=), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my =CNAME= in the =resources directory=:
+*** Hosting on Github Pages
+
+   From =lein=, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like put my website on-line and I hosted my previous site on Github Pages, so I need a few config things to occur on export.  The first is the =CNAME= file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in =(stasis/empy-directory!)=), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my =CNAME= in the =resources directory=:
 
 #+BEGIN_SRC clojure 
   (ns website-clj.web
@@ -574,14 +574,14 @@ use (link-to)
       (stasis/empty-directory! export-dir)
       (optimus.export/save-assets assets export-dir)
       (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
-    (cp-cname export-dir))
+    (cp-cname export-dir)) ;; after export, copy CNAME back to base. 
 
 #+END_SRC
 
-Now I can keep CNAME where it is supposed to be the whole time. time for a test upload to see how it looks. 
+Now I can keep CNAME where it is supposed to be the whole time. This seems hacky... but it also works without me messing up the awesome stasis code. 
 
-*** Hosting on Github Pages
-    To host on github pages, you need the static files to be in a repo all by themselves. No problem, since =target= is already on my gitignore, I can ignore my static content subdirectory and start a new repo within the subdirectory. Unfortunately, with the previously mentioned problems with =(stasis/empty-directory!)=, my =.git= repo is deleted with every update. Looking in stasis, there doesn't seem to be a way to leave certain files in the target directory alone (There was with my Python Flask setup...) while this may be a good and relatively easy use for a first pull request or something, for now I am going to do a very horribly inefficient thing and copy the =.git= directory around first. 
+To host on github pages, you also need the static files to be in a repo all by themselves. No problem, since =target= is already on my =.gitignore= from my Leiningen project, I can add my static content subdirectory (=nickgeorge.net=) and start a new repo in there. 
+Unfortunately, with the previously mentioned problems with =(stasis/empty-directory!)=, my =.git= repo is deleted with every =lein build-site=. Looking in the [[https://github.com/magnars/stasis][Stasis code]], there doesn't seem to be a way to leave certain files in the target directory alone (There was with my Python Flask setup...) while this may be a good and relatively easy way to contribute to the library, for now I am going to do a very horribly inefficient thing and copy the =.git= directory to a safe space, then back after export. I'll have to do the same with the =.gitignore=
 
 #+BEGIN_SRC clojure 
   (ns website-clj.web
@@ -616,26 +616,30 @@ Now I can keep CNAME where it is supposed to be the whole time. time for a test 
 
 
   (defn export []
-    (save-git safe-dir export-dir)
+    (save-git safe-dir export-dir) ;; copy .git to a safe place
     (let [assets (optimizations/all (get-assets) {})]
       (stasis/empty-directory! export-dir)
       (optimus.export/save-assets assets export-dir)
       (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
-    (cp-cname export-dir)
-    (cp-gitignore export-dir)
-    (replace-git safe-dir export-dir))
+    (cp-cname export-dir) ;; preserve CNAME
+    (cp-gitignore export-dir) ;; Put .gitignore in
+    (replace-git safe-dir export-dir)) ;; put .git back
 
 #+END_SRC
 
 
 *** one push publishing with Leiningen :alias
-*TODO: Use enliven to fix the image links.*
 I can already build my website with my current alias, now I will make another to deploy!
 The steps I need to do are: 
 1. Command line build org-project
-   - remember to add a header to tell org to /not/ evaluate code like this: =#+PROPERTY: header-args :eval never-export= 
+   - =org-publish-project clj-site= from the command line
+   - remember to add a header to tell org to /not/ evaluate code like this: =#+PROPERTY: header-args :eval never-export=
+   - This should be a clojure function called with =export= from =build-site= 
 2. Then run build-site
-3. =git add= and =git push= all changes. 
+3. =git add= and =git push= all changes.
+   - This could also be a clojure function called with =export= from =build-site= 
+
+The idea is that I just call build-site and it all happens automatically. I will adopt Christian's tests as well though. 
 
 
 
