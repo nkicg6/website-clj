@@ -2,14 +2,14 @@
 ;; based on https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
 
 (ns website-clj.web
-  (:require [optimus.assets :as assets]
+  (:require [website-clj.export-helpers :as helpers]
+            [optimus.assets :as assets]
             [optimus.export]
             [optimus.link :as link] 
             [optimus.optimizations :as optimizations]      
             [optimus.prime :as optimus]                    
             [optimus.strategies :refer [serve-live-assets]]
             [clojure.java.io :as io]
-            [clojure.java.shell :as shell]
             [clojure.string :as str]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer (link-to image)]
@@ -83,8 +83,6 @@
     :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
 
 
-
-
 (def app
   (optimus/wrap
    (stasis/serve-pages get-pages)
@@ -96,25 +94,12 @@
 
 (def safe-dir "target")
 
-(defn cp-cname [export-dir]
-  (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
-
-(defn cp-gitignore [export-dir]
-  (shell/sh "cp" "target/.gitignore" (str export-dir "/.gitignore")))
-
-(defn save-git [safe-dir export-dir] 
-  (shell/sh "mv" (str export-dir "/.git") (str safe-dir "/.git")))
-
-(defn replace-git [safe-dir export-dir]
-  (shell/sh "mv" (str safe-dir "/.git") (str export-dir "/.git")))
-
-
 (defn export []
-  (save-git safe-dir export-dir)
+  (helpers/save-git safe-dir export-dir)
   (let [assets (optimizations/all (get-assets) {})]
     (stasis/empty-directory! export-dir)
     (optimus.export/save-assets assets export-dir)
     (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
-  (cp-cname export-dir)
-  (cp-gitignore export-dir)
-  (replace-git safe-dir export-dir))
+  (helpers/cp-cname export-dir)
+  (helpers/cp-gitignore export-dir)
+  (helpers/replace-git safe-dir export-dir))
