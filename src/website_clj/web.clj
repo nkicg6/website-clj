@@ -32,10 +32,9 @@
       [:div {:class "navbar-header"}
        (link-to  {:class "navbar-brand"} "/" "Nick George")]
       [:ul {:class "nav navbar-nav navbar-right"}
-       [:li {:class "inactive"} (link-to "/" "Science")]
-       [:li {:class "inactive"} (link-to "/" "Programming")]
+       [:li {:class "inactive"} (link-to "/science" "Science")]
+       [:li {:class "inactive"} (link-to "/programming" "Programming")]
        [:li {:class "inactive"} (link-to "/" "About")]
-       [:li {:class "inactive"} (link-to "/test_post" "Post")]
        [:li [:a {:href "https://github.com/nkicg6"}
              [:span {:class "fa fa-github" :style "font-size:24px"}]]]
        [:li [:a {:href "https://twitter.com/NicholasMG"}
@@ -58,10 +57,15 @@
   (str/replace html #"src=\"img" "src=\"/img"))
 
 ;; main pages function.
-(defn html-pages [pages]
-  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+(defn html-pages [base pages]
+  (zipmap (map #(str base %) (map #(str/replace % #"(?<!index)\.html$" "") (keys pages)))
           (map #(fn [req] (layout-base-header req %))
                (map format-images (vals pages)))))
+
+
+(str/replace "index.html" #"(?<!index)\.html$" "")
+
+
 
 (defn partial-pages [pages]
   (zipmap (keys pages)
@@ -78,7 +82,8 @@
 (defn get-pages []
   (stasis/merge-page-sources
    {:landing (home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
-    :posts  (html-pages (stasis/slurp-directory "resources/posts" #".*\.html$"))
+    :programming  (html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))
+    :science (html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))
     :partials (partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
     :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
 
@@ -103,3 +108,5 @@
   (helpers/cp-cname export-dir)
   (helpers/cp-gitignore export-dir)
   (helpers/replace-git safe-dir export-dir))
+
+

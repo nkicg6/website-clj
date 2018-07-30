@@ -2,43 +2,43 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgf94d304">Static sites</a></li>
-<li><a href="#org5db5e5b">Why?</a>
+<li><a href="#orgdaa80b4">Static sites</a></li>
+<li><a href="#orgec5e4a4">Why?</a>
 <ul>
-<li><a href="#orgab1f290">Why Clojure?</a></li>
-<li><a href="#org57ddc8a">Why Stasis?</a></li>
+<li><a href="#org8ae9ac2">Why Clojure?</a></li>
+<li><a href="#org2c31a02">Why Stasis?</a></li>
 </ul>
 </li>
-<li><a href="#org8d4c2ca">Org-mode to html workflow</a></li>
-<li><a href="#org7aa8fec">Building the website</a>
+<li><a href="#org359dcc5">Org-mode to html workflow</a></li>
+<li><a href="#org0dcebd9">Building the website</a>
 <ul>
-<li><a href="#orge3ec381">Style</a></li>
-<li><a href="#org1ff106a">My header and footer</a></li>
-<li><a href="#org7dbb018">org-workflow: basic HTML export</a></li>
-<li><a href="#orgc686904">Images and relative links</a>
+<li><a href="#orgb41e03b">Style</a></li>
+<li><a href="#orgb799b07">My header and footer</a></li>
+<li><a href="#org4cbcf45">org-workflow: basic HTML export</a></li>
+<li><a href="#org95f2f7e">Images and relative links</a>
 <ul>
-<li><a href="#org7a30a32">Images</a>
+<li><a href="#orgf4c85d7">Images</a>
 <ul>
-<li><a href="#orgca490da">Optimus</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org2da4c7c">org-workflow: Handling images</a></li>
-<li><a href="#orgb0bc528">org-workflow: syntax highlighting</a>
-<ul>
-<li><a href="#org9ed2460">Links</a></li>
-</ul>
-</li>
-<li><a href="#orgcd73e37">publishing</a>
-<ul>
-<li><a href="#orgc82ba68">Hosting on Github Pages</a></li>
-<li><a href="#orgc528355">one push publishing with Leiningen :alias</a></li>
+<li><a href="#orga20f9f5">Optimus</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org2344fef">References</a></li>
+<li><a href="#org3afe6b9">org-workflow: Handling images</a></li>
+<li><a href="#org54bd236">org-workflow: syntax highlighting</a>
+<ul>
+<li><a href="#org12716de">Links</a></li>
+</ul>
+</li>
+<li><a href="#org928fe30">publishing</a>
+<ul>
+<li><a href="#org4a79373">Hosting on Github Pages</a></li>
+<li><a href="#org008f561">one push publishing with Leiningen :alias</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org680328b">References</a></li>
 </ul>
 </div>
 </div>
@@ -49,35 +49,36 @@
 <li>Update, condense, and clean these docs.<br /></li>
 <li>Set up publish commands (see bottom)<br /></li>
 <li>Port over useful posts from old site<br /></li>
+<li><a href="https://github.com/swannodette/enlive-tutorial">enlive</a> tutorial is worth looking at<br /></li>
 <li>Tests!!<br /></li>
 </ol>
 
-<div id="outline-container-orgf94d304" class="outline-2">
-<h2 id="orgf94d304">Static sites</h2>
-<div class="outline-text-2" id="text-orgf94d304">
+<div id="outline-container-orgdaa80b4" class="outline-2">
+<h2 id="orgdaa80b4">Static sites</h2>
+<div class="outline-text-2" id="text-orgdaa80b4">
 <p>
 These are static collections of HTML, CSS, and JavaScript files that make up simple, fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, etc. files that make up the website.<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org5db5e5b" class="outline-2">
-<h2 id="org5db5e5b">Why?</h2>
-<div class="outline-text-2" id="text-org5db5e5b">
+<div id="outline-container-orgec5e4a4" class="outline-2">
+<h2 id="orgec5e4a4">Why?</h2>
+<div class="outline-text-2" id="text-orgec5e4a4">
 <p>
 They are simple and very useful. I don't need anything more complicated for my personal website, and static sites are low maintenance and easy to customize and extend.<br />
 </p>
 </div>
-<div id="outline-container-orgab1f290" class="outline-3">
-<h3 id="orgab1f290">Why Clojure?</h3>
-<div class="outline-text-3" id="text-orgab1f290">
+<div id="outline-container-org8ae9ac2" class="outline-3">
+<h3 id="org8ae9ac2">Why Clojure?</h3>
+<div class="outline-text-3" id="text-org8ae9ac2">
 <p>
 I am currently learning Clojure, mostly because I wanted to learn functional programming and Rich Hickey gives <a href="https://github.com/tallesl/Rich-Hickey-fanclub">amazing talks</a>, but also because it is an functional programming language hosted on both the web with clojurescript (javascript) and the JVM (regular Clojure). Since clojurescript is a clojure trans-piler for javascript, that means that I can use one language to leverage all of javascript and non-web programming or backend web tasks with clojure!<br />
 </p>
 </div>
 </div>
-<div id="outline-container-org57ddc8a" class="outline-3">
-<h3 id="org57ddc8a">Why Stasis?</h3>
-<div class="outline-text-3" id="text-org57ddc8a">
+<div id="outline-container-org2c31a02" class="outline-3">
+<h3 id="org2c31a02">Why Stasis?</h3>
+<div class="outline-text-3" id="text-org2c31a02">
 <p>
 My original website was written with python and the Flask framework and made into a static site with <a href="https://pythonhosted.org/Frozen-Flask/">Frozen-flask</a> and <a href="https://pythonhosted.org/Flask-FlatPages/">Flask-FlatPages</a> for hosting on github pages. I was originally going to port it to Clojure using the Clojure static site generator <a href="https://github.com/cryogen-project/cryogen">Cryogen</a>, a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult. In the spirit of Clojure (and Tim Ewald's excellent talk <a href="https://www.youtube.com/watch?v=ShEez0JkOFw">Programming with hand tools</a>), I choose to use the <a href="https://github.com/magnars/stasis">Stasis</a>, the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go.<br />
 </p>
@@ -85,9 +86,9 @@ My original website was written with python and the Flask framework and made int
 </div>
 </div>
 
-<div id="outline-container-org8d4c2ca" class="outline-2">
-<h2 id="org8d4c2ca">Org-mode to html workflow</h2>
-<div class="outline-text-2" id="text-org8d4c2ca">
+<div id="outline-container-org359dcc5" class="outline-2">
+<h2 id="org359dcc5">Org-mode to html workflow</h2>
+<div class="outline-text-2" id="text-org359dcc5">
 <p>
 <img src="img/org-mode-unicorn-logo.png" alt="org-mode-unicorn-logo.png" /><br />
   I write in Emacs with <a href="https://orgmode.org/">Org-mode</a> markup and plan to publish with Org-publish, so periodically I will be adding notes for how this all works with my org-mode publishing scheme. These will be under the sub heading <code>org-workflow</code> <br />
@@ -95,9 +96,9 @@ My original website was written with python and the Flask framework and made int
 </div>
 </div>
 
-<div id="outline-container-org7aa8fec" class="outline-2">
-<h2 id="org7aa8fec">Building the website</h2>
-<div class="outline-text-2" id="text-org7aa8fec">
+<div id="outline-container-org0dcebd9" class="outline-2">
+<h2 id="org0dcebd9">Building the website</h2>
+<div class="outline-text-2" id="text-org0dcebd9">
 <p>
   <i>Disclaimer</i> <br />
 I am still very new to Clojure, so my custom code will likely be very beginner-ish and rough, but hopefully it will improve as I go!<br />
@@ -105,9 +106,9 @@ I am still very new to Clojure, so my custom code will likely be very beginner-i
 </p>
 </div>
 
-<div id="outline-container-orge3ec381" class="outline-3">
-<h3 id="orge3ec381">Style</h3>
-<div class="outline-text-3" id="text-orge3ec381">
+<div id="outline-container-orgb41e03b" class="outline-3">
+<h3 id="orgb41e03b">Style</h3>
+<div class="outline-text-3" id="text-orgb41e03b">
 <p>
 After following most of the Christian Johansen's awesome tutorial, the first thing I wanted to do was add <a href="https://getbootstrap.com/docs/3.3/getting-started/">Twitter Bootstrap</a> CSS. I know there is a <a href="https://github.com/weavejester/hiccup-bootstrap">Hiccup wrapper</a> for bootstrap, but since I write in Emacs Org-mode and export to HTML directly, I don't think it is necessary for me. Hiccup looks like simplified HTML, so I changed the name of the function from <code>layout-page</code> to <code>layout-base-header</code> and added the CDN links from the Bootstrap home page. The function now looks like this:<br />
 </p>
@@ -336,9 +337,9 @@ and the website is working now!<br />
 </div>
 </div>
 
-<div id="outline-container-org1ff106a" class="outline-3">
-<h3 id="org1ff106a">My header and footer</h3>
-<div class="outline-text-3" id="text-org1ff106a">
+<div id="outline-container-orgb799b07" class="outline-3">
+<h3 id="orgb799b07">My header and footer</h3>
+<div class="outline-text-3" id="text-orgb799b07">
 <p>
 On my old Python-flask based static blog, I made a nav bar that I really liked. The source looks like this:<br />
 </p>
@@ -450,9 +451,9 @@ I changed the section names and added dummy links for now, but the rest is a pre
 </div>
 </div>
 
-<div id="outline-container-org7dbb018" class="outline-3">
-<h3 id="org7dbb018">org-workflow: basic HTML export</h3>
-<div class="outline-text-3" id="text-org7dbb018">
+<div id="outline-container-org4cbcf45" class="outline-3">
+<h3 id="org4cbcf45">org-workflow: basic HTML export</h3>
+<div class="outline-text-3" id="text-org4cbcf45">
 
 <div class="figure">
 <p><img src="img/org-mode-unicorn-logo.png" alt="org-mode-unicorn-logo.png" /><br />
@@ -480,11 +481,12 @@ Here is a test post
 </pre>
 
 <p>
-Next, I will add the following to my <code>config.org</code> file (or <code>init.el</code> file if you arent using an org-mode config file) that says the following:<br />
+Next, I will add the following to my <a href="https://github.com/nkicg6/emacs-config">config.org</a> file (aka org-mode <code>init.el</code> file) that says the following:<br />
 </p>
 
 <div class="org-src-container">
-<pre class="src src-emacs-lisp">(<span style="color: #0000FF;">setq</span> org-publish-project-alist
+<pre class="src src-emacs-lisp"><span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">emacs lisp</span>
+(<span style="color: #0000FF;">setq</span> org-publish-project-alist
         '(
           (<span style="color: #008000;">"posts"</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">name of this function</span>
            <span style="color: #006FE0;">:base-directory</span> <span style="color: #008000;">"~/personal_projects/website-clj/resources/org-posts"</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">where the orgs are</span>
@@ -527,12 +529,12 @@ Which is visible when I render the site (it is handled by the <code>html-posts</
 </div>
 </div>
 
-<div id="outline-container-orgc686904" class="outline-3">
-<h3 id="orgc686904">Images and relative links</h3>
-<div class="outline-text-3" id="text-orgc686904">
-</div><div id="outline-container-org7a30a32" class="outline-4">
-<h4 id="org7a30a32">Images</h4>
-<div class="outline-text-4" id="text-org7a30a32">
+<div id="outline-container-org95f2f7e" class="outline-3">
+<h3 id="org95f2f7e">Images and relative links</h3>
+<div class="outline-text-3" id="text-org95f2f7e">
+</div><div id="outline-container-orgf4c85d7" class="outline-4">
+<h4 id="orgf4c85d7">Images</h4>
+<div class="outline-text-4" id="text-orgf4c85d7">
 <p>
 Adding images is important to any site, and links too for that matter. How well do they work in this format?<br />
 I'll start with a sample screenshot of my part of my landing page with an annotation.<br />
@@ -571,9 +573,9 @@ This doesnt work. Changing the source to <code>&lt;img src ="sample-img.png"/&gt
 </p>
 </div>
 
-<div id="outline-container-orgca490da" class="outline-5">
-<h5 id="orgca490da">Optimus</h5>
-<div class="outline-text-5" id="text-orgca490da">
+<div id="outline-container-orga20f9f5" class="outline-5">
+<h5 id="orga20f9f5">Optimus</h5>
+<div class="outline-text-5" id="text-orga20f9f5">
 <p>
 Christian Johansen's blog post uses <code>optimus</code> to wrap static folders. I'll start by trying to serve bootstrap locally rather than linking to the CDN.<br />
 I played around with this for a few hours yesterday and couldn't figure it out. I understood things reasonably well until <code>Optimus</code>, which doesn't make much sense to me because I do not have a background in web development so I really cant understand what it is doing or why it is doing it. This is likely because I did not spend much time with the docs, but they use a lot of web-jargon and I don't have the time or will to jump into that now.<br />
@@ -612,9 +614,9 @@ inserts the image stored in public/img/test-img.png<br />
 </div>
 </div>
 
-<div id="outline-container-org2da4c7c" class="outline-3">
-<h3 id="org2da4c7c">org-workflow: Handling images</h3>
-<div class="outline-text-3" id="text-org2da4c7c">
+<div id="outline-container-org3afe6b9" class="outline-3">
+<h3 id="org3afe6b9">org-workflow: Handling images</h3>
+<div class="outline-text-3" id="text-org3afe6b9">
 <p>
 Back to my original org-export example file, I'll add an image in org-markup manner.<br />
 </p>
@@ -690,9 +692,9 @@ I will likely need to add a similar helper when linking between pages in a post,
 </div>
 </div>
 
-<div id="outline-container-orgb0bc528" class="outline-3">
-<h3 id="orgb0bc528">org-workflow: syntax highlighting</h3>
-<div class="outline-text-3" id="text-orgb0bc528">
+<div id="outline-container-org54bd236" class="outline-3">
+<h3 id="org54bd236">org-workflow: syntax highlighting</h3>
+<div class="outline-text-3" id="text-org54bd236">
 <p>
    <a href="https://cjohansen.no/building-static-sites-in-clojure-with-stasis/">Christian Johanson</a> has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing <code>org-mode</code> takes care of syntax highlighting for me when I add <code>(setq org-src-fontify-natively t)</code> to my <code>config.org</code>. So here I will just test it real quick and see how it looks.<br />
 In my HTML file, I will add a clojure code block like so:<br />
@@ -749,9 +751,9 @@ At this point, I removed all the markdown file stuff from my project as I don't 
 </p>
 </div>
 
-<div id="outline-container-org9ed2460" class="outline-4">
-<h4 id="org9ed2460">Links</h4>
-<div class="outline-text-4" id="text-org9ed2460">
+<div id="outline-container-org12716de" class="outline-4">
+<h4 id="org12716de">Links</h4>
+<div class="outline-text-4" id="text-org12716de">
 <p>
 Will update when I need it.<br />
 use (link-to)<br />
@@ -759,12 +761,12 @@ use (link-to)<br />
 </div>
 </div>
 </div>
-<div id="outline-container-orgcd73e37" class="outline-3">
-<h3 id="orgcd73e37">publishing</h3>
-<div class="outline-text-3" id="text-orgcd73e37">
-</div><div id="outline-container-orgc82ba68" class="outline-4">
-<h4 id="orgc82ba68">Hosting on Github Pages</h4>
-<div class="outline-text-4" id="text-orgc82ba68">
+<div id="outline-container-org928fe30" class="outline-3">
+<h3 id="org928fe30">publishing</h3>
+<div class="outline-text-3" id="text-org928fe30">
+</div><div id="outline-container-org4a79373" class="outline-4">
+<h4 id="org4a79373">Hosting on Github Pages</h4>
+<div class="outline-text-4" id="text-org4a79373">
 <p>
 From <code>lein</code>, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like put my website on-line and I hosted my previous site on Github Pages, so I need a few config things to occur on export.  The first is the <code>CNAME</code> file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in <code>(stasis/empy-directory!)</code>), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my <code>CNAME</code> in the <code>resources directory</code>:<br />
 </p>
@@ -869,9 +871,9 @@ Unfortunately, with the previously mentioned problems with <code>(stasis/empty-d
 </div>
 
 
-<div id="outline-container-orgc528355" class="outline-4">
-<h4 id="orgc528355">one push publishing with Leiningen :alias</h4>
-<div class="outline-text-4" id="text-orgc528355">
+<div id="outline-container-org008f561" class="outline-4">
+<h4 id="org008f561">one push publishing with Leiningen :alias</h4>
+<div class="outline-text-4" id="text-org008f561">
 <p>
 I can already build my website with my current alias, now I will make another to deploy!<br />
 The steps I need to do are:<br />
@@ -901,9 +903,9 @@ The idea is that I just call build-site and it all happens automatically. I will
 
 
 
-<div id="outline-container-org2344fef" class="outline-2">
-<h2 id="org2344fef">References</h2>
-<div class="outline-text-2" id="text-org2344fef">
+<div id="outline-container-org680328b" class="outline-2">
+<h2 id="org680328b">References</h2>
+<div class="outline-text-2" id="text-org680328b">
 <ul class="org-ul">
 <li><a href="https://github.com/magnars/stasis">Stasis</a><br /></li>
 <li><a href="https://github.com/magnars/optimus">Optimus links</a><br /></li>
