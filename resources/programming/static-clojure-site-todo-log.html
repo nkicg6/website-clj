@@ -1,0 +1,177 @@
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgf58c0ae">1. What's left to do?</a>
+<ul>
+<li>
+<ul>
+<li><a href="#org3d2d30f">1.0.1. From old todo page</a></li>
+</ul>
+</li>
+<li><a href="#org3bf48cf">1.1. Goals for today (2018-08-04)</a>
+<ul>
+<li><a href="#org8c05ec1">1.1.1. New namespace to process HTML</a></li>
+</ul>
+</li>
+<li><a href="#org7d6924c">1.2. Goals for tomorrow (2018-08-05)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgf58c0ae" class="outline-2">
+<h2 id="orgf58c0ae"><span class="section-number-2">1</span> What's left to do?</h2>
+<div class="outline-text-2" id="text-1">
+<ul class="org-ul">
+<li>On the index page, automatically list all of the pages in whatever subfolder that index refers to.
+<ul class="org-ul">
+<li>Add <a href="https://github.com/edn-format/edn">edn</a> metadata to the top of the every page, use this to assign a published date, title, and tags to the posts.</li>
+</ul></li>
+<li>Add tracking with google analytics or <a href="https://matomo.org/">Matomo</a> (used by <a href="https://www.fsf.org/">FSF</a>)</li>
+<li>refactor code for increased simplicity</li>
+</ul>
+</div>
+<div id="outline-container-org3d2d30f" class="outline-4">
+<h4 id="org3d2d30f"><span class="section-number-4">1.0.1</span> From old todo page</h4>
+<div class="outline-text-4" id="text-1-0-1">
+<p>
+<b>TODO:</b>
+</p>
+<ol class="org-ol">
+<li>Update, condense, and clean these docs.</li>
+<li>Set up publish commands (see bottom)</li>
+<li>Port over useful posts from old site</li>
+<li><a href="https://github.com/swannodette/enlive-tutorial">enlive</a> tutorial is worth looking at</li>
+<li>Tests!!</li>
+</ol>
+</div>
+</div>
+
+
+<div id="outline-container-org3bf48cf" class="outline-3">
+<h3 id="org3bf48cf"><span class="section-number-3">1.1</span> Goals for today (2018-08-04)</h3>
+<div class="outline-text-3" id="text-1-1">
+<ol class="org-ol">
+<li>Re-factor code for increased simplicity. Add a namespace to process pages.</li>
+<li>List subfolder pages on index page.</li>
+</ol>
+</div>
+
+<div id="outline-container-org8c05ec1" class="outline-4">
+<h4 id="org8c05ec1"><span class="section-number-4">1.1.1</span> New namespace to process HTML</h4>
+<div class="outline-text-4" id="text-1-1-1">
+<p>
+In the spirit of the <a href="https://www.youtube.com/watch?v=f84n5oFoZBc">Hammock driven development</a> I am going to re-think the code I am writing and make a plan for what exactly I want to do. First, of all, I want a way to process the text of pages independently without adding more little functions to this mess:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">html-pages</span> <span style="color: #7388D6;">[</span>base pages<span style="color: #7388D6;">]</span>
+  <span style="color: #7388D6;">(</span>zipmap <span style="color: #909183;">(</span>map #<span style="color: #709870;">(</span>str base <span style="color: #BA36A5;">%</span><span style="color: #709870;">)</span> <span style="color: #709870;">(</span>map #<span style="color: #907373;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> <span style="color: #BA36A5;">%</span> #<span style="color: #008000;">"</span><span style="color: #008000; font-weight: bold;">(?&lt;!</span><span style="color: #008000;">index</span><span style="color: #008000; font-weight: bold;">)</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000;">html$"</span> <span style="color: #008000;">""</span><span style="color: #907373;">)</span> <span style="color: #907373;">(</span><span style="color: #006FE0;">keys</span> pages<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span>
+          <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span><span style="color: #0000FF;">fn</span> <span style="color: #907373;">[</span>req<span style="color: #907373;">]</span> <span style="color: #907373;">(</span>layout-base-header req <span style="color: #BA36A5;">%</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
+               <span style="color: #709870;">(</span><span style="color: #006FE0;">map</span> format-images <span style="color: #907373;">(</span><span style="color: #006FE0;">vals</span> pages<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+<span style="color: #8D8D84;">;;</span><span style="color: #8D8D84; font-style: italic;">---- snip ---</span>
+
+<span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">get-pages</span> <span style="color: #7388D6;">[]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>merge-page-sources
+   <span style="color: #909183;">{</span><span style="color: #D0372D;">:landing</span> <span style="color: #709870;">(</span>home-page <span style="color: #907373;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>slurp-directory <span style="color: #008000;">"resources/home"</span> #<span style="color: #008000;">".*</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000; font-weight: bold;">(</span><span style="color: #008000;">html</span><span style="color: #008000; font-weight: bold;">|</span><span style="color: #008000;">css</span><span style="color: #008000; font-weight: bold;">|</span><span style="color: #008000;">js</span><span style="color: #008000; font-weight: bold;">)</span><span style="color: #008000;">$"</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
+    <span style="color: #D0372D;">:programming</span>  <span style="color: #709870;">(</span>html-pages <span style="color: #008000;">"/programming"</span> <span style="color: #907373;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>slurp-directory <span style="color: #008000;">"resources/programming"</span> #<span style="color: #008000;">".*</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000;">html$"</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
+    <span style="color: #D0372D;">:science</span> <span style="color: #709870;">(</span>html-pages <span style="color: #008000;">"/science"</span> <span style="color: #907373;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>slurp-directory <span style="color: #008000;">"resources/science"</span> #<span style="color: #008000;">".*</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000;">html$"</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
+    <span style="color: #D0372D;">:partials</span> <span style="color: #709870;">(</span>partial-pages <span style="color: #907373;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>slurp-directory <span style="color: #008000;">"resources/partials"</span> #<span style="color: #008000;">".*</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000;">html$"</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
+    <span style="color: #D0372D;">:public</span> <span style="color: #709870;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>slurp-directory <span style="color: #008000;">"resources/public"</span> #<span style="color: #008000;">".*</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000; font-weight: bold;">(</span><span style="color: #008000;">html</span><span style="color: #008000; font-weight: bold;">|</span><span style="color: #008000;">css</span><span style="color: #008000; font-weight: bold;">|</span><span style="color: #008000;">js</span><span style="color: #008000; font-weight: bold;">)</span><span style="color: #008000;">$"</span><span style="color: #709870;">)</span><span style="color: #909183;">}</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+<span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">--- snip ---</span>
+
+</pre>
+</div>
+
+<p>
+While <code>html-pages</code> isn't that bad now, all the maps and anonymous functions are getting a bit dense for me, and I plan to do some more pre-processing so I think it would really be best to re-factor it now. 
+I also have no idea what <code>partials</code> are for in my map in <code>get-pages</code> (just copied from the tutorial), so that should probably go too. 
+</p>
+
+<p>
+So, first thing first, how do I break this up, and what should I spin off into the new namespace called <code>process-pages</code>? 
+</p>
+
+<p>
+To deal with the second part, I moved all the functions that deal directly with html formatting to the <code>process-pages</code> namespace, this follows the rule that each namespace should do one thing. I'll have the main <code>web.clj</code> handle building and exporting, mostly with the <code>get-pages</code> and <code>export</code> functions, but it makes sense that the html formatting should happen elsewhere (along the same lines, I have export helper functions that I broke out into a namespace called <code>export-helpers</code>). 
+</p>
+
+<p>
+I'll look closely at <code>html-pages</code> and see what the different parts do
+</p>
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">main pages formatting function</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">html-pages</span> <span style="color: #7388D6;">[</span>base pages<span style="color: #7388D6;">]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #006FE0;">zipmap</span> <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span><span style="color: #006FE0;">str</span> base <span style="color: #BA36A5;">%</span><span style="color: #709870;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">1</span>
+               <span style="color: #709870;">(</span>map #<span style="color: #907373;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> <span style="color: #BA36A5;">%</span> #<span style="color: #008000;">"</span><span style="color: #008000; font-weight: bold;">(?&lt;!</span><span style="color: #008000;">index</span><span style="color: #008000; font-weight: bold;">)</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000;">html$"</span> <span style="color: #008000;">""</span><span style="color: #907373;">)</span> <span style="color: #907373;">(</span><span style="color: #006FE0;">keys</span> pages<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">2</span>
+          <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span><span style="color: #0000FF;">fn</span> <span style="color: #907373;">[</span>req<span style="color: #907373;">]</span> <span style="color: #907373;">(</span>layout-base-header req <span style="color: #BA36A5;">%</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span>
+               <span style="color: #709870;">(</span><span style="color: #006FE0;">map</span> format-images <span style="color: #907373;">(</span><span style="color: #006FE0;">vals</span> pages<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">3 </span>
+          <span style="color: #7388D6;">)</span><span style="color: #707183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">4</span>
+
+</pre>
+</div>
+
+<ol class="org-ol">
+<li>concatenates the "base url" onto the page name keys. This allows me to add things like "programming/" to the base of pages in the programming directory, and "science/" to the base of pages in the science directory. So the</li>
+<li>removes .html from keys, which are the page names IF they don't start in index, which is for landing pages and needs .html.</li>
+<li>applies the header to the pages, and fixes image links.</li>
+<li>returns a map of page names and values of raw html for pages. however this is a bunch of lazy functions</li>
+</ol>
+
+<p>
+Really not too complicated. But to be more explicit, I'll make named functions to fix this.
+To deal with <code>1</code> and <code>2</code>, I'll make a function to perform those roles.
+The new function and its use in <code>html-pages</code> looks like so:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">fmt-page-names</span> <span style="color: #7388D6;">[</span>base name<span style="color: #7388D6;">]</span>
+  <span style="color: #7388D6;">(</span>str base <span style="color: #909183;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> name #<span style="color: #008000;">"</span><span style="color: #008000; font-weight: bold;">(?&lt;!</span><span style="color: #008000;">index</span><span style="color: #008000; font-weight: bold;">)</span><span style="color: #000000; font-weight: bold;">\.</span><span style="color: #008000;">html$"</span> <span style="color: #008000;">""</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">takes care of 1 and 2!</span>
+
+<span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">main pages formatting function</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">html-pages</span> <span style="color: #7388D6;">[</span>base pages<span style="color: #7388D6;">]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #006FE0;">zipmap</span> <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span>fmt-page-names base <span style="color: #BA36A5;">%</span><span style="color: #709870;">)</span> <span style="color: #709870;">(</span><span style="color: #006FE0;">keys</span> pages<span style="color: #709870;">)</span><span style="color: #909183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">apply new fn</span>
+          <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span><span style="color: #0000FF;">fn</span> <span style="color: #907373;">[</span>req<span style="color: #907373;">]</span> <span style="color: #907373;">(</span>layout-base-header req <span style="color: #BA36A5;">%</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span> 
+               <span style="color: #709870;">(</span><span style="color: #006FE0;">map</span> format-images <span style="color: #907373;">(</span><span style="color: #006FE0;">vals</span> pages<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span> 
+          <span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+
+</pre>
+</div>
+
+<p>
+Great. I am happy with that. I'll cross 1 and 2 off the list. Now the second part is beginning to format the html. Rather than doing all the formatting in one function, I'll have change my <code>format-images</code> function to <code>format-html</code> and then when I have any other html formatting to do to <i>all</i> the pages I can add another function to <code>format-html</code>, which will just take raw html and mess with it. For now, it will only have the format-images function. 
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">format images</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">format-images</span> <span style="color: #7388D6;">[</span>html<span style="color: #7388D6;">]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> html #<span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">img"</span> <span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">/img"</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+
+<span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">format-html</span> <span style="color: #7388D6;">[</span>html<span style="color: #7388D6;">]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #0000FF;">-&gt;</span> format-images<span style="color: #7388D6;">)</span>
+  <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">other fns for html here</span>
+  <span style="color: #707183;">)</span>
+
+<span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">main pages formatting function</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">html-pages</span> <span style="color: #7388D6;">[</span>base pages<span style="color: #7388D6;">]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #006FE0;">zipmap</span> <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span>fmt-page-names base <span style="color: #BA36A5;">%</span><span style="color: #709870;">)</span> <span style="color: #709870;">(</span><span style="color: #006FE0;">keys</span> pages<span style="color: #709870;">)</span><span style="color: #909183;">)</span> 
+          <span style="color: #909183;">(</span><span style="color: #006FE0;">map</span> #<span style="color: #709870;">(</span><span style="color: #0000FF;">fn</span> <span style="color: #907373;">[</span>req<span style="color: #907373;">]</span> <span style="color: #907373;">(</span>layout-base-header req <span style="color: #BA36A5;">%</span><span style="color: #907373;">)</span><span style="color: #709870;">)</span> 
+               <span style="color: #709870;">(</span><span style="color: #006FE0;">map</span> format-html <span style="color: #907373;">(</span><span style="color: #006FE0;">vals</span> pages<span style="color: #907373;">)</span><span style="color: #709870;">)</span><span style="color: #909183;">)</span> 
+          <span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+
+</pre>
+</div>
+
+<p>
+I am a lot happier with this. I have reduced complexity in my code by breaking up the anonymous functions, and explicitly naming them. I also don't have to deal with adding more complexity to my main <code>html-pages</code> function for future html formatting. I can just add more functions to the <code>format-html</code> function and be done with it. This will make editing and adding stuff much easier and more straightforward. I am trying to be more concise using the threading macros <code>-&gt;</code> and <code>-&gt;&gt;</code>, which are explained really well <a href="https://cjohansen.no/clojure-to-die-for/">here</a> as well.
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org7d6924c" class="outline-3">
+<h3 id="org7d6924c"><span class="section-number-3">1.2</span> Goals for tomorrow (2018-08-05)</h3>
+</div>
+</div>

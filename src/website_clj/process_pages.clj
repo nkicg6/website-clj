@@ -1,9 +1,13 @@
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
             [hiccup.page :refer [html5]]
-            [hiccup.element :refer (link-to image)]))
+            [hiccup.element :refer (link-to image)]
+            [stasis.core :as stasis] ;; only for testing?
+            ))
 
 
+
+;; header formatting goes on every page
 (defn layout-base-header [request page]
   (html5
    [:head
@@ -38,11 +42,21 @@
 (defn format-images [html]
   (str/replace html #"src=\"img" "src=\"/img"))
 
+(defn format-html [html]
+  (-> html
+      (format-images))
+  ;; other fns for html here
+  )
+
+(defn fmt-page-names [base name]
+  (str base (str/replace name #"(?<!index)\.html$" "")))
+
 ;; main pages formatting function
 (defn html-pages [base pages]
-  (zipmap (map #(str base %) (map #(str/replace % #"(?<!index)\.html$" "") (keys pages)))
-          (map #(fn [req] (layout-base-header req %))
-               (map format-images (vals pages)))))
+  (zipmap (map #(fmt-page-names base %) (keys pages)) 
+          (map #(fn [req] (layout-base-header req %)) 
+               (map format-html (vals pages))) 
+          ))
 
 (defn partial-pages [pages]
   (zipmap (keys pages)
@@ -53,9 +67,13 @@
           (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
 ;; playing below
-;; (home-page
-;;  (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+(home-page
+ (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
 
-;; (str/replace "index.html" #"(?<!index)\.html$" "")
+;; (defn prepare-page [page]
+;;   (if (string? page) page (page "")))
 
-
+(def test-pages (html-pages "/programming"
+                            (stasis/slurp-directory "resources/programming" #".*\.html$")))
+(print test-pages)
+(first test-pages)

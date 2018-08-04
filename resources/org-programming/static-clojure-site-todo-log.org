@@ -11,9 +11,12 @@
  4. [[https://github.com/swannodette/enlive-tutorial][enlive]] tutorial is worth looking at
  5. Tests!!
 
+
 ** Goals for today (2018-08-04)
 1. Re-factor code for increased simplicity. Add a namespace to process pages. 
 2. List subfolder pages on index page.
+   - add edn metadata to fix names, links, etc.
+
 *** New namespace to process HTML
 In the spirit of the [[https://www.youtube.com/watch?v=f84n5oFoZBc][Hammock driven development]] I am going to re-think the code I am writing and make a plan for what exactly I want to do. First, of all, I want a way to process the text of pages independently without adding more little functions to this mess:
 
@@ -36,9 +39,113 @@ In the spirit of the [[https://www.youtube.com/watch?v=f84n5oFoZBc][Hammock driv
 #+END_SRC
 
 While =html-pages= isn't that bad now, all the maps and anonymous functions are getting a bit dense for me, and I plan to do some more pre-processing so I think it would really be best to re-factor it now. 
-I also have no idea what =partials= are for in my map in =get-pages=, so that should probably go too. 
+I also have no idea what =partials= are for in my map in =get-pages= (just copied from the tutorial), so that should probably go too. 
 
 So, first thing first, how do I break this up, and what should I spin off into the new namespace called =process-pages=? 
+
+To deal with the second part, I moved all the functions that deal directly with html formatting to the =process-pages= namespace, this follows the rule that each namespace should do one thing. I'll have the main =web.clj= handle building and exporting, mostly with the =get-pages= and =export= functions, but it makes sense that the html formatting should happen elsewhere (along the same lines, I have export helper functions that I broke out into a namespace called =export-helpers=). 
+*** New namespace
+ The declaration for this namespace looks like so:
+ #+BEGIN_SRC clojure 
+   ;; website-clj/process_pages.clj
+   (ns website-clj.process-pages
+     (:require [clojure.string :as str]
+               [hiccup.page :refer [html5]]
+               [hiccup.element :refer (link-to image)]
+               [stasis.core :as stasis] ;; only for testing?
+               ))
+
+ #+END_SRC
+
+ And the functions included here will be =html-pages=, =layout-base-header=, =format-images=, the other prepare pages functions =partial-pages=, and =home-page=. And any others I write. 
+ Now I just change =web.clj= to accept the new ns, and add the alias in front of any of the new functions
+
+ #+BEGIN_SRC clojure 
+   ;;website-clj/web.clj
+   (ns website-clj.web
+     (:require [optimus.assets :as assets]
+               [optimus.export]
+               [optimus.link :as link] 
+               [optimus.optimizations :as optimizations]      
+               [optimus.prime :as optimus]                    
+               [optimus.strategies :refer [serve-live-assets]]
+               [clojure.java.io :as io]
+               [clojure.string :as str]
+               [stasis.core :as stasis]
+               [website-clj.export-helpers :as helpers] ;; my export helper namespace
+               [website-clj.process-pages :as process])) ;; process-pages namespace
+
+
+ #+END_SRC
+
+*** break up =html-pages=
+ Now for the first part, I'll look closely at =html-pages= and see what the different parts do
+
+ #+BEGIN_SRC clojure 
+   ;; main pages formatting function
+   (defn html-pages [base pages]
+     (zipmap (map #(str base %) ;; 1
+                  (map #(str/replace % #"(?<!index)\.html$" "") (keys pages))) ;; 2
+             (map #(fn [req] (layout-base-header req %))
+                  (map format-images (vals pages))) ;; 3 
+             )) ;; 4
+
+ #+END_SRC
+
+ 1. concatenates the "base url" onto the page name keys. This allows me to add things like "programming/" to the base of pages in the programming directory, and "science/" to the base of pages in the science directory. So the 
+ 2. removes .html from keys, which are the page names IF they don't start in index, which is for landing pages and needs .html.
+ 3. applies the header to the pages, and fixes image links.
+ 4. returns a map of page names and values of raw html for pages. however this is a bunch of lazy functions
+
+ Really not too complicated. But to be more explicit, I'll make named functions to fix this.
+ To deal with =1= and =2=, I'll make a function to perform those roles.
+ The new function and its use in =html-pages= looks like so:
+
+ #+BEGIN_SRC clojure 
+   (defn fmt-page-names [base name]
+     (str base (str/replace name #"(?<!index)\.html$" ""))) ;; takes care of 1 and 2!
+
+   ;; main pages formatting function
+   (defn html-pages [base pages]
+     (zipmap (map #(fmt-page-names base %) (keys pages)) ;; apply new fn
+             (map #(fn [req] (layout-base-header req %)) 
+                  (map format-images (vals pages))) 
+             ))
+
+ #+END_SRC
+
+ Great. I am happy with that. I'll cross 1 and 2 off the list. Now the second part is beginning to format the html. Rather than doing all the formatting in one function, I'll have change my =format-images= function to =format-html= and then when I have any other html formatting to do to /all/ the pages I can add another function to =format-html=, which will just take raw html and mess with it. For now, it will only have the format-images function. 
+
+ #+BEGIN_SRC clojure 
+   ;; format images
+   (defn format-images [html]
+     (str/replace html #"src=\"img" "src=\"/img"))
+
+   (defn format-html [html]
+     (-> html
+         (format-images))
+     ;; other fns for html here
+     )
+
+   ;; main pages formatting function
+   (defn html-pages [base pages]
+     (zipmap (map #(fmt-page-names base %) (keys pages)) 
+             (map #(fn [req] (layout-base-header req %)) 
+                  (map format-html (vals pages))) 
+             ))
+
+ #+END_SRC
+
+ I am a lot happier with this. I have reduced complexity in my code by breaking up the anonymous functions, and explicitly naming them. I also don't have to deal with adding more complexity to my main =html-pages= function for future html formatting. I can just add more functions to the =format-html= function and be done with it. This will make editing and adding stuff much easier and more straightforward. I am trying to be more concise using the threading macros =->= and =->>=, which are explained really well [[https://cjohansen.no/clojure-to-die-for/][here]].
+
+** Now I want to do a few things.
+1. create names of pages based on =edn= metadata as opposed to just using the file names. 
+2. make a list of page with links to them in reverse chronological order (dates from =edn= metadata) in the appropriate index home page (i.e. a list of programming pages in the programming folder (except index itself...) to list in the programming index page, same for science...)
+   - This will likely be done using enlive to add links to a special div tag placed in the index page body.
+3. strip =edn= from the raw html. 
+
+This will be done by a function that acts on the map returned by html-pages. I think that is the simplest way to do it. 
+
 ** Goals for tomorrow (2018-08-05)
 
 
