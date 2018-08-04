@@ -1,0 +1,44 @@
+* What's left to do?
+- On the index page, automatically list all of the pages in whatever subfolder that index refers to.
+  - Add [[https://github.com/edn-format/edn][edn]] metadata to the top of the every page, use this to assign a published date, title, and tags to the posts.
+- Add tracking with google analytics or [[https://matomo.org/][Matomo]] (used by [[https://www.fsf.org/][FSF]])
+- refactor code for increased simplicity
+*** From old todo page 
+  *TODO:*
+ 1. Update, condense, and clean these docs.
+ 2. Set up publish commands (see bottom)
+ 3. Port over useful posts from old site
+ 4. [[https://github.com/swannodette/enlive-tutorial][enlive]] tutorial is worth looking at
+ 5. Tests!!
+
+** Goals for today (2018-08-04)
+1. Re-factor code for increased simplicity. Add a namespace to process pages. 
+2. List subfolder pages on index page.
+*** New namespace to process HTML
+In the spirit of the [[https://www.youtube.com/watch?v=f84n5oFoZBc][Hammock driven development]] I am going to re-think the code I am writing and make a plan for what exactly I want to do. First, of all, I want a way to process the text of pages independently without adding more little functions to this mess:
+
+#+BEGIN_SRC clojure 
+  (defn html-pages [base pages]
+    (zipmap (map #(str base %) (map #(str/replace % #"(?<!index)\.html$" "") (keys pages)))
+            (map #(fn [req] (layout-base-header req %))
+                 (map format-images (vals pages)))))
+  ;;---- snip ---
+
+  (defn get-pages []
+    (stasis/merge-page-sources
+     {:landing (home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+      :programming  (html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))
+      :science (html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))
+      :partials (partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
+      :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
+  ;; --- snip ---
+
+#+END_SRC
+
+While =html-pages= isn't that bad now, all the maps and anonymous functions are getting a bit dense for me, and I plan to do some more pre-processing so I think it would really be best to re-factor it now. 
+I also have no idea what =partials= are for in my map in =get-pages=, so that should probably go too. 
+
+So, first thing first, how do I break this up, and what should I spin off into the new namespace called =process-pages=? 
+** Goals for tomorrow (2018-08-05)
+
+

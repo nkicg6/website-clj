@@ -1,0 +1,172 @@
+#+OPTIONS: toc:t author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :eval never-export
+
+* Part 3: Syntax highlighting and org-mode publishing
+** org-workflow: syntax highlighting
+   [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian Johanson]] has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing =org-mode= takes care of syntax highlighting for me when I add =(setq org-src-fontify-natively t)= to my =config.org=. So here I will just test it real quick and see how it looks. 
+In my HTML file, I will add a clojure code block like so:
+
+#+BEGIN_EXAMPLE
+
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+HTML_CONTAINER: div
+
+
+
+
+;* This is a test post
+Here is a test post and a link to an image. 
+
+
+[[file:~/personal_projects/website-clj/resources/public/img/test-img.png]]
+
+And below is a test code block. 
+
+#+BEGIN_SRC clojure 
+(defn format-images [html]
+  (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" ""))
+
+;; main pages function.
+(defn html-pages [pages]
+  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+          (map #(fn [req] (layout-base-header req %))
+               (map format-images (vals pages)))))
+
+#+END_SRC
+
+How does it look?
+
+#+END_EXAMPLE
+
+This renders upon =M-x org-publish-project clj-site= to look like this:
+
+[[file:img/syntax-highlighting.png]]
+
+=org-src-fontify-natively= uses the currently active theme to highlight your source code. I just exported this using the [[https://github.com/fniessen/emacs-leuven-theme][Leuven theme]] (great for org-mode) and I like the way it looks. However, if I wanted to change it and use =enliven= with =pygments=, I would probably use some emacs-lisp code and packages such as those described here: https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e , but for right now I dont think this is necessary for me so I will go with the raw html formatting from org-export. 
+
+At this point, I removed all the markdown file stuff from my project as I don't plan to write in markdown and I cleaned up some other stuff I probably wont use. You can see the source code for my project [[https://github.com/nkicg6/website-clj][here]], all the code that does any work is in the =web.clj= file. 
+
+*** Links
+Will update when I need it. 
+use (link-to)
+** publishing
+*** Hosting on Github Pages
+
+   From =lein=, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like put my website on-line and I hosted my previous site on Github Pages, so I need a few config things to occur on export.  The first is the =CNAME= file, for mapping your domain name to the github repo. A good practice is to empty the target directory before exporting (as Christian did in =(stasis/empy-directory!)=), and I didn't see any options to exclude certain files, so I added a shell command to part of the export command and placed my =CNAME= in the =resources directory=:
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.web
+    (:require [optimus.assets :as assets]
+              [optimus.export]
+              [optimus.link :as link] 
+              [optimus.optimizations :as optimizations]      
+              [optimus.prime :as optimus]                    
+              [optimus.strategies :refer [serve-live-assets]]
+              [clojure.java.io :as io]
+              [clojure.java.shell :as shell] ;; shell commands from clojure
+              [clojure.string :as str]
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [stasis.core :as stasis]))
+  ;; <-----snip----->
+
+  ;; Christian's original:
+  ;;
+  ;; (def export-dir "build")
+  ;; (defn export []
+  ;;   (let [assets (optimizations/all (get-assets) {})]
+  ;;     (stasis/empty-directory! export-dir)
+  ;;     (optimus.export/save-assets assets export-dir)
+  ;;     (stasis/export-pages (get-pages) export-dir {:optimus-assets assets})))
+  ;;   
+  ;; my edits to include the copy after export. 
+  (defn cp-cname [export-dir]
+    (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
+
+
+  (def export-dir "build")
+
+
+  (defn export []
+    (let [assets (optimizations/all (get-assets) {})]
+      (stasis/empty-directory! export-dir)
+      (optimus.export/save-assets assets export-dir)
+      (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
+    (cp-cname export-dir)) ;; after export, copy CNAME back to base. 
+
+#+END_SRC
+
+Now I can keep CNAME where it is supposed to be the whole time. This seems hacky... but it also works without me messing up the awesome stasis code. 
+
+To host on github pages, you also need the static files to be in a repo all by themselves. No problem, since =target= is already on my =.gitignore= from my Leiningen project, I can add my static content subdirectory (=nickgeorge.net=) and start a new repo in there. 
+Unfortunately, with the previously mentioned problems with =(stasis/empty-directory!)=, my =.git= repo is deleted with every =lein build-site=. Looking in the [[https://github.com/magnars/stasis][Stasis code]], there doesn't seem to be a way to leave certain files in the target directory alone (There was with my Python Flask setup...) while this may be a good and relatively easy way to contribute to the library, for now I am going to do a very horribly inefficient thing and copy the =.git= directory to a safe space, then back after export. I'll have to do the same with the =.gitignore=
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.web
+    (:require [optimus.assets :as assets]
+              [optimus.export]
+              [optimus.link :as link] 
+              [optimus.optimizations :as optimizations]      
+              [optimus.prime :as optimus]                    
+              [optimus.strategies :refer [serve-live-assets]]
+              [clojure.java.io :as io]
+              [clojure.java.shell :as shell] ;; shell commands from clojure
+              [clojure.string :as str]
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [stasis.core :as stasis]))
+  ;; <-----snip----->
+  (def export-dir "target/nickgeorge.net")
+
+  (def safe-dir "target")
+
+  (defn cp-cname [export-dir]
+    (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
+
+  (defn cp-gitignore [export-dir]
+    (shell/sh "cp" "target/.gitignore" (str export-dir "/.gitignore")))
+
+  (defn save-git [safe-dir export-dir] 
+    (shell/sh "mv" (str export-dir "/.git") (str safe-dir "/.git")))
+
+  (defn replace-git [safe-dir export-dir]
+    (shell/sh "mv" (str safe-dir "/.git") (str export-dir "/.git")))
+
+
+  (defn export []
+    (save-git safe-dir export-dir) ;; copy .git to a safe place
+    (let [assets (optimizations/all (get-assets) {})]
+      (stasis/empty-directory! export-dir)
+      (optimus.export/save-assets assets export-dir)
+      (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
+    (cp-cname export-dir) ;; preserve CNAME
+    (cp-gitignore export-dir) ;; Put .gitignore in
+    (replace-git safe-dir export-dir)) ;; put .git back
+
+#+END_SRC
+
+
+*** one push publishing with Leiningen :alias
+I can already build my website with my current alias, now I will make another to deploy!
+The steps I need to do are: 
+1. Command line build org-project
+   - =org-publish-project clj-site= from the command line
+   - remember to add a header to tell org to /not/ evaluate code like this: =#+PROPERTY: header-args :eval never-export=
+   - This should be a clojure function called with =export= from =build-site= 
+2. Then run build-site
+3. =git add= and =git push= all changes.
+   - This could also be a clojure function called with =export= from =build-site= 
+
+The idea is that I just call build-site and it all happens automatically. I will adopt Christian's tests as well though. 
+
+
+* References
+- [[https://github.com/magnars/stasis][Stasis]]
+- [[https://github.com/magnars/optimus][Optimus links]]
+- [[https://github.com/ring-clojure/ring/wiki/Static-Resources][Ring static middleware]]
+- [[https://github.com/yokolet/hiccup-samples][hiccup samples]]
+- Christian Johansen's post on Building static sites in Clojure with Stasis https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
+  - handling links https://cjohansen.no/optimized-optimus-asset-paths-clojurescript/
+  - Also his post here is similar with some (useful) differences https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md
+- [[https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html][Clojure namespaces]]
+- add more org-mode links!
