@@ -53,19 +53,6 @@
   (assets/load-assets "public" [#".*"]))
 
 
-(defn format-images [html]
-  (str/replace html #"src=\"img" "src=\"/img"))
-
-;; main pages function.
-(defn html-pages [base pages]
-  (zipmap (map #(str base %) (map #(str/replace % #"(?<!index)\.html$" "") (keys pages)))
-          (map #(fn [req] (layout-base-header req %))
-               (map format-images (vals pages)))))
-
-
-(str/replace "index.html" #"(?<!index)\.html$" "")
-
-
 
 (defn partial-pages [pages]
   (zipmap (keys pages)
@@ -108,5 +95,4 @@
   (helpers/cp-cname export-dir)
   (helpers/cp-gitignore export-dir)
   (helpers/replace-git safe-dir export-dir))
-
 
