@@ -138,13 +138,154 @@ To deal with the second part, I moved all the functions that deal directly with 
 
  I am a lot happier with this. I have reduced complexity in my code by breaking up the anonymous functions, and explicitly naming them. I also don't have to deal with adding more complexity to my main =html-pages= function for future html formatting. I can just add more functions to the =format-html= function and be done with it. This will make editing and adding stuff much easier and more straightforward. I am trying to be more concise using the threading macros =->= and =->>=, which are explained really well [[https://cjohansen.no/clojure-to-die-for/][here]].
 
-** Now I want to do a few things.
+** Plan
+
 1. create names of pages based on =edn= metadata as opposed to just using the file names. 
 2. make a list of page with links to them in reverse chronological order (dates from =edn= metadata) in the appropriate index home page (i.e. a list of programming pages in the programming folder (except index itself...) to list in the programming index page, same for science...)
    - This will likely be done using enlive to add links to a special div tag placed in the index page body.
 3. strip =edn= from the raw html. 
 
-This will be done by a function that acts on the map returned by html-pages. I think that is the simplest way to do it. 
+This will be done by a function that acts on the map returned by =html-pages=. I think that is the simplest way to do it. 
+*** Read =edn= metadata
+
+    So in order to use metadata to name, tag, and add dates to pages I'll use a combination of [[https://github.com/cgrand/enlive][enlive]] and Clojure's [[https://clojuredocs.org/clojure.edn][edn]] data format. I'll insert the =edn= tags at the top of the org mode page (in html tags so it exports) and then parse it using =enlive= and use this to rename and do all the other fancy stuff with the data. To work on this, I'll add some =edn= metadata to a test html page and start playing. First I need to add =enlive= to my =project.clj=
+#+BEGIN_SRC clojure 
+  ;; project.clj
+  (defproject website-clj "0.1.0-SNAPSHOT"
+    :description "Personal website built with Clojure, Stasis, and Hiccup"
+    :url "http://nickgeorge.net"
+    :license {:name "Eclipse Public License"
+              :url "http://www.eclipse.org/legal/epl-v10.html"}
+    :dependencies [[org.clojure/clojure "1.8.0"]
+                   [stasis "1.0.0"]
+                   [ring "1.2.1"]
+                   [hiccup "1.0.5"]
+                   [me.raynes/cegdown "0.1.1"]
+                   [optimus "0.14.2"]
+                   [enlive "1.1.6"]]
+    :ring {:handler website-clj.web/app}
+    :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}
+    :aliases {"build-site" ["run" "-m" "website-clj.web/export"]})
+
+#+END_SRC
+
+and then run =lein deps= at the command line. I'll go through this [[https://github.com/swannodette/enlive-tutorial][enlive tutorial]] to figure out how to parse that portion of the page. My =test.org= doc looks like this:
+
+#+BEGIN_EXAMPLE
+#+HTML: <div class="edn">
+#+HTML: {:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+
+=* Here is my test content=
+
+and some code 
+
+#+BEGIN_SRC clojure 
+(test clj-code)
+(def test-me "test string")
+#+END_SRC
+
+#+END_EXAMPLE
+
+As you can see in the header I added the =#+HTML= tags, which will export literally when I run =org-publish-project clj-site= I get this:
+
+#+BEGIN_EXAMPLE
+<div class="edn">
+{:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
+</div>
+
+<div id="outline-container-orgd13af6f" class="outline-2">
+<h2 id="orgd13af6f">Here is my test content</h2>
+<div class="outline-text-2" id="text-orgd13af6f">
+<p>
+and some code<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #006FE0;">test</span> clj-code<span style="color: #707183;">)</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">def</span> <span style="color: #BA36A5;">test-me</span> <span style="color: #036A07;">"test string"</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+#+END_EXAMPLE
+
+With the useful stuff at the top in the tag. I made a new test folder for this, and I moved the test.html there. So now, I'll read that in and start messing around. 
+
+I am playing with this code at the bottom of my new =process-clj= namespace. 
+#+BEGIN_SRC clojure 
+  ;; get the test of your first page
+  (def test-pages ((first (vals (html-pages "/test"
+                                            (stasis/slurp-directory "resources/test" #".*\.html$")))) "" ))
+  test-pages ;; => html for the page
+#+END_SRC
+
+The =first vals= from my =html-pages= function returns a function, and I just call it with an empty string to give me the html text and store it in =test-pages=. Now I am going to use =enlive= to scrape it and read the stuff under the =edn= class div to start manipulating my keys and links. 
+This took some time, but eventually I figured out this code:
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive] ;; add enlive!
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+  ;; --- snip ---
+
+  (def test-pages (enlive/html-snippet ((first (vals (html-pages "/test"
+                                                                 (stasis/slurp-directory "resources/test" #".*\.html$")))) "" )))
+
+  (def selected (enlive/select test-pages [:#edn enlive/text-node]))
+  selected
+  ;; => "\n{:title \"renamed\" :date 2018-08-05 :tags (clojure testing post)}\n"
+#+END_SRC
+
+Now I'll just read that in as a map using the clojure =edn= library. 
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] ;; require edn 
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+  ;; --- snip ---
+  ;; get the test of your first page
+  (def test-pages (enlive/html-snippet ((first (vals (html-pages "/test"
+                                                                 (stasis/slurp-directory "resources/test" #".*\.html$")))) "" )))
+
+  (def selected (enlive/select test-pages [:#edn enlive/text-node]))
+  (edn/read-string (apply str selected))
+  ;; => {:title "renamed" :date "2018-08-05" :tags ("clojure" "testing" "post")}
+#+END_SRC
+
+I refactored that into a function using the threading macro like so:
+#+BEGIN_SRC clojure 
+  (def test-html ((first (vals (html-pages "/test"
+                                           (stasis/slurp-directory "resources/test" #".*\.html$")))) "" ))
+  (defn parse-edn
+    [html]
+    (-> html
+        (enlive/html-snippet)
+        (enlive/select [:#edn enlive/text-node])
+        (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
+        (edn/read-string)))
+
+  (parse-edn test-html)
+  ;; => {:title "renamed" :date "2018-08-05" :tags ("clojure" "testing" "post")}
+#+END_SRC
+
+Great, I can access all the elements of that map as normal now.
+ 
+The end goal will be to use the =:title= key in the map to rename the article (url or just the link title) and associate that with the =:date=. then I want to make a list of all non-index pages under a certain category (programming or science) and add
+
 
 ** Goals for tomorrow (2018-08-05)
 

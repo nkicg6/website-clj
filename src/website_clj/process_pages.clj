@@ -2,6 +2,8 @@
   (:require [clojure.string :as str]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer (link-to image)]
+            [net.cgrand.enlive-html :as enlive]
+            [clojure.edn :as edn] 
             [stasis.core :as stasis] ;; only for testing?
             ))
 
@@ -33,7 +35,6 @@
              [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]
     [:div {:class "container"}
      [:div.body page]]
-    ;;[:div.test [:img {:src "/img/test-img.png"}]] ; img test
     [:footer {:class "footer"}
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
@@ -42,38 +43,57 @@
 (defn format-images [html]
   (str/replace html #"src=\"img" "src=\"/img"))
 
+;; anything that formats html will be added here. 
 (defn format-html [html]
   (-> html
       (format-images))
   ;; other fns for html here
   )
 
+;; fix up page names. 
 (defn fmt-page-names [base name]
-  (str base (str/replace name #"(?<!index)\.html$" "")))
+  (str base
+       (str/replace name #"(?<!index)\.html$" "")))
 
 ;; main pages formatting function
 (defn html-pages [base pages]
-  (zipmap (map #(fmt-page-names base %) (keys pages)) 
-          (map #(fn [req] (layout-base-header req %)) 
-               (map format-html (vals pages))) 
+  (zipmap (map #(fmt-page-names base %) (keys pages)) ;; initial keys manipulation
+          (map #(fn [req] (layout-base-header req %))  ;; apply main header/footer 
+               (map format-html (vals pages))) ;; all html formatting 
           ))
 
+;; will likely be removed. 
 (defn partial-pages [pages]
   (zipmap (keys pages)
           (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
+;; likely not needed?
 (defn home-page [pages]
   (zipmap (keys pages)
           (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
+
 ;; playing below
-(home-page
- (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
 
-;; (defn prepare-page [page]
-;;   (if (string? page) page (page "")))
+;; get the test of your first page
 
-(def test-pages (html-pages "/programming"
-                            (stasis/slurp-directory "resources/programming" #".*\.html$")))
-(print test-pages)
-(first test-pages)
+(def test-html ((first (vals (html-pages "/test"
+                                         (stasis/slurp-directory "resources/test" #".*\.html$")))) "" ))
+(defn parse-edn
+  [html]
+  (-> html
+      (enlive/html-snippet)
+      (enlive/select [:#edn enlive/text-node])
+      (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
+      (edn/read-string)
+      ))
+
+(get (parse-edn test-html) :title)
+
+(defn prepare-page [page]
+  (if (string? page) page (page "")))
+
+(map parse-edn (map prepare-page (vals (html-pages "/test"
+                                                   (stasis/slurp-directory "resources/test" #".*\.html$")))))
+
+

@@ -12,9 +12,16 @@
 <li><a href="#org3bf48cf">1.1. Goals for today (2018-08-04)</a>
 <ul>
 <li><a href="#org8c05ec1">1.1.1. New namespace to process HTML</a></li>
+<li><a href="#org4f21d06">1.1.2. New namespace</a></li>
+<li><a href="#orge70a6d4">1.1.3. break up <code>html-pages</code></a></li>
 </ul>
 </li>
-<li><a href="#org7d6924c">1.2. Goals for tomorrow (2018-08-05)</a></li>
+<li><a href="#org4841f8f">1.2. Now I want to do a few things.</a>
+<ul>
+<li><a href="#org95ad330">1.2.1. Read <code>edn</code> metadata</a></li>
+</ul>
+</li>
+<li><a href="#org7d6924c">1.3. Goals for tomorrow (2018-08-05)</a></li>
 </ul>
 </li>
 </ul>
@@ -54,7 +61,10 @@
 <div class="outline-text-3" id="text-1-1">
 <ol class="org-ol">
 <li>Re-factor code for increased simplicity. Add a namespace to process pages.</li>
-<li>List subfolder pages on index page.</li>
+<li>List subfolder pages on index page.
+<ul class="org-ul">
+<li>add edn metadata to fix names, links, etc.</li>
+</ul></li>
 </ol>
 </div>
 
@@ -96,10 +106,59 @@ So, first thing first, how do I break this up, and what should I spin off into t
 <p>
 To deal with the second part, I moved all the functions that deal directly with html formatting to the <code>process-pages</code> namespace, this follows the rule that each namespace should do one thing. I'll have the main <code>web.clj</code> handle building and exporting, mostly with the <code>get-pages</code> and <code>export</code> functions, but it makes sense that the html formatting should happen elsewhere (along the same lines, I have export helper functions that I broke out into a namespace called <code>export-helpers</code>). 
 </p>
+</div>
+</div>
+<div id="outline-container-org4f21d06" class="outline-4">
+<h4 id="org4f21d06"><span class="section-number-4">1.1.2</span> New namespace</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<p>
+The declaration for this namespace looks like so:
+</p>
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">website-clj/process_pages.clj</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">ns</span> <span style="color: #6434A3;">website-clj.process-pages</span>
+  <span style="color: #7388D6;">(</span><span style="color: #D0372D;">:require</span> <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.string</span> <span style="color: #D0372D;">:as</span> str<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.page</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">[</span>html5<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.element</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">(</span>link-to image<span style="color: #709870;">)</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">stasis.core</span> <span style="color: #D0372D;">:as</span> stasis<span style="color: #909183;">]</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">only for testing?</span>
+            <span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+
+</pre>
+</div>
 
 <p>
-I'll look closely at <code>html-pages</code> and see what the different parts do
+And the functions included here will be <code>html-pages</code>, <code>layout-base-header</code>, <code>format-images</code>, the other prepare pages functions <code>partial-pages</code>, and <code>home-page</code>. And any others I write. 
+Now I just change <code>web.clj</code> to accept the new ns, and add the alias in front of any of the new functions
 </p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #8D8D84;">;;</span><span style="color: #8D8D84; font-style: italic;">website-clj/web.clj</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">ns</span> <span style="color: #6434A3;">website-clj.web</span>
+  <span style="color: #7388D6;">(</span><span style="color: #D0372D;">:require</span> <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.assets</span> <span style="color: #D0372D;">:as</span> assets<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.export</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.link</span> <span style="color: #D0372D;">:as</span> link<span style="color: #909183;">]</span> 
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.optimizations</span> <span style="color: #D0372D;">:as</span> optimizations<span style="color: #909183;">]</span>      
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.prime</span> <span style="color: #D0372D;">:as</span> optimus<span style="color: #909183;">]</span>                    
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.strategies</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">[</span>serve-live-assets<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.io</span> <span style="color: #D0372D;">:as</span> io<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.string</span> <span style="color: #D0372D;">:as</span> str<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">stasis.core</span> <span style="color: #D0372D;">:as</span> stasis<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">website-clj.export-helpers</span> <span style="color: #D0372D;">:as</span> helpers<span style="color: #909183;">]</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">my export helper namespace</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">website-clj.process-pages</span> <span style="color: #D0372D;">:as</span> process<span style="color: #909183;">]</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">process-pages namespace</span>
+
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orge70a6d4" class="outline-4">
+<h4 id="orge70a6d4"><span class="section-number-4">1.1.3</span> break up <code>html-pages</code></h4>
+<div class="outline-text-4" id="text-1-1-3">
+<p>
+Now for the first part, I'll look closely at <code>html-pages</code> and see what the different parts do
+</p>
+
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">main pages formatting function</span>
 <span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">html-pages</span> <span style="color: #7388D6;">[</span>base pages<span style="color: #7388D6;">]</span>
@@ -149,7 +208,8 @@ Great. I am happy with that. I'll cross 1 and 2 off the list. Now the second par
   <span style="color: #7388D6;">(</span><span style="color: #6434A3;">str</span><span style="color: #333333; background-color: #FFFFFF;">/</span><span style="color: #006FE0;">replace</span> html #<span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">img"</span> <span style="color: #008000;">"src=</span><span style="color: #000000; font-weight: bold;">\"</span><span style="color: #008000;">/img"</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
 
 <span style="color: #707183;">(</span><span style="color: #0000FF;">defn</span> <span style="color: #006699;">format-html</span> <span style="color: #7388D6;">[</span>html<span style="color: #7388D6;">]</span>
-  <span style="color: #7388D6;">(</span><span style="color: #0000FF;">-&gt;</span> format-images<span style="color: #7388D6;">)</span>
+  <span style="color: #7388D6;">(</span><span style="color: #0000FF;">-&gt;</span> html
+      <span style="color: #909183;">(</span>format-images<span style="color: #909183;">)</span><span style="color: #7388D6;">)</span>
   <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">other fns for html here</span>
   <span style="color: #707183;">)</span>
 
@@ -164,14 +224,83 @@ Great. I am happy with that. I'll cross 1 and 2 off the list. Now the second par
 </div>
 
 <p>
-I am a lot happier with this. I have reduced complexity in my code by breaking up the anonymous functions, and explicitly naming them. I also don't have to deal with adding more complexity to my main <code>html-pages</code> function for future html formatting. I can just add more functions to the <code>format-html</code> function and be done with it. This will make editing and adding stuff much easier and more straightforward. I am trying to be more concise using the threading macros <code>-&gt;</code> and <code>-&gt;&gt;</code>, which are explained really well <a href="https://cjohansen.no/clojure-to-die-for/">here</a> as well.
+I am a lot happier with this. I have reduced complexity in my code by breaking up the anonymous functions, and explicitly naming them. I also don't have to deal with adding more complexity to my main <code>html-pages</code> function for future html formatting. I can just add more functions to the <code>format-html</code> function and be done with it. This will make editing and adding stuff much easier and more straightforward. I am trying to be more concise using the threading macros <code>-&gt;</code> and <code>-&gt;&gt;</code>, which are explained really well <a href="https://cjohansen.no/clojure-to-die-for/">here</a>.
 </p>
 </div>
 </div>
 </div>
 
+<div id="outline-container-org4841f8f" class="outline-3">
+<h3 id="org4841f8f"><span class="section-number-3">1.2</span> Now I want to do a few things.</h3>
+<div class="outline-text-3" id="text-1-2">
+<ol class="org-ol">
+<li>create names of pages based on <code>edn</code> metadata as opposed to just using the file names.</li>
+<li>make a list of page with links to them in reverse chronological order (dates from <code>edn</code> metadata) in the appropriate index home page (i.e. a list of programming pages in the programming folder (except index itself&#x2026;) to list in the programming index page, same for science&#x2026;)
+<ul class="org-ul">
+<li>This will likely be done using enlive to add links to a special div tag placed in the index page body.</li>
+</ul></li>
+<li>strip <code>edn</code> from the raw html.</li>
+</ol>
 
+<p>
+This will be done by a function that acts on the map returned by <code>html-pages</code>. I think that is the simplest way to do it. 
+</p>
+</div>
+<div id="outline-container-org95ad330" class="outline-4">
+<h4 id="org95ad330"><span class="section-number-4">1.2.1</span> Read <code>edn</code> metadata</h4>
+<div class="outline-text-4" id="text-1-2-1">
+<p>
+So in order to use metadata to name, tag, and add dates to pages I'll use a combination of <a href="https://github.com/cgrand/enlive">enlive</a> and Clojure's <a href="https://clojuredocs.org/clojure.edn">edn</a> data format. I'll insert the <code>edn</code> tags at the top of the org mode page (in html tags so it exports) and then parse it using <code>enlive</code> and use this to rename and do all the other fancy stuff with the data. To work on this, I'll add some <code>edn</code> metadata to a test html page and start playing. First I need to add <code>enlive</code> to my <code>project.clj</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">project.clj</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">defproject</span> <span style="color: #006699;">website-clj</span> <span style="color: #008000;">"0.1.0-SNAPSHOT"</span>
+  <span style="color: #D0372D;">:description</span> <span style="color: #008000;">"Personal website built with Clojure, Stasis, and Hiccup"</span>
+  <span style="color: #D0372D;">:url</span> <span style="color: #008000;">"http://nickgeorge.net"</span>
+  <span style="color: #D0372D;">:license</span> <span style="color: #7388D6;">{</span><span style="color: #D0372D;">:name</span> <span style="color: #008000;">"Eclipse Public License"</span>
+            <span style="color: #D0372D;">:url</span> <span style="color: #008000;">"http://www.eclipse.org/legal/epl-v10.html"</span><span style="color: #7388D6;">}</span>
+  <span style="color: #D0372D;">:dependencies</span> <span style="color: #7388D6;">[</span><span style="color: #909183;">[</span><span style="color: #6434A3;">org.clojure</span><span style="color: #333333; background-color: #FFFFFF;">/</span>clojure <span style="color: #008000;">"1.8.0"</span><span style="color: #909183;">]</span>
+                 <span style="color: #909183;">[</span>stasis <span style="color: #008000;">"1.0.0"</span><span style="color: #909183;">]</span>
+                 <span style="color: #909183;">[</span>ring <span style="color: #008000;">"1.2.1"</span><span style="color: #909183;">]</span>
+                 <span style="color: #909183;">[</span>hiccup <span style="color: #008000;">"1.0.5"</span><span style="color: #909183;">]</span>
+                 <span style="color: #909183;">[</span><span style="color: #6434A3;">me.raynes</span><span style="color: #333333; background-color: #FFFFFF;">/</span>cegdown <span style="color: #008000;">"0.1.1"</span><span style="color: #909183;">]</span>
+                 <span style="color: #909183;">[</span>optimus <span style="color: #008000;">"0.14.2"</span><span style="color: #909183;">]</span>
+                 <span style="color: #909183;">[</span>enlive <span style="color: #008000;">"1.1.6"</span><span style="color: #909183;">]</span><span style="color: #7388D6;">]</span>
+  <span style="color: #D0372D;">:ring</span> <span style="color: #7388D6;">{</span><span style="color: #D0372D;">:handler</span> <span style="color: #6434A3;">website-clj.web</span><span style="color: #333333; background-color: #FFFFFF;">/</span>app<span style="color: #7388D6;">}</span>
+  <span style="color: #D0372D;">:profiles</span> <span style="color: #7388D6;">{</span><span style="color: #D0372D;">:dev</span> <span style="color: #909183;">{</span><span style="color: #D0372D;">:plugins</span> <span style="color: #709870;">[</span><span style="color: #907373;">[</span>lein-ring <span style="color: #008000;">"0.8.10"</span><span style="color: #907373;">]</span><span style="color: #709870;">]</span><span style="color: #909183;">}</span><span style="color: #7388D6;">}</span>
+  <span style="color: #D0372D;">:aliases</span> <span style="color: #7388D6;">{</span><span style="color: #008000;">"build-site"</span> <span style="color: #909183;">[</span><span style="color: #008000;">"run"</span> <span style="color: #008000;">"-m"</span> <span style="color: #008000;">"website-clj.web/export"</span><span style="color: #909183;">]</span><span style="color: #7388D6;">}</span><span style="color: #707183;">)</span>
+
+</pre>
+</div>
+
+<p>
+and then run <code>lein deps</code> at the command line. I'll go through this <a href="https://github.com/swannodette/enlive-tutorial">enlive tutorial</a> to figure out how to parse that portion of the page. My <code>test.org</code> doc looks like this:
+</p>
+
+<pre class="example">
+#+HTML: &lt;div class="edn"&gt;
+#+HTML: {:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
+#+HTML: &lt;/div&gt;
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+
+=* Here is my test content=
+
+and some code 
+
+#+BEGIN_SRC clojure 
+(test clj-code)
+(def test-me "test string")
+#+END_SRC
+
+</pre>
+
+<p>
+As you can see in the header I added the <code>#+HTML</code> tags, which will export literally when I run <code>org-publish-project</code>. 
+</p>
+</div>
+</div>
+</div>
 <div id="outline-container-org7d6924c" class="outline-3">
-<h3 id="org7d6924c"><span class="section-number-3">1.2</span> Goals for tomorrow (2018-08-05)</h3>
+<h3 id="org7d6924c"><span class="section-number-3">1.3</span> Goals for tomorrow (2018-08-05)</h3>
 </div>
 </div>

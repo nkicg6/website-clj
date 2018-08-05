@@ -1,15 +1,12 @@
-#+TITLE: this is a test
+#+HTML: <div class="edn">
+#+HTML: {:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 
-#+DATE: 2018-07-29
-#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
-#+PROPERTY: header-args :eval never-export
-#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
-#+LATEX_HEADER: \hypersetup{colorlinks=true,citecolor=black,linkcolor=black,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
-#+LATEX_HEADER: \usepackage[round]{natbib}
-#+LATEX_HEADER: \renewcommand{\bibsection}
-* Here is my test
+* Here is my test content
 
 and some code 
+
 #+BEGIN_SRC clojure 
 (test clj-code)
 (def test-me "test string")
