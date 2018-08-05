@@ -282,11 +282,28 @@ I refactored that into a function using the threading macro like so:
   ;; => {:title "renamed" :date "2018-08-05" :tags ("clojure" "testing" "post")}
 #+END_SRC
 
-Great, I can access all the elements of that map as normal now.
- 
-The end goal will be to use the =:title= key in the map to rename the article (url or just the link title) and associate that with the =:date=. then I want to make a list of all non-index pages under a certain category (programming or science) and add
+Unfortunately, I need to use =(apply str html)=, with the html passed as the last argument. The =->= macro inserts the result of the previous form as the /first/ argument, which would result in the apply step looking like =(apply html str)= which will not work. The =->>= macro inserts the result of the previous form as the /last/ argument, so added that macro to apply to only the =apply str= step. I've read mixing these macros is bad form, but for now it seems to work so I'll leave it be. 
 
+I created another =test.html= page called =test2.html=, and I just tested to make sure I could map over it with =parse-edn=. You'll notice I had to use =prepare-pages= in order to force the functions to evaluate. 
 
-** Goals for tomorrow (2018-08-05)
+#+BEGIN_SRC clojure 
+  (defn prepare-page [page]
+    (if (string? page) page (page "")))
 
+  (map parse-edn
+       (map prepare-page
+            (vals
+             (html-pages "/test"
+                         (stasis/slurp-directory "resources/test" #".*\.html$")))))
 
+  ;;=>  [{:title "renamed" :date "2018-08-05" :tags ("clojure" "testing" "post")} {:title "renamed2" :date "2018-08-06" :tags ("clojure" "testing2" "post")}]
+
+#+END_SRC
+
+Those are the two pages I'll use for further testing. 
+
+Great, I can access all the elements of that like a normal hash-map now.
+
+** Goals for tomorrow (2018-08-06) 
+
+I want to make a list of all non-index pages under a certain category (programming or science) and add them to the index page under the category in reverse chronological order. This will make navigation easier. To accomplish this, I'll build a new map by grabbing the =:title= from the parsed edn, and using it as a hash-map key with the value being the url for the article. Then I will iterate through those, and build a list of URLs to insert into the index page under some special div body tag.
