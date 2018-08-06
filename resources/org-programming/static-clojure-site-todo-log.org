@@ -300,6 +300,59 @@ I created another =test.html= page called =test2.html=, and I just tested to mak
 
 #+END_SRC
 
+Now I made a few changes to =parse-edn= to get my link generator working quickly. Here is that updated function:
+
+#+BEGIN_SRC clojure 
+  ;; --- snip ---
+  (defn prepare-page [page]
+    (if (string? page) page (page "")))
+
+  (defn parse-edn
+    [html]
+    (-> html
+        (prepare-page) ;; new, render the page if a fn
+        (enlive/html-snippet)
+        (enlive/select [:#edn enlive/text-node])
+        (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
+        (edn/read-string)
+        (get :title))) ;; new just return the title for now. 
+#+END_SRC
+
+I just added =prepare-page= in order to force render the functions, and the =(get :title)= to return just the title for now. However in my main =get-pages= function in =web.clj=, the index pages will be included. Since it would be silly to link to those in the link pages, I will filter those out with a regex. The final form to give me a =hash-map= of ={url-title metadata-title}= looks like this:
+
+#+BEGIN_SRC clojure 
+
+  (defn remove-index [values] (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
+
+  (def link-map
+    (zipmap (remove-index (keys test-map))
+            (remove-index (map parse-edn (vals test-map)))))
+
+#+END_SRC
+
+I envision using this in a separate series of functions to create lists of urls for all my pages. Basically, this would be reduced to a single list of href links, which I would pass to a helper function out side of =get-pages=, which would then insert the list using enlive to the index pages /only/ by using a unique div element. A skeleton looks like so:
+
+#+BEGIN_SRC clojure 
+  ;; web.clj 
+
+  ;; define links below
+  (def list-of-science-links (process/make-links science-map))
+  (def list-of-programming-links (process/make-links programming-map))
+
+  ;; below, process/insert-links will add the links to index.html using enlive and a unique selector
+
+  (defn get-pages []
+    (stasis/merge-page-sources
+     {:landing  (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+      :programming  (process/insert-links list-of-programming-links (process/html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))) ;; NEW!
+      :science (process/insert-links list-of-science-links (process/html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))) ;; NEW
+      :partials (process/partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
+      :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
+
+#+END_SRC
+
+So todo, I need to write a function to make a valid html link, then figure out how to add it to the index page. 
+
 Those are the two pages I'll use for further testing. 
 
 Great, I can access all the elements of that like a normal hash-map now.

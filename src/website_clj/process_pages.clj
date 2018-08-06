@@ -39,6 +39,10 @@
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
 
+;; force rendering of pages
+(defn prepare-page [page]
+  (if (string? page) page (page "")))
+
 ;; format images
 (defn format-images [html]
   (str/replace html #"src=\"img" "src=\"/img"))
@@ -79,21 +83,27 @@
 
 (def test-html ((first (vals (html-pages "/test"
                                          (stasis/slurp-directory "resources/test" #".*\.html$")))) "" ))
+
 (defn parse-edn
   [html]
   (-> html
+      (prepare-page)
       (enlive/html-snippet)
       (enlive/select [:#edn enlive/text-node])
       (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
       (edn/read-string)
+      (get :title)
       ))
 
-(get (parse-edn test-html) :title)
 
-(defn prepare-page [page]
-  (if (string? page) page (page "")))
+(def test-map (html-pages "/test"
+                          (stasis/slurp-directory "resources/test" #".*\.html$")))
 
-(map parse-edn (map prepare-page (vals (html-pages "/test"
-                                                   (stasis/slurp-directory "resources/test" #".*\.html$")))))
 
+
+(defn remove-index [values] (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
+
+(def link-map
+  (zipmap (remove-index (keys test-map))
+          (remove-index (map parse-edn (vals test-map)))))
 
