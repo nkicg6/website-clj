@@ -138,12 +138,13 @@ To deal with the second part, I moved all the functions that deal directly with 
 
  I am a lot happier with this. I have reduced complexity in my code by breaking up the anonymous functions, and explicitly naming them. I also don't have to deal with adding more complexity to my main =html-pages= function for future html formatting. I can just add more functions to the =format-html= function and be done with it. This will make editing and adding stuff much easier and more straightforward. I am trying to be more concise using the threading macros =->= and =->>=, which are explained really well [[https://cjohansen.no/clojure-to-die-for/][here]].
 
-** Plan
+** All about =edn= metadata
 
 1. create names of pages based on =edn= metadata as opposed to just using the file names. 
 2. make a list of page with links to them in reverse chronological order (dates from =edn= metadata) in the appropriate index home page (i.e. a list of programming pages in the programming folder (except index itself...) to list in the programming index page, same for science...)
    - This will likely be done using enlive to add links to a special div tag placed in the index page body.
 3. strip =edn= from the raw html. 
+
 
 This will be done by a function that acts on the map returned by =html-pages=. I think that is the simplest way to do it. 
 *** Read =edn= metadata
@@ -351,9 +352,72 @@ I envision using this in a separate series of functions to create lists of urls 
 
 #+END_SRC
 
+** making links from page lists
+
 So todo, I need to write a function to make a valid html link, then figure out how to add it to the index page. 
 
-Those are the two pages I'll use for further testing. 
+I'll start tackling these by first addressing the =process/make-links= problem.  First, I'll make =link-map=, defined in the previous section into a into a function
+
+#+BEGIN_SRC clojure 
+  ;; make a map for urls
+  (defn link-map [stasis-map]
+    (zipmap (remove-index (keys stasis-map))
+            (remove-index (map parse-edn (vals stasis-map)))))
+
+#+END_SRC
+
+Now generating links from these is shown with the following hiccup code (note I had to update my =ns=):
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]] ;; just added
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+
+  ;; --- snip ---
+
+
+  (def test-map (html-pages "/test"
+                            (stasis/slurp-directory "resources/test" #".*\.html$"))) ;; I'll work with the map that stasis returns
+
+  ;; make a map for urls
+  (defn link-map [stasis-map]
+    (zipmap (remove-index (keys stasis-map))
+            (remove-index (map parse-edn (vals stasis-map))))) ;; removes index files form the maps. 
+
+  ;; this makes a list of links with Hiccup. enlive will then insert it.
+  (defn link-list [links]
+    (html [:ul (for [[k v] links]
+                 [:li (link-to k v)])])) ;; returns the html for the list of links. 
+
+  (link-list (link-map test-map)) ;; demo how it will run.
+
+  ;; => "<ul><li><a href=\"/test/test\">renamed</a></li><li><a href=\"/test/test2\">renamed2</a></li></ul>"
+#+END_SRC
+
+Great! Quick refactoring for simplicity:
+
+#+BEGIN_SRC clojure 
+  (defn make-links [stasis-map]
+    (-> stasis-map
+        (link-map)
+        (link-list)))
+
+
+  (make-links test-map)
+
+  ;;=> "<ul><li><a href=\"/test/test\">renamed</a></li><li><a href=\"/test/test2\">renamed2</a></li></ul>"
+#+END_SRC
+
+Now I need to insert a new special =<div>= tag into my index html, then use enlive to insert these links!
+
+** Inserting =hiccup= html with =enlive=
 
 Great, I can access all the elements of that like a normal hash-map now.
 

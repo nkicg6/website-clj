@@ -1,5 +1,6 @@
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
+            [hiccup.core :refer [html]]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer (link-to image)]
             [net.cgrand.enlive-html :as enlive]
@@ -103,7 +104,31 @@
 
 (defn remove-index [values] (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
 
-(def link-map
-  (zipmap (remove-index (keys test-map))
-          (remove-index (map parse-edn (vals test-map)))))
+;; make a list of links.
+(defn link-map [stasis-map]
+  (zipmap (remove-index (keys stasis-map))
+          (remove-index (map parse-edn (vals stasis-map)))))
 
+;; this makes a list of links with Hiccup. enlive will then insert it.
+
+(defn link-list [links]
+  (html [:ul (for [[k v] links]
+               [:li (link-to k v)])]))
+
+(link-list (link-map test-map))
+(link-map test-map)
+
+(defn make-links [stasis-map]
+  (-> stasis-map
+      (link-map)
+      (link-list)))
+
+
+(make-links test-map)
+
+;; this will be used in the future for getting the other metadata. 
+(def test-map {:title "test-title", :date "2018-08-06", :tags '("tag1" "clojure")})
+(keys test-map)
+
+(let [title (get test-map :title) date (get test-map :date) tags (get test-map :tags)]
+  (list title (list date tags)))
