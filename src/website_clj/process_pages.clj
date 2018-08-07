@@ -124,13 +124,15 @@
 
 (def test-links (make-links (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
 ;; main workhorse function that adds the links and returns the modified html
+
 (defn add-links [page links]
   (-> page
       (prepare-page) ;; forse eval of lazy pages
       (enlive/sniptest
        [:#pageListDiv] ;; exists only in index pages. 
-       (enlive/content links)
-       (->> (apply str))))) ;; add the links
+       (enlive/content links))
+      (str/replace #"&gt;" ">")
+      (str/replace #"&lt;" "<"))) ;; add the links
 
 (map #(add-links % test-links)
      (vals stasis-map))
@@ -150,5 +152,4 @@
 
 (let [title (get test-map2 :title) date (get test-map2 :date) tags (get test-map2 :tags)]
   (list title (list date tags)))
-
-
+(str/replace test-html #"&gt" "")

@@ -16,20 +16,26 @@
 
 
 
-(def test-links (process/make-links (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+(def test-map (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
+(def test-links
+  (process/make-links test-map))
 
+
+test-links
 (defn get-assets []
   (assets/load-assets "public" [#".*"]))
 
 
 (defn get-pages []
   (stasis/merge-page-sources
-   {:landing (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+   {:landing (process/home-page
+              (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
     :programming  (process/html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))
     :science (process/html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))
-    :partials (process/partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
     :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")
-    :test (zipmap (keys (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$"))) (map #(process/add-links % test-links) (vals (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))))}))
+    :test (zipmap (keys test-map)
+                  (map #(process/add-links % test-links)
+                       (vals test-map)))}))
 
 
 (def app
