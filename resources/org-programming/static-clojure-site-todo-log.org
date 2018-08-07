@@ -418,8 +418,103 @@ Great! Quick refactoring for simplicity:
 Now I need to insert a new special =<div>= tag into my index html, then use enlive to insert these links!
 
 ** Inserting =hiccup= html with =enlive=
+   First, I wanted to make sure that I could hide the metadata from the normal page. I /could/ use enlive to actually delete them, but that is really just unnecessary. I don't care if it is in the html, I'd just rather not show it. So I made a css file called =hide.css= and had it hide all the =id=edn= divs.
+
+#+BEGIN_SRC css
+  #edn {
+      display: none;
+  }
+#+END_SRC
+
+Easy. Now I will use the =include-css= hiccup header and add the following to my =hiccup=-defined header:
+
+#+BEGIN_SRC clojure 
+  ;; process-pages ns
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]]
+              [hiccup.page :use [html5 include-css include-js]] ;; include hiccup helpers
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+  ;; --- snip ---
+  (defn layout-base-header [request page]
+    (html5
+     [:head
+      [:meta {:charset "utf-8"}]
+      ;;... --- snip ---
+      (include-css "/css/hide.css") ;; the new stuff
+      ;;... --- snip ---
+      ]
+     ;;Much more here, I cut it out for simplicity
+     ))
+
+#+END_SRC
 
 Great, I can access all the elements of that like a normal hash-map now.
+The element I want to insert the links into is called 
+#+BEGIN_EXAMPLE
+<div id="pageListDiv">Page nav list Here</div> 
+#+END_EXAMPLE
+
+Which will /only/ exist in the index.html pages that should have this list. 
+
+*** adding links
+
+After a lot of troubleshooting, I finally came up with this. 
+
+#+BEGIN_SRC clojure 
+  (defn add-links [page links]
+    (-> page
+        (prepare-page) ;; forse eval of lazy pages
+        (enlive/sniptest
+         [:#pageListDiv] ;; exists only in index pages. 
+         (enlive/content links))))
+
+#+END_SRC
+
+This can be mapped over the values like so:
+
+#+BEGIN_SRC clojure 
+  ;; used for testing
+  (def stasis-map (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+  (def test-html ((first (vals stasis-map)) ""))
+  (def test-links (make-links (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+
+  ;; map it!
+
+  (map #(add-links % test-links)
+       (vals stasis-map))
+
+#+END_SRC
+
+This seems to give the exact output I was looking for. Now when I refer to how it will actually be used:
+
+#+BEGIN_SRC clojure 
+  ;; web.clj
+
+  ;; --- snip ---
+
+  (defn get-pages []
+    (stasis/merge-page-sources
+     {:landing (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+      :programming  (process/html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))
+      :science (process/html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))
+      :partials (process/partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
+      :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")
+
+      ;; see below!
+
+      :test (zipmap (keys (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+                    (map #(process/add-links % test-links) (vals (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))))}))
+
+
+#+END_SRC
+I still need to return a zipmap like html-pages does, but I also need to use enlive to insert the links. 
+This technically does what I want, unfortunately all my =>= characters are escaped as =&gt=, so the html is not rendering as a list. I'll have to figure out why that is. It also appears the links are not perfectly correct in this one, they need the "test" prepended. 
 
 ** Goals for tomorrow (2018-08-06) 
 

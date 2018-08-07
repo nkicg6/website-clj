@@ -15,9 +15,8 @@
             [website-clj.process-pages :as process]))
 
 
-;; not used...
-(defn prepare-page [page req]
-  (if (string? page) page (page req)))
+
+(def test-links (process/make-links (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
 
 (defn get-assets []
   (assets/load-assets "public" [#".*"]))
@@ -29,7 +28,8 @@
     :programming  (process/html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))
     :science (process/html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))
     :partials (process/partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
-    :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
+    :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")
+    :test (zipmap (keys (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$"))) (map #(process/add-links % test-links) (vals (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))))}))
 
 
 (def app

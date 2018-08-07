@@ -1,7 +1,7 @@
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
             [hiccup.core :refer [html]]
-            [hiccup.page :refer [html5]]
+            [hiccup.page :use [html5 include-css include-js]]
             [hiccup.element :refer (link-to image)]
             [net.cgrand.enlive-html :as enlive]
             [clojure.edn :as edn] 
@@ -19,6 +19,7 @@
             :content "width=device-width, initial-scale=1.0"}]
     [:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
     [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}]
+    (include-css "/css/hide.css")
     [:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" :integrity "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" :crossorigin "anonymous"}]
     ]
    [:body
@@ -80,11 +81,12 @@
 
 ;; playing below
 
-;; get the test of your first page
+;; used for testing
+(def stasis-map (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+(def test-html ((first (vals stasis-map)) ""))
 
-(def test-html ((first (vals (html-pages "/test"
-                                         (stasis/slurp-directory "resources/test" #".*\.html$")))) "" ))
 
+;; parse edn takes values, returns the title part.  
 (defn parse-edn
   [html]
   (-> html
@@ -93,16 +95,12 @@
       (enlive/select [:#edn enlive/text-node])
       (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
       (edn/read-string)
-      (get :title)
-      ))
+      (get :title)))
 
-
-(def test-map (html-pages "/test"
-                          (stasis/slurp-directory "resources/test" #".*\.html$")))
-
-
-
-(defn remove-index [values] (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
+;; don't want to use links from index pages. 
+(defn remove-index
+  [values]
+  (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
 
 ;; make a list of links.
 (defn link-map [stasis-map]
@@ -110,25 +108,47 @@
           (remove-index (map parse-edn (vals stasis-map)))))
 
 ;; this makes a list of links with Hiccup. enlive will then insert it.
-
 (defn link-list [links]
   (html [:ul (for [[k v] links]
                [:li (link-to k v)])]))
 
-(link-list (link-map test-map))
-(link-map test-map)
+;;(link-list (link-map stasis-map))
+;;(link-map stasis-map)
 
+
+;; make-links provides the second argument to add-links, with the first being the raw html. 
 (defn make-links [stasis-map]
   (-> stasis-map
       (link-map)
       (link-list)))
 
+(def test-links (make-links (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+;; main workhorse function that adds the links and returns the modified html
+(defn add-links [page links]
+  (-> page
+      (prepare-page) ;; forse eval of lazy pages
+      (enlive/sniptest
+       [:#pageListDiv] ;; exists only in index pages. 
+       (enlive/content links)
+       (->> (apply str))))) ;; add the links
 
-(make-links test-map)
+(map #(add-links % test-links)
+     (vals stasis-map))
+
+(= (class (html (make-links stasis-map)))
+   (class test-html))
+
+
+(def test-big-map (zipmap (keys (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+                          (map #(add-links % test-links) (vals (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$"))))))
+
+(first (vals test-big-map))
 
 ;; this will be used in the future for getting the other metadata. 
-(def test-map {:title "test-title", :date "2018-08-06", :tags '("tag1" "clojure")})
-(keys test-map)
+(def test-map2 {:title "test-title", :date "2018-08-06", :tags '("tag1" "clojure")})
+(keys test-map2)
 
-(let [title (get test-map :title) date (get test-map :date) tags (get test-map :tags)]
+(let [title (get test-map2 :title) date (get test-map2 :date) tags (get test-map2 :tags)]
   (list title (list date tags)))
+
+
