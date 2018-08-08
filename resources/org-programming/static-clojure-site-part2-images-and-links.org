@@ -1,4 +1,7 @@
-#+OPTIONS: toc:t author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+HTML: <div id="edn">
+#+HTML: {:title "Static clojure site part 2: images and links" :date "2018-08-07" :tags (clojure)}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
 
 * Part 2: Images and links

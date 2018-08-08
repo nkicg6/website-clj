@@ -1,6 +1,9 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Static clojure site part 1: styling headers and footers" :date "2018-08-07" :tags (clojure)}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+OPTIONS: toc:t author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
 #+PROPERTY: header-args :eval never-export
-
 
 * Part 1: Introduction and header/footer styles with hiccup
 

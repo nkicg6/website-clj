@@ -1,3 +1,8 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "What's left to do" :date "2018-08-08" :tags (clojure)}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
 * What's left to do?
 - On the index page, automatically list all of the pages in whatever subfolder that index refers to.
   - Add [[https://github.com/edn-format/edn][edn]] metadata to the top of the every page, use this to assign a published date, title, and tags to the posts.
@@ -462,6 +467,7 @@ The element I want to insert the links into is called
 
 Which will /only/ exist in the index.html pages that should have this list. 
 
+
 *** adding links
 
 After a lot of troubleshooting, I finally came up with this. 
@@ -513,8 +519,22 @@ This seems to give the exact output I was looking for. Now when I refer to how i
 
 
 #+END_SRC
-I still need to return a zipmap like html-pages does, but I also need to use enlive to insert the links. 
-This technically does what I want, unfortunately all my =>= characters are escaped as =&gt=, so the html is not rendering as a list. I'll have to figure out why that is. It also appears the links are not perfectly correct in this one, they need the "test" prepended. 
+
+I still need to return a zipmap like =html-pages= does, but I also need to use enlive to insert the links. 
+This technically does what I want, unfortunately all my =>= characters are escaped as =&gt=, so the html is not rendering as a list. To fix that, I set up a quick helper function to un-escape those characters and added it like so:
+
+#+BEGIN_SRC clojure 
+  (defn add-links [page links]
+    (-> page
+        (prepare-page) ;; forse eval of lazy pages
+        (enlive/sniptest
+         [:#pageListDiv] ;; exists only in index pages. 
+         (enlive/content links))
+        (str/replace #"&gt;" ">") ;; replace greater than
+        (str/replace #"&lt;" "<"))) ;; replace less than
+#+END_SRC
+
+This works well for my purposes. I need to refactor and work with this a lot, because right now it is not very resilient. For example, if the =edn= is misformed, or if none of the pages even have the metadata then it will fail with a Java null pointer exception, but for now this will definitely work.
 
 ** Goals for tomorrow (2018-08-06) 
 

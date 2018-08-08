@@ -1,25 +1,5 @@
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#orgdf8bc1f">Part 3: Syntax highlighting and org-mode publishing</a>
-<ul>
-<li><a href="#orgcdd698a">org-workflow: syntax highlighting</a>
-<ul>
-<li><a href="#org3c805c1">Links</a></li>
-</ul>
-</li>
-<li><a href="#orgbc4ad9b">publishing</a>
-<ul>
-<li><a href="#orga65a50c">Hosting on Github Pages</a></li>
-<li><a href="#org32673ac">one push publishing with Leiningen :alias</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#org4db12c3">References</a></li>
-</ul>
-</div>
+<div id="edn">
+{:title "Static clojure site part 3: Syntax highlighting and org-mode publishing" :date "2018-08-07" :tags (clojure)}
 </div>
 
 <div id="outline-container-orgdf8bc1f" class="outline-2">
@@ -106,18 +86,18 @@ From <code>lein</code>, Christian gives some nice instructions, so I followed th
 
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #0000FF;">ns</span> <span style="color: #6434A3;">website-clj.web</span>
-  <span style="color: #7388D6;">(</span><span style="color: #D0372D;">:require</span> <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.assets</span> <span style="color: #D0372D;">:as</span> assets<span style="color: #909183;">]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #006FE0;">:require</span> <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.assets</span> <span style="color: #006FE0;">:as</span> assets<span style="color: #909183;">]</span>
             <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.export</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.link</span> <span style="color: #D0372D;">:as</span> link<span style="color: #909183;">]</span> 
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.optimizations</span> <span style="color: #D0372D;">:as</span> optimizations<span style="color: #909183;">]</span>      
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.prime</span> <span style="color: #D0372D;">:as</span> optimus<span style="color: #909183;">]</span>                    
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.strategies</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">[</span>serve-live-assets<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.io</span> <span style="color: #D0372D;">:as</span> io<span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.shell</span> <span style="color: #D0372D;">:as</span> shell<span style="color: #909183;">]</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">shell commands from clojure</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.string</span> <span style="color: #D0372D;">:as</span> str<span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.page</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">[</span>html5<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.element</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">(</span>link-to image<span style="color: #709870;">)</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">stasis.core</span> <span style="color: #D0372D;">:as</span> stasis<span style="color: #909183;">]</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.link</span> <span style="color: #006FE0;">:as</span> link<span style="color: #909183;">]</span> 
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.optimizations</span> <span style="color: #006FE0;">:as</span> optimizations<span style="color: #909183;">]</span>      
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.prime</span> <span style="color: #006FE0;">:as</span> optimus<span style="color: #909183;">]</span>                    
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.strategies</span> <span style="color: #006FE0;">:refer</span> <span style="color: #709870;">[</span>serve-live-assets<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.io</span> <span style="color: #006FE0;">:as</span> io<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.shell</span> <span style="color: #006FE0;">:as</span> shell<span style="color: #909183;">]</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">shell commands from clojure</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.string</span> <span style="color: #006FE0;">:as</span> str<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.page</span> <span style="color: #006FE0;">:refer</span> <span style="color: #709870;">[</span>html5<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.element</span> <span style="color: #006FE0;">:refer</span> <span style="color: #709870;">(</span>link-to image<span style="color: #709870;">)</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">stasis.core</span> <span style="color: #006FE0;">:as</span> stasis<span style="color: #909183;">]</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
 <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">&lt;-----snip-----&gt;</span>
 
 <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">Christian's original:</span>
@@ -141,7 +121,7 @@ From <code>lein</code>, Christian gives some nice instructions, so I followed th
   <span style="color: #7388D6;">(</span><span style="color: #0000FF;">let</span> <span style="color: #909183;">[</span>assets <span style="color: #709870;">(</span><span style="color: #6434A3;">optimizations</span><span style="color: #333333; background-color: #FFFFFF;">/</span>all <span style="color: #907373;">(</span>get-assets<span style="color: #907373;">)</span> <span style="color: #907373;">{}</span><span style="color: #709870;">)</span><span style="color: #909183;">]</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>empty-directory! export-dir<span style="color: #909183;">)</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">optimus.export</span><span style="color: #333333; background-color: #FFFFFF;">/</span>save-assets assets export-dir<span style="color: #909183;">)</span>
-    <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>export-pages <span style="color: #709870;">(</span>get-pages<span style="color: #709870;">)</span> export-dir <span style="color: #709870;">{</span><span style="color: #D0372D;">:optimus-assets</span> assets<span style="color: #709870;">}</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span>
+    <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>export-pages <span style="color: #709870;">(</span>get-pages<span style="color: #709870;">)</span> export-dir <span style="color: #709870;">{</span><span style="color: #006FE0;">:optimus-assets</span> assets<span style="color: #709870;">}</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span>
   <span style="color: #7388D6;">(</span>cp-cname export-dir<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">after export, copy CNAME back to base. </span>
 
 </pre>
@@ -158,18 +138,18 @@ Unfortunately, with the previously mentioned problems with <code>(stasis/empty-d
 
 <div class="org-src-container">
 <pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #0000FF;">ns</span> <span style="color: #6434A3;">website-clj.web</span>
-  <span style="color: #7388D6;">(</span><span style="color: #D0372D;">:require</span> <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.assets</span> <span style="color: #D0372D;">:as</span> assets<span style="color: #909183;">]</span>
+  <span style="color: #7388D6;">(</span><span style="color: #006FE0;">:require</span> <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.assets</span> <span style="color: #006FE0;">:as</span> assets<span style="color: #909183;">]</span>
             <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.export</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.link</span> <span style="color: #D0372D;">:as</span> link<span style="color: #909183;">]</span> 
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.optimizations</span> <span style="color: #D0372D;">:as</span> optimizations<span style="color: #909183;">]</span>      
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.prime</span> <span style="color: #D0372D;">:as</span> optimus<span style="color: #909183;">]</span>                    
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.strategies</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">[</span>serve-live-assets<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.io</span> <span style="color: #D0372D;">:as</span> io<span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.shell</span> <span style="color: #D0372D;">:as</span> shell<span style="color: #909183;">]</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">shell commands from clojure</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.string</span> <span style="color: #D0372D;">:as</span> str<span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.page</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">[</span>html5<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.element</span> <span style="color: #D0372D;">:refer</span> <span style="color: #709870;">(</span>link-to image<span style="color: #709870;">)</span><span style="color: #909183;">]</span>
-            <span style="color: #909183;">[</span><span style="color: #6434A3;">stasis.core</span> <span style="color: #D0372D;">:as</span> stasis<span style="color: #909183;">]</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.link</span> <span style="color: #006FE0;">:as</span> link<span style="color: #909183;">]</span> 
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.optimizations</span> <span style="color: #006FE0;">:as</span> optimizations<span style="color: #909183;">]</span>      
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.prime</span> <span style="color: #006FE0;">:as</span> optimus<span style="color: #909183;">]</span>                    
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">optimus.strategies</span> <span style="color: #006FE0;">:refer</span> <span style="color: #709870;">[</span>serve-live-assets<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.io</span> <span style="color: #006FE0;">:as</span> io<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.java.shell</span> <span style="color: #006FE0;">:as</span> shell<span style="color: #909183;">]</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">shell commands from clojure</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">clojure.string</span> <span style="color: #006FE0;">:as</span> str<span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.page</span> <span style="color: #006FE0;">:refer</span> <span style="color: #709870;">[</span>html5<span style="color: #709870;">]</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">hiccup.element</span> <span style="color: #006FE0;">:refer</span> <span style="color: #709870;">(</span>link-to image<span style="color: #709870;">)</span><span style="color: #909183;">]</span>
+            <span style="color: #909183;">[</span><span style="color: #6434A3;">stasis.core</span> <span style="color: #006FE0;">:as</span> stasis<span style="color: #909183;">]</span><span style="color: #7388D6;">)</span><span style="color: #707183;">)</span>
 <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">&lt;-----snip-----&gt;</span>
 <span style="color: #707183;">(</span><span style="color: #0000FF;">def</span> <span style="color: #BA36A5;">export-dir</span> <span style="color: #036A07;">"target/nickgeorge.net"</span><span style="color: #707183;">)</span>
 
@@ -193,7 +173,7 @@ Unfortunately, with the previously mentioned problems with <code>(stasis/empty-d
   <span style="color: #7388D6;">(</span><span style="color: #0000FF;">let</span> <span style="color: #909183;">[</span>assets <span style="color: #709870;">(</span><span style="color: #6434A3;">optimizations</span><span style="color: #333333; background-color: #FFFFFF;">/</span>all <span style="color: #907373;">(</span>get-assets<span style="color: #907373;">)</span> <span style="color: #907373;">{}</span><span style="color: #709870;">)</span><span style="color: #909183;">]</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>empty-directory! export-dir<span style="color: #909183;">)</span>
     <span style="color: #909183;">(</span><span style="color: #6434A3;">optimus.export</span><span style="color: #333333; background-color: #FFFFFF;">/</span>save-assets assets export-dir<span style="color: #909183;">)</span>
-    <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>export-pages <span style="color: #709870;">(</span>get-pages<span style="color: #709870;">)</span> export-dir <span style="color: #709870;">{</span><span style="color: #D0372D;">:optimus-assets</span> assets<span style="color: #709870;">}</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span>
+    <span style="color: #909183;">(</span><span style="color: #6434A3;">stasis</span><span style="color: #333333; background-color: #FFFFFF;">/</span>export-pages <span style="color: #709870;">(</span>get-pages<span style="color: #709870;">)</span> export-dir <span style="color: #709870;">{</span><span style="color: #006FE0;">:optimus-assets</span> assets<span style="color: #709870;">}</span><span style="color: #909183;">)</span><span style="color: #7388D6;">)</span>
   <span style="color: #7388D6;">(</span>cp-cname export-dir<span style="color: #7388D6;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">preserve CNAME</span>
   <span style="color: #7388D6;">(</span>cp-gitignore export-dir<span style="color: #7388D6;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">Put .gitignore in</span>
   <span style="color: #7388D6;">(</span>replace-git safe-dir export-dir<span style="color: #7388D6;">)</span><span style="color: #707183;">)</span> <span style="color: #8D8D84;">;; </span><span style="color: #8D8D84; font-style: italic;">put .git back</span>

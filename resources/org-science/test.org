@@ -1,11 +1,11 @@
-#+HTML: <div class="edn">
+#+HTML: <div id="edn">
 #+HTML: {:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 
 * Here is my test content
 
-and some code 
+This is a test science page. Nothing is here yet. 
 
 #+BEGIN_SRC clojure 
 (test clj-code)
