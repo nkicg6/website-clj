@@ -9,7 +9,6 @@
             ))
 
 
-
 ;; header formatting goes on every page
 (defn layout-base-header [request page]
   (html5
@@ -79,13 +78,6 @@
           (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
 
-;; playing below
-
-;; used for testing
-(def stasis-map (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
-(def test-html ((first (vals stasis-map)) ""))
-
-
 ;; parse edn takes values, returns the title part.  
 (defn parse-edn
   [html]
@@ -107,14 +99,12 @@
   (zipmap (remove-index (keys stasis-map))
           (remove-index (map parse-edn (vals stasis-map)))))
 
+
+
 ;; this makes a list of links with Hiccup. enlive will then insert it.
 (defn link-list [links]
   (html [:ul (for [[k v] links]
                [:li (link-to k v)])]))
-
-;;(link-list (link-map stasis-map))
-;;(link-map stasis-map)
-
 
 ;; make-links provides the second argument to add-links, with the first being the raw html. 
 (defn make-links [stasis-map]
@@ -122,7 +112,7 @@
       (link-map)
       (link-list)))
 
-(def test-links (make-links (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+
 ;; main workhorse function that adds the links and returns the modified html
 
 (defn add-links [page links]
@@ -134,17 +124,12 @@
       (str/replace #"&gt;" ">")
       (str/replace #"&lt;" "<"))) ;; add the links
 
-(map #(add-links % test-links)
-     (vals stasis-map))
-
-(= (class (html (make-links stasis-map)))
-   (class test-html))
 
 
-(def test-big-map (zipmap (keys (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
-                          (map #(add-links % test-links) (vals (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$"))))))
 
-(first (vals test-big-map))
+;; playing below
+
+
 
 ;; this will be used in the future for getting the other metadata. 
 (def test-map2 {:title "test-title", :date "2018-08-06", :tags '("tag1" "clojure")})

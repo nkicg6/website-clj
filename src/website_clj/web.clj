@@ -15,27 +15,35 @@
             [website-clj.process-pages :as process]))
 
 
+;; define page maps and link maps
 
-(def test-map (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
-(def test-links
-  (process/make-links test-map))
+(def programming-map
+  (process/html-pages "/programming"
+                      (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
+(def programming-links
+  (process/make-links programming-map))
+
+(def science-map
+  (process/html-pages "/science"
+                      (stasis/slurp-directory "resources/science" #".*\.(html|css|js)")))
+(def science-links
+  (process/make-links science-map))
 
 
-test-links
 (defn get-assets []
   (assets/load-assets "public" [#".*"]))
 
-
 (defn get-pages []
   (stasis/merge-page-sources
-   {:landing (process/home-page
+   {:public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$") 
+    :landing (process/home-page
               (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
-    :programming  (process/html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))
-    :science (process/html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))
-    :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")
-    :test (zipmap (keys test-map)
-                  (map #(process/add-links % test-links)
-                       (vals test-map)))}))
+    :programming  (zipmap (keys programming-map)
+                          (map #(process/add-links % programming-links)
+                               (vals programming-map)))
+    :science (zipmap (keys science-map)
+                     (map #(process/add-links % science-links)
+                          (vals science-map)))}))
 
 
 (def app
@@ -46,7 +54,6 @@ test-links
    serve-live-assets))
 
 (def export-dir "target/nickgeorge.net")
-
 (def safe-dir "target")
 
 (defn export []
