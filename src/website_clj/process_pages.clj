@@ -137,4 +137,5 @@
 
 (let [title (get test-map2 :title) date (get test-map2 :date) tags (get test-map2 :tags)]
   (list title (list date tags)))
-(str/replace test-html #"&gt" "")
+
+

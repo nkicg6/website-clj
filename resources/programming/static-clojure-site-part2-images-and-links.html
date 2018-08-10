@@ -1,5 +1,5 @@
 <div id="edn">
-{:title "Static clojure site part 2: images and links" :date "2018-08-07" :tags (clojure)}
+{:title "Static clojure site part 2: images and links" :date "2018-08-07" :tags ("clojure" "static-site")}
 </div>
 
 <div id="outline-container-org7bb2a8c" class="outline-2">
@@ -141,9 +141,9 @@ Now I can start up my server and check out the link formatting when I <code>view
 </p>
 
 
-<p>
-<code>&lt;img src</code>"/img/test-img.png" alt="test-img.png" /&gt;=<br />
-</p>
+<pre class="example">
+&lt;img src="/img/test-img.png" alt="test-img.png" /&gt;
+</pre>
 
 <p>
 Perfect! I will factor out this function so it is more readable like so:<br />
@@ -168,7 +168,6 @@ I will likely need to add a similar helper when linking between pages in a post,
 </div>
 </div>
 </div>
-
 <div id="outline-container-org9306ed8" class="outline-2">
 <h2 id="org9306ed8">References</h2>
 <div class="outline-text-2" id="text-org9306ed8">

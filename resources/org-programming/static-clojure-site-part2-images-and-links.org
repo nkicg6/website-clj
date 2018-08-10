@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Static clojure site part 2: images and links" :date "2018-08-07" :tags (clojure)}
+#+HTML: {:title "Static clojure site part 2: images and links" :date "2018-08-07" :tags ("clojure" "static-site")}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
@@ -106,7 +106,9 @@ I know that I could use [[https://github.com/cgrand/enlive][enlive]] to do prett
 Now I can start up my server and check out the link formatting when I =view-source= on =http://localhost:3000/test_post=:
 
 
-=<img src="/img/test-img.png" alt="test-img.png" />=
+#+BEGIN_EXAMPLE
+<img src="/img/test-img.png" alt="test-img.png" />
+#+END_EXAMPLE
 
 Perfect! I will factor out this function so it is more readable like so:
 
@@ -123,7 +125,6 @@ Perfect! I will factor out this function so it is more readable like so:
 #+END_SRC
 
 I will likely need to add a similar helper when linking between pages in a post, but this =key value= handling of all the pages as simple html strings makes it very easy to add formatting fixes to my exported html pages. I am starting to feel the value and power of Clojure's emphasis on simplicity already--very cool!
-
 * References
 
 - [[https://github.com/magnars/stasis][Stasis]]

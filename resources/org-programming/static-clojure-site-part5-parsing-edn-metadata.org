@@ -1,0 +1,400 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Static clojure site part 5: Parsing edn metadata" :date "2018-08-09" :tags ("clojure" "static-site")}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+* What's left to do?
+- On the index page, automatically list all of the pages in whatever subfolder that index refers to.
+  - Add [[https://github.com/edn-format/edn][edn]] metadata to the top of the every page, use this to assign a published date, title, and tags to the posts.
+- Add tracking with google analytics or [[https://matomo.org/][Matomo]] (used by [[https://www.fsf.org/][FSF]])
+- refactor code for increased simplicity
+** All about =edn= metadata
+
+1. create names of pages based on =edn= metadata as opposed to just using the file names. 
+2. make a list of page with links to them in reverse chronological order (dates from =edn= metadata) in the appropriate index home page (i.e. a list of programming pages in the programming folder (except index itself...) to list in the programming index page, same for science...)
+   - This will likely be done using enlive to add links to a special div tag placed in the index page body.
+3. strip =edn= from the raw html. 
+This will be done by a function that acts on the map returned by =html-pages=. I think that is the simplest way to do it. 
+*** Read =edn= metadata
+
+    So in order to use metadata to name, tag, and add dates to pages I'll use a combination of [[https://github.com/cgrand/enlive][enlive]] and Clojure's [[https://clojuredocs.org/clojure.edn][edn]] data format. I'll insert the =edn= tags at the top of the org mode page (in html tags so it exports) and then parse it using =enlive= and use this to rename and do all the other fancy stuff with the data. To work on this, I'll add some =edn= metadata to a test html page and start playing. First I need to add =enlive= to my =project.clj=
+#+BEGIN_SRC clojure 
+  ;; project.clj
+  (defproject website-clj "0.1.0-SNAPSHOT"
+    :description "Personal website built with Clojure, Stasis, and Hiccup"
+    :url "http://nickgeorge.net"
+    :license {:name "Eclipse Public License"
+              :url "http://www.eclipse.org/legal/epl-v10.html"}
+    :dependencies [[org.clojure/clojure "1.8.0"]
+                   [stasis "1.0.0"]
+                   [ring "1.2.1"]
+                   [hiccup "1.0.5"]
+                   [me.raynes/cegdown "0.1.1"]
+                   [optimus "0.14.2"]
+                   [enlive "1.1.6"]]
+    :ring {:handler website-clj.web/app}
+    :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}
+    :aliases {"build-site" ["run" "-m" "website-clj.web/export"]})
+
+#+END_SRC
+
+and then run =lein deps= at the command line. I'll go through this [[https://github.com/swannodette/enlive-tutorial][enlive tutorial]] to figure out how to parse that portion of the page. My =test.org= doc looks like this:
+
+#+BEGIN_EXAMPLE
+=#+HTML: <div class="edn">=
+=#+HTML: {:title "renamed" :date 2018-08-05 :tags (clojure testing post)}=
+=#+HTML: </div>=
+=#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}=
+
+=* Here is my test content=
+
+and some code 
+
+=#+BEGIN_SRC clojure=
+(test clj-code)
+(def test-me "test string")
+=#+END_SRC=
+
+#+END_EXAMPLE
+
+As you can see in the header I added the =#+HTML= tags, which will export literally when I run =org-publish-project clj-site= I get this:
+
+#+BEGIN_EXAMPLE
+<div class="edn">
+{:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
+</div>
+
+<div id="outline-container-orgd13af6f" class="outline-2">
+<h2 id="orgd13af6f">Here is my test content</h2>
+<div class="outline-text-2" id="text-orgd13af6f">
+<p>
+and some code<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #006FE0;">test</span> clj-code<span style="color: #707183;">)</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">def</span> <span style="color: #BA36A5;">test-me</span> <span style="color: #036A07;">"test string"</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+#+END_EXAMPLE
+
+With the useful stuff at the top in the tag. I made a new test folder for this, and I moved the test.html there. So now, I'll read that in and start messing around. 
+
+I am playing with this code at the bottom of my new =process-clj= namespace. 
+#+BEGIN_SRC clojure 
+  ;; get the test of your first page
+  (def test-pages ((first (vals (html-pages "/test"
+                                            (stasis/slurp-directory "resources/test" #".*\.html$")))) "" ))
+  test-pages ;; => html for the page
+#+END_SRC
+
+The =first vals= from my =html-pages= function returns a function, and I just call it with an empty string to give me the html text and store it in =test-pages=. Now I am going to use =enlive= to scrape it and read the stuff under the =edn= class div to start manipulating my keys and links. 
+This took some time, but eventually I figured out this code:
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive] ;; add enlive!
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+  ;; --- snip ---
+
+  (def test-pages (enlive/html-snippet ((first (vals (html-pages "/test"
+                                                                 (stasis/slurp-directory "resources/test" #".*\.html$")))) "" )))
+
+  (def selected (enlive/select test-pages [:#edn enlive/text-node]))
+  selected
+  ;; => "\n{:title \"renamed\" :date 2018-08-05 :tags (clojure testing post)}\n"
+#+END_SRC
+
+Now I'll just read that in as a map using the clojure =edn= library. 
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] ;; require edn 
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+  ;; --- snip ---
+  ;; get the test of your first page
+  (def test-pages (enlive/html-snippet ((first (vals (html-pages "/test"
+                                                                 (stasis/slurp-directory "resources/test" #".*\.html$")))) "" )))
+
+  (def selected (enlive/select test-pages [:#edn enlive/text-node]))
+  (edn/read-string (apply str selected))
+  ;; => {:title "renamed" :date "2018-08-05" :tags ("clojure" "testing" "post")}
+#+END_SRC
+
+I refactored that into a function using the threading macro like so:
+#+BEGIN_SRC clojure 
+  (def test-html ((first (vals (html-pages "/test"
+                                           (stasis/slurp-directory "resources/test" #".*\.html$")))) "" ))
+  (defn parse-edn
+    [html]
+    (-> html
+        (enlive/html-snippet)
+        (enlive/select [:#edn enlive/text-node])
+        (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
+        (edn/read-string)))
+
+  (parse-edn test-html)
+  ;; => {:title "renamed" :date "2018-08-05" :tags ("clojure" "testing" "post")}
+#+END_SRC
+
+Unfortunately, I need to use =(apply str html)=, with the html passed as the last argument. The =->= macro inserts the result of the previous form as the /first/ argument, which would result in the apply step looking like =(apply html str)= which will not work. The =->>= macro inserts the result of the previous form as the /last/ argument, so added that macro to apply to only the =apply str= step. I've read mixing these macros is bad form, but for now it seems to work so I'll leave it be. 
+
+I created another =test.html= page called =test2.html=, and I just tested to make sure I could map over it with =parse-edn=. You'll notice I had to use =prepare-pages= in order to force the functions to evaluate. 
+
+#+BEGIN_SRC clojure 
+  (defn prepare-page [page]
+    (if (string? page) page (page "")))
+
+  (map parse-edn
+       (map prepare-page
+            (vals
+             (html-pages "/test"
+                         (stasis/slurp-directory "resources/test" #".*\.html$")))))
+
+  ;;=>  [{:title "renamed" :date "2018-08-05" :tags ("clojure" "testing" "post")} {:title "renamed2" :date "2018-08-06" :tags ("clojure" "testing2" "post")}]
+
+#+END_SRC
+
+Now I made a few changes to =parse-edn= to get my link generator working quickly. Here is that updated function:
+
+#+BEGIN_SRC clojure 
+  ;; --- snip ---
+  (defn prepare-page [page]
+    (if (string? page) page (page "")))
+
+  (defn parse-edn
+    [html]
+    (-> html
+        (prepare-page) ;; new, render the page if a fn
+        (enlive/html-snippet)
+        (enlive/select [:#edn enlive/text-node])
+        (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
+        (edn/read-string)
+        (get :title))) ;; new just return the title for now. 
+#+END_SRC
+
+I just added =prepare-page= in order to force render the functions, and the =(get :title)= to return just the title for now. However in my main =get-pages= function in =web.clj=, the index pages will be included. Since it would be silly to link to those in the link pages, I will filter those out with a regex. The final form to give me a =hash-map= of ={url-title metadata-title}= looks like this:
+
+#+BEGIN_SRC clojure 
+
+  (defn remove-index [values] (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
+
+  (def link-map
+    (zipmap (remove-index (keys test-map))
+            (remove-index (map parse-edn (vals test-map)))))
+
+#+END_SRC
+
+I envision using this in a separate series of functions to create lists of urls for all my pages. Basically, this would be reduced to a single list of href links, which I would pass to a helper function out side of =get-pages=, which would then insert the list using enlive to the index pages /only/ by using a unique div element. A skeleton looks like so:
+
+#+BEGIN_SRC clojure 
+  ;; web.clj 
+
+  ;; define links below
+  (def list-of-science-links (process/make-links science-map))
+  (def list-of-programming-links (process/make-links programming-map))
+
+  ;; below, process/insert-links will add the links to index.html using enlive and a unique selector
+
+  (defn get-pages []
+    (stasis/merge-page-sources
+     {:landing  (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+      :programming  (process/insert-links list-of-programming-links (process/html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))) ;; NEW!
+      :science (process/insert-links list-of-science-links (process/html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))) ;; NEW
+      :partials (process/partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
+      :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")}))
+
+#+END_SRC
+
+** making links from page lists
+
+So todo, I need to write a function to make a valid html link, then figure out how to add it to the index page. 
+
+I'll start tackling these by first addressing the =process/make-links= problem.  First, I'll make =link-map=, defined in the previous section into a into a function
+
+#+BEGIN_SRC clojure 
+  ;; make a map for urls
+  (defn link-map [stasis-map]
+    (zipmap (remove-index (keys stasis-map))
+            (remove-index (map parse-edn (vals stasis-map)))))
+
+#+END_SRC
+
+Now generating links from these is shown with the following hiccup code (note I had to update my =ns=):
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]] ;; just added
+              [hiccup.page :refer [html5]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+
+  ;; --- snip ---
+
+
+  (def test-map (html-pages "/test"
+                            (stasis/slurp-directory "resources/test" #".*\.html$"))) ;; I'll work with the map that stasis returns
+
+  ;; make a map for urls
+  (defn link-map [stasis-map]
+    (zipmap (remove-index (keys stasis-map))
+            (remove-index (map parse-edn (vals stasis-map))))) ;; removes index files form the maps. 
+
+  ;; this makes a list of links with Hiccup. enlive will then insert it.
+  (defn link-list [links]
+    (html [:ul (for [[k v] links]
+                 [:li (link-to k v)])])) ;; returns the html for the list of links. 
+
+  (link-list (link-map test-map)) ;; demo how it will run.
+
+  ;; => "<ul><li><a href=\"/test/test\">renamed</a></li><li><a href=\"/test/test2\">renamed2</a></li></ul>"
+#+END_SRC
+
+Great! Quick refactoring for simplicity:
+
+#+BEGIN_SRC clojure 
+  (defn make-links [stasis-map]
+    (-> stasis-map
+        (link-map)
+        (link-list)))
+
+
+  (make-links test-map)
+
+  ;;=> "<ul><li><a href=\"/test/test\">renamed</a></li><li><a href=\"/test/test2\">renamed2</a></li></ul>"
+#+END_SRC
+
+Now I need to insert a new special =<div>= tag into my index html, then use enlive to insert these links!
+
+** Inserting =hiccup= html with =enlive=
+   First, I wanted to make sure that I could hide the metadata from the normal page. I /could/ use enlive to actually delete them, but that is really just unnecessary. I don't care if it is in the html, I'd just rather not show it. So I made a css file called =hide.css= and had it hide all the =id=edn= divs.
+
+#+BEGIN_SRC css
+  #edn {
+      display: none;
+  }
+#+END_SRC
+
+Easy. Now I will use the =include-css= hiccup header and add the following to my =hiccup=-defined header:
+
+#+BEGIN_SRC clojure 
+  ;; process-pages ns
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]]
+              [hiccup.page :use [html5 include-css include-js]] ;; include hiccup helpers
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+  ;; --- snip ---
+  (defn layout-base-header [request page]
+    (html5
+     [:head
+      [:meta {:charset "utf-8"}]
+      ;;... --- snip ---
+      (include-css "/css/hide.css") ;; the new stuff
+      ;;... --- snip ---
+      ]
+     ;;Much more here, I cut it out for simplicity
+     ))
+
+#+END_SRC
+
+Great, I can access all the elements of that like a normal hash-map now.
+The element I want to insert the links into is called 
+#+BEGIN_EXAMPLE
+<div id="pageListDiv">Page nav list Here</div> 
+#+END_EXAMPLE
+
+Which will /only/ exist in the index.html pages that should have this list. 
+
+
+*** adding links
+
+After a lot of troubleshooting, I finally came up with this. 
+
+#+BEGIN_SRC clojure 
+  (defn add-links [page links]
+    (-> page
+        (prepare-page) ;; forse eval of lazy pages
+        (enlive/sniptest
+         [:#pageListDiv] ;; exists only in index pages. 
+         (enlive/content links))))
+
+#+END_SRC
+
+This can be mapped over the values like so:
+
+#+BEGIN_SRC clojure 
+  ;; used for testing
+  (def stasis-map (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+  (def test-html ((first (vals stasis-map)) ""))
+  (def test-links (make-links (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+
+  ;; map it!
+
+  (map #(add-links % test-links)
+       (vals stasis-map))
+
+#+END_SRC
+
+This seems to give the exact output I was looking for. Now when I refer to how it will actually be used:
+
+#+BEGIN_SRC clojure 
+  ;; web.clj
+
+  ;; --- snip ---
+
+  (defn get-pages []
+    (stasis/merge-page-sources
+     {:landing (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+      :programming  (process/html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.html$"))
+      :science (process/html-pages "/science" (stasis/slurp-directory "resources/science" #".*\.html$"))
+      :partials (process/partial-pages (stasis/slurp-directory "resources/partials" #".*\.html$"))
+      :public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$")
+
+      ;; see below!
+
+      :test (zipmap (keys (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))
+                    (map #(process/add-links % test-links) (vals (process/html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)$")))))}))
+
+
+#+END_SRC
+
+I still need to return a zipmap like =html-pages= does, but I also need to use enlive to insert the links. 
+This technically does what I want, unfortunately all my =>= characters are escaped as =&gt=, so the html is not rendering as a list. To fix that, I set up a quick helper function to un-escape those characters and added it like so:
+
+#+BEGIN_SRC clojure 
+  (defn add-links [page links]
+    (-> page
+        (prepare-page) ;; forse eval of lazy pages
+        (enlive/sniptest
+         [:#pageListDiv] ;; exists only in index pages. 
+         (enlive/content links))
+        (str/replace #"&gt;" ">") ;; replace greater than
+        (str/replace #"&lt;" "<"))) ;; replace less than
+#+END_SRC
+
+This works well for my purposes. I need to refactor and work with this a lot, because right now it is not very resilient. For example, if the =edn= is misformed, or if none of the pages even have the metadata then it will fail with a Java null pointer exception, but for now this will definitely work.

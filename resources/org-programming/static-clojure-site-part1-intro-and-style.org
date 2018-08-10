@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Static clojure site part 1: styling headers and footers" :date "2018-08-07" :tags (clojure)}
+#+HTML: {:title "Static clojure site part 1: styling headers and footers" :date "2018-08-07" :tags ("clojure" "static-site")}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+OPTIONS: toc:t author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
@@ -8,13 +8,13 @@
 * Part 1: Introduction and header/footer styles with hiccup
 
 * Static sites
-These are static collections of HTML, CSS, and JavaScript files that make up simple, fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, etc. files that make up the website.
+These are static collections of HTML, CSS, and JavaScript files that make up simple (but not necessarily so), fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, CSS, JS, etc. files that make up the website.
 * Why?
 They are simple and very useful. I don't need anything more complicated for my personal website, and static sites are low maintenance and easy to customize and extend.
 ** Why Clojure?
- I am currently learning Clojure, mostly because I wanted to learn functional programming principles and Rich Hickey gives [[https://github.com/tallesl/Rich-Hickey-fanclub][amazing talks]], but also because it is an functional programming language hosted on both the web with ClojureScript (javascript) and the JVM (regular Clojure). Since clojurescript is a clojure trans-piler for javascript, that means that I can use one language to leverage all of javascript and non-web programming or backend web tasks with clojure!
+ I am currently learning Clojure, mostly because I wanted to learn functional programming principles and Rich Hickey gives [[https://github.com/tallesl/Rich-Hickey-fanclub][amazing talks]], but also because it is an functional programming language hosted on both the web with ClojureScript (javascript) and the JVM (regular Clojure). ClojureScript seems like it is better javascript,(and it is just trans-piler to javascript), that means that I can use one language to leverage all of javascript and non-web programming or backend web tasks with one well-designed language -- Clojure!
 ** Why Stasis?
-My original static website was written with python and the Flask framework and made into a static site with [[https://pythonhosted.org/Frozen-Flask/][Frozen-flask]] and [[https://pythonhosted.org/Flask-FlatPages/][Flask-FlatPages]] for hosting on github pages. I was originally going to port it to Clojure using the Clojure static site generator [[https://github.com/cryogen-project/cryogen][Cryogen]], a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult (for a beginner at least). In the spirit of Clojure (and Tim Ewald's excellent talk [[https://www.youtube.com/watch?v=ShEez0JkOFw][Programming with hand tools]]), I choose to use the [[https://github.com/magnars/stasis][Stasis]], the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go. 
+My original static website was written with python and the Flask framework and made into a static site with [[https://pythonhosted.org/Frozen-Flask/][Frozen-flask]] and [[https://pythonhosted.org/Flask-FlatPages/][Flask-FlatPages]] for hosting on github pages. I am learning Clojure and websites are a great learning experience, so I going to port it to Clojure using the static site generator [[https://github.com/cryogen-project/cryogen][Cryogen]], a clojure/clojurescript static website generator, but I found the templates hard to understand and customization difficult (for a beginner at least). In the spirit of Clojure (and Tim Ewald's excellent talk [[https://www.youtube.com/watch?v=ShEez0JkOFw][Programming with hand tools]]), I choose to use the [[https://github.com/magnars/stasis][Stasis]], the clojure library for developing (frameworkless) static web sites. I will write about that in this post as I go. 
 
 * Org-mode to html workflow
 
@@ -74,7 +74,7 @@ But when I refreshed my webpage, I got this horrible error:
 ...
 #+END_EXAMPLE
 
-and on and on. Well, looks like I have to figure out what these functions are actually doing. 
+and on and on. Looks like I have to figure out what these functions are actually doing. 
 
 First, I'll run one that I know works to see what the output looks like:
 
@@ -124,7 +124,7 @@ But when I navigate to =/index=, it is right there and working.
 
 [[file:img/working-index.png]]
 
-hmm, I will have to see how the home page will be rendered. When I return to Christian's blog, and re-read the explanation of =get-pages=, I see the only thing I changed was replacing the .html with a blank string. When i make the following change to the =html-pages= file, it works fine!
+hmm, I will have to see how the home page will be rendered. When I return to Christian's blog, and re-read the explanation of =get-pages=, I see the only thing I changed was replacing the =.html= with a blank string. When i make the following change to the =html-pages= file, it works fine!
 
 #+BEGIN_SRC clojure 
 (defn html-pages [pages]
@@ -212,6 +212,7 @@ I then added a =home-page= function and modified =get-pages= to properly render.
 and the website is working now!
 
 ** My header and footer
+
 On my old Python-flask based static blog, I made a nav bar that I really liked. The source looks like this:
 
 #+BEGIN_SRC html
@@ -306,9 +307,15 @@ Here is my new =layout-base-header= function with the hiccup.
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
 #+END_SRC
 
-I changed the section names and added dummy links for now, but the rest is a pretty straightforward translation. I am sure I am writing it in a non-compact way (i.e. it looks like classes under tags can be indicated as =.= attributes such as =[:div.logo "website-clj"]= expanding to =<div class="logo"> "website-clj"</div>), but this is working for me and it now renders like so:
+I changed the section names and added dummy links for now, but the rest is a pretty straightforward translation. I am sure I am writing it in a non-compact way (i.e. it looks like classes under tags can be indicated as =.= attributes such as =[:div.logo "website-clj"]= expanding to 
+#+BEGIN_EXAMPLE
+<div class="logo"> "website-clj"</div>)
+#+END_EXAMPLE
 
+but this is working for me and it now renders like so:
 [[file:img/with-header-footer.png]]
+
+Next time, I will work on adding images to the simple webpage. 
 
 * References
 
