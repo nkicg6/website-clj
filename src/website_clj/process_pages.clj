@@ -11,6 +11,7 @@
 
 ;; header formatting goes on every page
 (defn layout-base-header [request page]
+  "Applies a header and footer to html strings."
   (html5
    [:head
     [:meta {:charset "utf-8"}]
@@ -42,44 +43,55 @@
 
 ;; force rendering of pages
 (defn prepare-page [page]
+  "Force the evaluation of lazy pages.
+  `page` is a function that takes no arguments and returns an html string, or an html string."
   (if (string? page) page (page "")))
 
-;; format images
+;; format image links for html
 (defn format-images [html]
+  "formats html image link to appropriately link to static website image directory.
+  `html` is a raw html string."
   (str/replace html #"src=\"img" "src=\"/img"))
 
 ;; anything that formats html will be added here. 
 (defn format-html [html]
+  "Composed function to apply multiple html processing steps to raw html.
+  `html` is a raw html string."
   (-> html
       (format-images))
   ;; other fns for html here
   )
 
-;; fix up page names. 
+;; fix up page names, don't remove html from index.html
 (defn fmt-page-names [base name]
+  "removes .html from all non-index.html pages.
+  `base` is whatever base name you want the string to have prepended to it. 
+  `name` is a string."
   (str base
        (str/replace name #"(?<!index)\.html$" "")))
 
 ;; main pages formatting function
 (defn html-pages [base pages]
+  "Composed function that performs formatting to a map of strings
+  The argument `base` is a new string that will be prepended to all keys in the 
+  `pages` map argument. `pages` is typically a map created by the `stasis` function `slurp-directory`. 
+  The overall purpose of `html-pages` is to apply formatting to html pages meant for different sections
+  of my website. For instance, calling `html-pages` with 'programming' and the a map of pages will prepend 
+  'programming' to every key in the map and strip the html end off all non-index pages. "
   (zipmap (map #(fmt-page-names base %) (keys pages)) ;; initial keys manipulation
           (map #(fn [req] (layout-base-header req %))  ;; apply main header/footer 
-               (map format-html (vals pages))) ;; all html formatting 
-          ))
+               (map format-html (vals pages)))))  ;; all html formatting 
 
-;; will likely be removed. 
-(defn partial-pages [pages]
-  (zipmap (keys pages)
-          (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
-;; likely not needed?
 (defn home-page [pages]
+  "Applies `labout-base-header` to a map of `:page-names page-html`
+  `pages` is typically a map created by `stasis` function `slurp-directory`"
   (zipmap (keys pages)
           (map #(fn [req] (layout-base-header req %)) (vals pages))))
 
-
-;; parse edn takes values, returns the title part.  
 (defn parse-edn
+  "Takes raw html and returns keys from edn metadata under the div id=edn html tag
+  `html` is raw html"
   [html]
   (-> html
       (prepare-page)
@@ -89,33 +101,40 @@
       (edn/read-string)
       (get :title)))
 
-;; don't want to use links from index pages. 
 (defn remove-index
+  "Filters out pages containing index from a map.
+  `values` are strings."
   [values]
   (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
 
-;; make a list of links.
 (defn link-map [stasis-map]
+  "applies `remove-index` to a map.
+  `stasis-map` is a map created by the `stasis` function `slurp-directory`. The purpose is 
+  to filter out index pages from a list of all pages in order to make a list of page links
+  to insert into my index pages"
   (zipmap (remove-index (keys stasis-map))
           (remove-index (map parse-edn (vals stasis-map)))))
 
-
-
-;; this makes a list of links with Hiccup. enlive will then insert it.
 (defn link-list [links]
+  "makes a list of links using hiccup markup
+  `links` come from the output of `link-map`"
   (html [:ul (for [[k v] links]
                [:li (link-to k v)])]))
 
-;; make-links provides the second argument to add-links, with the first being the raw html. 
 (defn make-links [stasis-map]
+  "pipeline function to create the list of links to insert into the index page.
+  `stasis-map` is a map created by the `stasis` function `slurp-directory`. This function 
+  provides the second argument to the `add-links` function"
   (-> stasis-map
       (link-map)
       (link-list)))
 
 
-;; main workhorse function that adds the links and returns the modified html
-
 (defn add-links [page links]
+  "adds links of all pages to the index.html page and un-escapes html characters. 
+  The `page` argument is the html for a page. 
+  The `links` argument is an html string, typically generated with the `make-links` function 
+  This returns the modified html"
   (-> page
       (prepare-page) ;; forse eval of lazy pages
       (enlive/sniptest
