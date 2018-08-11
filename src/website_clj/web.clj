@@ -2,6 +2,7 @@
 ;; based on https://cjohansen.no/building-static-sites-in-clojure-with-stasis/
 
 (ns website-clj.web
+  "main namespace for building and exporting the website"
   (:require [optimus.assets :as assets]
             [optimus.export]
             [optimus.link :as link] 
@@ -29,11 +30,16 @@
 (def science-links
   (process/make-links science-map))
 
-
-(defn get-assets []
+;; load all assets
+(defn get-assets
+  "get all static assets from the public directory."
+  []
   (assets/load-assets "public" [#".*"]))
 
-(defn get-pages []
+;; main get pages function for render and export
+(defn get-pages
+  "Gathers all website pages and resources."
+  []
   (stasis/merge-page-sources
    {:public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$") 
     :landing (process/home-page
@@ -45,18 +51,27 @@
                      (map #(process/add-links % science-links)
                           (vals science-map)))}))
 
-
+;; for test rendering
 (def app
+  "renders the website for experimentation"
   (optimus/wrap
    (stasis/serve-pages get-pages)
    get-assets
    optimizations/none
    serve-live-assets))
 
+;; constants for exporting
 (def export-dir "target/nickgeorge.net")
 (def safe-dir "target")
 
-(defn export []
+;; main export function, called by lein build-site
+(defn export
+  "main export function for static site. See docs for functions included.
+  `website-clj.web/helpers/save-git`
+  `website-clj.web/helpers/cp-cname`
+  `website-clj.web/helpers/cp-gitignore`
+  `website-clj.web/helpers/replace-git`"
+  []
   (helpers/save-git safe-dir export-dir)
   (let [assets (optimizations/all (get-assets) {})]
     (stasis/empty-directory! export-dir)
@@ -65,6 +80,3 @@
   (helpers/cp-cname export-dir)
   (helpers/cp-gitignore export-dir)
   (helpers/replace-git safe-dir export-dir))
-
-;;;
-
