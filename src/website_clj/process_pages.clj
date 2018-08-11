@@ -5,8 +5,7 @@
             [hiccup.element :refer (link-to image)]
             [net.cgrand.enlive-html :as enlive]
             [clojure.edn :as edn] 
-            [stasis.core :as stasis] ;; only for testing?
-            ))
+            [stasis.core :as stasis]))  ;; only for testing?
 
 
 ;; header formatting goes on every page
