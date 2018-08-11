@@ -44,7 +44,8 @@
 ;; force rendering of pages
 (defn prepare-page [page]
   "Force the evaluation of lazy pages.
-  `page` is a function that takes no arguments and returns an html string, or an html string."
+  `page` is a function that takes no arguments and 
+  returns an html string, or an html string."
   (if (string? page) page (page "")))
 
 ;; format image links for html
@@ -59,9 +60,8 @@
   `html` is a raw html string."
   [html]
   (-> html
-      (format-images))
-  ;; other fns for html here
-  )
+      (format-images))) ;; other fns for html here
+
 
 ;; fix up page names, don't remove html from index.html
 (defn fmt-page-names
@@ -103,7 +103,17 @@
       (enlive/select [:#edn enlive/text-node])
       (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
       (edn/read-string)
+      ;;(select-keys [:title :date])
+      ;;(vals)
       (get :title)))
+
+(defn remove-index2
+  "Filters out pages containing index from a map.
+  `values` are strings."
+  [values]
+  (if (seq? values)
+    (remove #(re-matches #"(/.*/)?index(.html)?" %) (first values))
+    (remove #(re-matches #"(/.*/)?index(.html)?" %) values)))
 
 (defn remove-index
   "Filters out pages containing index from a map.
@@ -136,7 +146,6 @@
       (link-map)
       (link-list)))
 
-
 (defn add-links
   "adds links of all pages to the index.html page and un-escapes html characters. 
   The `page` argument is the html for a page. 
@@ -155,7 +164,6 @@
 ;; playing below
 
 
-
 ;; this will be used in the future for getting the other metadata. 
 (def test-map2 {:title "test-title", :date "2018-08-06", :tags '("tag1" "clojure")})
 (keys test-map2)
@@ -163,4 +171,23 @@
 (let [title (get test-map2 :title) date (get test-map2 :date) tags (get test-map2 :tags)]
   (list title (list date tags)))
 
+(def test-html-page
+  (second (vals (html-pages "/programming"
+                            (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))))
 
+(def testmapval
+  (second (html-pages "/programming"
+                      (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)"))))
+(def test-map1
+  (hash-map (first testmapval)
+            (second testmapval)))
+
+(def testseq (parse-edn test-html-page))
+
+(vals test-map1)
+(parse-edn (prepare-page (vals test-map1)))
+
+
+(link-map (html-pages "/programming"
+                      (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
+(hash-map (first testmapval) (parse-edn (prepare-page (second testmapval))))
