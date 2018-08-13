@@ -8,7 +8,6 @@
             [stasis.core :as stasis]))  ;; only for testing?
 
 
-;; header formatting goes on every page
 (defn layout-base-header
   "Applies a header and footer to html strings."
   [request page]
@@ -41,20 +40,18 @@
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
 
-;; force rendering of pages
 (defn prepare-page [page]
   "Force the evaluation of lazy pages.
   `page` is a function that takes no arguments and 
   returns an html string, or an html string."
   (if (string? page) page (page "")))
 
-;; format image links for html
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
   `html` is a raw html string."
   (str/replace html #"src=\"img" "src=\"/img"))
 
-;; anything that formats html will be added here. 
+
 (defn format-html 
   "Composed function to apply multiple html processing steps to raw html.
   `html` is a raw html string."
@@ -63,7 +60,6 @@
       (format-images))) ;; other fns for html here
 
 
-;; fix up page names, don't remove html from index.html
 (defn fmt-page-names
   "removes .html from all non-index.html pages.
   `base` is whatever base name you want the string to have prepended to it. 
