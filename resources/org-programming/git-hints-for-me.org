@@ -1,0 +1,18 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "helpful git links and hints" :date "2018-08-13" :tags ("git")}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+
+* =git= 
+
+  This is a collection of helpful links and tips I am aggregating as a kind of cheat sheet for using =git= version control. 
+
+** Merging and branches
+- [[https://stackoverflow.com/a/14168817/6032156][Merge dev/master before master/dev]]
+- [[https://stackoverflow.com/a/5772882/6032156][OMG DETACHED HEAD?!!]] Amazing explanation.
+
+** git for scientists
+- [[http://nickgeorge.net/github-lab-setup/getting_started_git][A quick presentation I made]] promoting using git. I gave this at a lab meeting. 
+
+More coming soon. 
