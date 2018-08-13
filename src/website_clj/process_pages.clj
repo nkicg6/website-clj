@@ -1,3 +1,4 @@
+;; TODO add this to hiccup template! and see about making header bigger. style="font-size: 18px"
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
             [hiccup.core :refer [html]]
@@ -7,9 +8,9 @@
             [clojure.edn :as edn] 
             [stasis.core :as stasis]))  ;; only for testing?
 
-
 ;; --- basic html formatting ---
 
+;;header
 (defn layout-base-header
   "Applies a header and footer to html strings."
   [page]
@@ -42,7 +43,6 @@
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
 
-;; html formatting
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
   `html` is a raw html string."
@@ -84,8 +84,7 @@
           (map #(layout-base-header %) (map #(format-html %) (vals page-map)))))
 
 
-
-;; --- edn parsing ---
+;; --- edn parsing for metadata---
 
 ;; remove index page
 (defn remove-index
