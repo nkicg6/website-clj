@@ -107,12 +107,45 @@
     (zipmap (keys filtered-page-map)
             (map parse-html (vals filtered-page-map)))))
 
+;; --- make links to insert ---
+
+(defn format-html-links
+  "Makes a list of links in reverse chronological order using hiccup markup.
+  `metadata-map`comes from the output of `parse-edn`"
+  [metadata-map]
+  (html [:ul (for [[k v] (reverse (sort-by #(get-in (val %) [:date]) metadata-map))] ;; reverse chrono order
+               [:li (link-to k (get v :title)) (str "<em>Published: " (get v :date) "</em>")])]))
+
+;; --- insert links ---
+
+(defn add-links
+  "adds links of all pages to the index.html page and un-escapes html characters. 
+  The `page` argument is the html for a page. 
+  The `links` argument is an html string, typically generated with the `make-links` function 
+  This returns the modified html"
+  [page links]
+  (-> page
+      (enlive/sniptest
+       [:#pageListDiv] ;; exists only in index pages. 
+       (enlive/content links))
+      (str/replace #"&gt;" ">")
+      (str/replace #"&lt;" "<")))
+
+
 ;; -- TESTING BELOW --
 ;; first step is slurping a directory, applying the path prefix and formatting html.
 
 (def slurped-raw
   "holds a map of formatted html pages for my website"
   (html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
-
 ;; next step is parsing edn. I will use the already slurped directory for this.
-(parse-edn "/programming" slurped-raw)
+(def metadata (parse-edn "/programming" slurped-raw))
+;; now I need to make the links. Sorted in reverse chrono order. 
+(def links-to-put (format-html-links metadata))
+;; now insert the links. 
+(zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
+
+
+(def test-hash-map {"test1" {:name "test1name" :date "2018-06-10"}, "test2" {:name "test2name" :date "2018-06-08"}})
+
+(reverse (sort-by #(get-in (val %) [:date]) test-hash-map))

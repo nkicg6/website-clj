@@ -156,33 +156,3 @@
       (str/replace #"&lt;" "<"))) ;; add the links
 
 
-;; playing below
-
-
-;; this will be used in the future for getting the other metadata. 
-(def test-map2 {:title "test-title", :date "2018-08-06", :tags '("tag1" "clojure")})
-(keys test-map2)
-
-(let [title (get test-map2 :title) date (get test-map2 :date) tags (get test-map2 :tags)]
-  (list title (list date tags)))
-
-(def test-html-page
-  (second (vals (html-pages "/programming"
-                            (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))))
-
-(def testmapval
-  (second (html-pages "/programming"
-                      (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)"))))
-(def test-map1
-  (hash-map (first testmapval)
-            (second testmapval)))
-
-(def testseq (parse-edn test-html-page))
-
-(vals test-map1)
-(parse-edn (prepare-page (vals test-map1)))
-
-
-(link-map (html-pages "/programming"
-                      (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
-(hash-map (first testmapval) (parse-edn (prepare-page (second testmapval))))
