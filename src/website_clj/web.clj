@@ -21,14 +21,20 @@
 (def programming-map
   (process/html-pages "/programming"
                       (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
+(def programming-metadata
+  (process/parse-edn "/programming" programming-map))
+
 (def programming-links
-  (process/make-links programming-map))
+  (process/format-html-links programming-metadata))
 
 (def science-map
   (process/html-pages "/science"
                       (stasis/slurp-directory "resources/science" #".*\.(html|css|js)")))
+(def science-metadata
+  (process/parse-edn "/science" science-map))
+
 (def science-links
-  (process/make-links science-map))
+  (process/format-html-links science-metadata))
 
 ;; load all assets
 (defn get-assets

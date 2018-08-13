@@ -8,9 +8,11 @@
             [stasis.core :as stasis]))  ;; only for testing?
 
 
+;; --- basic html formatting ---
+
 (defn layout-base-header
   "Applies a header and footer to html strings."
-  [request page]
+  [page]
   (html5
    [:head
     [:meta {:charset "utf-8"}]
@@ -40,12 +42,7 @@
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
 
-(defn prepare-page [page]
-  "Force the evaluation of lazy pages.
-  `page` is a function that takes no arguments and 
-  returns an html string, or an html string."
-  (if (string? page) page (page "")))
-
+;; html formatting
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
   `html` is a raw html string."
@@ -61,85 +58,70 @@
 
 (defn fmt-page-names
   "removes .html from all non-index.html pages.
-  `base` is whatever base name you want the string to have prepended to it. 
+  `base-name` is whatever base name you want the string to have prepended to it. 
   `name` is a string."
-  [base name]
-  (str base
+  [base-name name]
+  (str base-name
        (str/replace name #"(?<!index)\.html$" "")))
-
-;; main pages formatting function
-(defn html-pages 
-  "Composed function that performs formatting to a map of strings
-  The argument `base` is a new string that will be prepended to all keys in the 
-  `pages` map argument. `pages` is typically a map created by the function `stasis/slurp-directory`. 
-  The overall purpose of `html-pages` is to apply formatting to html pages meant for different sections
-  of my website. For instance, calling `html-pages` with 'programming' and the a map of pages will prepend 
-  'programming' to every key in the map and strip the html end off all non-index pages. "
-  [base pages]
-  (zipmap (map #(fmt-page-names base %) (keys pages)) ;; initial keys manipulation
-          (map #(fn [req] (layout-base-header req %))  ;; apply main header/footer 
-               (map format-html (vals pages)))))  ;; all html formatting 
-
 
 (defn home-page
   "Applies `labout-base-header` to a map of `:page-names page-html`
   `pages` is typically a map created by the function `stasis/slurp-directory`"
   [pages]
   (zipmap (keys pages)
-          (map #(fn [req] (layout-base-header req %)) (vals pages))))
+          (map #(layout-base-header %) (map #(format-html %) (vals pages)))))
 
-(defn parse-edn
+;; big fn
+(defn html-pages
+  "Composed function that performs html formatting to a map of strings for my blog.
+  The argument `base-name` is a new string that will be prepended to all keys in the 
+  `page-map` map argument. `page-map` is a map created by the function `stasis/slurp-directory`. 
+  The purpose of `html-pages` is to apply formatting to html pages meant for different sections
+  of my website. For instance, calling `html-pages` with '/programming' and the a map of pages will prepend 
+  '/programming/<page-name>' to every key in the map and strip the html end off all non-index pages."
+  [base-name page-map]
+  (zipmap (map #(fmt-page-names base-name %) (keys page-map))
+          (map #(layout-base-header %) (map #(format-html %) (vals page-map)))))
+
+
+
+;; --- edn parsing ---
+
+;; remove index page
+(defn remove-index
+  "removes /index.html from map that will be parsed for edn metadata.
+  `base-name` is the name prepended to the index.html page. For programming pages it will be '/programming'
+  `page-map` is the map returned by `html-pages`. returns `page-map` minus the index pages."
+  [base-name page-map]
+  (dissoc page-map (str base-name "/index.html")))
+
+(defn parse-html
   "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
   `html` is raw html"
   [html]
   (-> html
-      (prepare-page)
       (enlive/html-snippet)
       (enlive/select [:#edn enlive/text-node])
       (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
       (edn/read-string)
-      ;;(select-keys [:title :date])
-      ;;(vals)
-      (get :title)))
+      (select-keys [:title :date])))
 
-(defn remove-index2
-  "Filters out pages containing index from a map.
-  `values` are strings."
-  [values]
-  (if (seq? values)
-    (remove #(re-matches #"(/.*/)?index(.html)?" %) (first values))
-    (remove #(re-matches #"(/.*/)?index(.html)?" %) values)))
+(defn parse-edn
+  [base-name page-map]
+  (let [filtered-page-map (remove-index base-name page-map)]
+    (zipmap (keys filtered-page-map)
+            (map parse-html (vals filtered-page-map)))))
 
-(defn remove-index
-  "Filters out pages containing index from a map.
-  `values` are strings."
-  [values]
-  (remove #(re-matches #"(/.*/)?index(.html)?" %) values))
+;; --- make links to insert ---
 
-(defn link-map 
-  "applies `remove-index` to a map.
-  `stasis-map` is a map created by the function `stasis/slurp-directory`. The purpose is 
-  to filter out index pages from a list of all pages in order to make a list of page links
-  to insert into my index pages"
-  [stasis-map]
-  (zipmap (remove-index (keys stasis-map))
-          (remove-index (map parse-edn (vals stasis-map)))))
+(defn format-html-links
+  "Makes a list of links in reverse chronological order using hiccup markup.
+  `metadata-map`comes from the output of `parse-edn`"
+  [metadata-map]
+  (html [:ul (for [[k v] (reverse (sort-by #(get-in (val %) [:date]) metadata-map))] ;; reverse chrono order
+               [:li (link-to k (get v :title)) (str "<em> Published: " (get v :date) "</em>")])]))
 
-(defn link-list
-  "makes a list of links using hiccup markup
-  `links` come from the output of `link-map`"
-  [links]
-  (html [:ul (for [[k v] links]
-               [:li (link-to k v)])]))
-
-(defn make-links
-  "pipeline function to create the list of links to insert into the index page.
-  `stasis-map` is a map created by the function `stasis/slurp-directory`. This function 
-  provides the second argument to the `add-links` function"
-  [stasis-map]
-  (-> stasis-map
-      (link-map)
-      (link-list)))
+;; --- insert links ---
 
 (defn add-links
   "adds links of all pages to the index.html page and un-escapes html characters. 
@@ -148,11 +130,22 @@
   This returns the modified html"
   [page links]
   (-> page
-      (prepare-page) ;; forse eval of lazy pages
       (enlive/sniptest
        [:#pageListDiv] ;; exists only in index pages. 
        (enlive/content links))
       (str/replace #"&gt;" ">")
-      (str/replace #"&lt;" "<"))) ;; add the links
+      (str/replace #"&lt;" "<")))
 
 
+;; -- TESTING BELOW --
+;; first step is slurping a directory, applying the path prefix and formatting html.
+
+;; (def slurped-raw
+;;   "holds a map of formatted html pages for my website"
+;;   (html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
+;; ;; next step is parsing edn. I will use the already slurped directory for this.
+;; (def metadata (parse-edn "/programming" slurped-raw))
+;; ;; now I need to make the links. Sorted in reverse chrono order. 
+;; (def links-to-put (format-html-links metadata))
+;; ;; now insert the links. 
+;; (zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
