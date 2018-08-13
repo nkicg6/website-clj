@@ -59,7 +59,6 @@
   (-> html
       (format-images))) ;; other fns for html here
 
-
 (defn fmt-page-names
   "removes .html from all non-index.html pages.
   `base` is whatever base name you want the string to have prepended to it. 
