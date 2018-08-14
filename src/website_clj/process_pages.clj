@@ -1,4 +1,5 @@
-;; TODO add this to hiccup template! and see about making header bigger. style="font-size: 18px"
+;; also, add recent posts to home page! previous five?
+;; another metadata thing could be the first 50 words of the post. very easy to work with this now. 
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
             [hiccup.core :refer [html]]
@@ -38,7 +39,7 @@
        [:li [:a {:href "https://twitter.com/NicholasMG"}
              [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]
     [:div {:class "container"}
-     [:div.body page]]
+     [:div.body {:style "font-size:18px"} page]]
     [:footer {:class "footer"}
      [:div {:class "text-center"}
       [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
@@ -88,7 +89,7 @@
 
 ;; remove index page
 (defn remove-index
-  "removes /index.html from map that will be parsed for edn metadata.
+  "Removes /index.html from map that will be parsed for edn metadata.
   `base-name` is the name prepended to the index.html page. For programming pages it will be '/programming'
   `page-map` is the map returned by `html-pages`. returns `page-map` minus the index pages."
   [base-name page-map]
@@ -123,7 +124,7 @@
 ;; --- insert links ---
 
 (defn add-links
-  "adds links of all pages to the index.html page and un-escapes html characters. 
+  "Adds links of all pages to the index.html page and un-escapes html characters. 
   The `page` argument is the html for a page. 
   The `links` argument is an html string, typically generated with the `make-links` function 
   This returns the modified html"

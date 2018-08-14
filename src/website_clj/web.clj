@@ -73,10 +73,10 @@
 ;; main export function, called by lein build-site
 (defn export
   "main export function for static site. See docs for functions included.
-  `website-clj.web/helpers/save-git`
-  `website-clj.web/helpers/cp-cname`
-  `website-clj.web/helpers/cp-gitignore`
-  `website-clj.web/helpers/replace-git`"
+  `website-clj.helpers/save-git`
+  `website-clj.helpers/cp-cname`
+  `website-clj.helpers/cp-gitignore`
+  `website-clj.helpers/replace-git`"
   []
   (helpers/save-git safe-dir export-dir)
   (let [assets (optimizations/all (get-assets) {})]
