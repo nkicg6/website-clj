@@ -1,0 +1,11 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Building blocks" :date "2018-08-14" :tags (clojure)}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+
+* Building blocks
+
+Two years ago this December, I asked for, and received, a book called Clojure for the brave and true <LINK TO ME> for Christmas. I asked for this book because I have been writing semi-literate Python and R code for a few years now, happily evangelizing and using these for open science and reproducible research practices... But also because I liked doing it. I love the feeling of automating something that used to take me hours or days of manual labor and breaking it down to a script that takes a few seconds. There really is nothing better for me. 
+I recently (re)built my static webstite in Clojure. 
+

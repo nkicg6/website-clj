@@ -3,8 +3,7 @@
 The source code for my website, rewritten in Clojure. 
 
 ## Usage
-
-My progress will be logged under <https://github.com/nkicg6/website-clj/blob/master/doc/building-a-static-site-with-clojure.org> until the new website is up and running. Then, I will link to it from here. 
+Check out the site at: http://nickgeorge.net/
 
 ## License
 
