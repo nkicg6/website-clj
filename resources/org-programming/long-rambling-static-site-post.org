@@ -10,7 +10,7 @@
 :CUSTOM_ID: note
 :END:
 This is a long rambling journey of me stumbling through learning clojure via building a static site. 
-I wouldn't recommend reading it, but I left it here as it may be helpful to someone. I wrote a distilled version [[/programming/long-rambling-static-site-post/][here]] that I would recommend instead. This one is likely a lot different from my actual site, as I wrote it as I was building my real site, so things are out of order and things I changed may not have been re-explained or updated.
+I wouldn't recommend reading it, but I left it here as it may be helpful to someone. I wrote a distilled version [[http://nickgeorge.net/programming/building-my-static-clojure-website/][here]] that I would recommend instead. This one is likely a lot different from my actual site, as I wrote it as I was building my real site, so things are out of order and things I changed may not have been re-explained or updated.
 * Part 1: Introduction and header/footer styles with hiccup and org-mode intro
 :PROPERTIES:
 :CUSTOM_ID: part1

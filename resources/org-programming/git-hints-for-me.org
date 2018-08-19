@@ -10,7 +10,7 @@
 
 ** Merging and branches
 - [[https://stackoverflow.com/a/14168817/6032156][Merge dev/master before master/dev]]
-- [[https://stackoverflow.com/a/5772882/6032156][OMG DETACHED HEAD?!!]] Amazing explanation.
+- [[https://stackoverflow.com/a/5772882/6032156][OMG DETACHED HEAD?!!]] Amazing explanation for how to get around and work with detached head without panicking. 
 
 ** git for scientists
 - [[http://nickgeorge.net/github-lab-setup/getting_started_git][A quick presentation I made]] promoting using git. I gave this at a lab meeting. 
