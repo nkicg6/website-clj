@@ -107,6 +107,9 @@
       (select-keys [:title :date])))
 
 (defn parse-edn
+  "filters the `page-map` to remove index.html and returns a map of page names and edn metadata.
+  `page-map` is returned by `stasis/slurp-directory`. 
+  `base-name` provides the prepended base for the directory you are filtering by with `remove-index`"
   [base-name page-map]
   (let [filtered-page-map (remove-index base-name page-map)]
     (zipmap (keys filtered-page-map)
@@ -140,11 +143,16 @@
 ;; -- TESTING BELOW --
 ;; first step is slurping a directory, applying the path prefix and formatting html.
 
-;; (def slurped-raw
-;;   "holds a map of formatted html pages for my website"
-;;   (html-pages "/programming" (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
+(def slurped-raw
+  "holds a map of formatted html pages for my website"
+  (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
+(keys slurped-raw)
+(def test-html (second (vals slurped-raw)))
+(parse-html test-html)
+
 ;; ;; next step is parsing edn. I will use the already slurped directory for this.
-;; (def metadata (parse-edn "/programming" slurped-raw))
+(def metadata (parse-edn "/test" slurped-raw))
+(format-html-links metadata)
 ;; ;; now I need to make the links. Sorted in reverse chrono order. 
 ;; (def links-to-put (format-html-links metadata))
 ;; ;; now insert the links. 

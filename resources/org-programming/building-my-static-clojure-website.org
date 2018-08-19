@@ -1,0 +1,1100 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Building my static website with Clojure" :date "2018-08-18" :tags ["clojure"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+
+* Building my static site
+* Learning through projects
+:PROPERTIES:
+:CUSTOM_ID: intro
+:END:
+*I* learn through projects. I have a hard time following the =text -> exercises= model of learning that is sometimes used in programming and science textbooks, but I found that learning the basics and then jumping into a project is the best (and most fun) way to learn something new (for me at least).
+This particular project is my personal website, and I am rebuilding it in Clojure. I am building a simple, static website to organize my projects and save hints for myself or others for future use. 
+* /An aside/: Why Clojure?
+:PROPERTIES:
+:CUSTOM_ID: why-clojure
+:END:
+/small rant/
+
+I am currently learning Clojure, mostly because I wanted to learn functional programming principles and Rich Hickey gives [[https://github.com/tallesl/Rich-Hickey-fanclub][amazing talks]], but also because it is a functional-focused lisp-dialect that can be hosted both on the web with *ClojureScript* (via JavaScript) and the on the JVM (via *Clojure*). *Why not just learn JavaScript?* I don't really want to learn JavaScript in depth, and this is mostly because I have limited time, and it doesn't seem to offer any interesting new paradigms or ideas apart from what I already know from Python, R, etc. All I get from JavaScript would be a new syntax and more of the same headaches (and apparently a lot more headaches-- see Gary Bernhardt's [[https://www.destroyallsoftware.com/talks/wat][wat]] and [[https://www.destroyallsoftware.com/talks/the-birth-and-death-of-javascript][the birth and death of javascript]]). Clojure, on the other hand, appears to be an extremely well thought out language that allows me to explore the mysterious world of Lisp and functional programming with immutable data structures. The icing on the cake is that Clojure can compile to and leverage all of JavaScript with *ClojureScript*. So by learning Clojure, I get /a lot/ more leverage (all of the JVM, Lisp, functional programming, /and/ web programming/JavaScript) than I would get from any other langauge!
+** org-mode
+
+[[file:img/org-mode-unicorn-logo.png]]
+
+Emacs [[https://orgmode.org/][org-mode]] has taken over my life. I will write more about org mode soon, but I plan to write content and publish my site with =org-publish=, so my org-mode settings will be included throughout this document.
+
+* Getting started 
+:PROPERTIES:
+:CUSTOM_ID: style
+:END:
+
+The first thing I did was follow along with Christian Johansen's excellent post /Building static sites in Clojure with Stasis/ https://cjohansen.no/building-static-sites-in-clojure-with-stasis/. If you are just getting started, please check this out first!
+After following along with that tutorial, I had a much better understanding of what was going on and how things worked. The next step was to think about what I wanted my website and workflow to look like in order to personalize this to my liking. Below are some of my _main goals_:
+
+1. Two main categories of posts: =Programming= and =Science=.
+2. Index pages for both Programming and Science. These pages should contain (among other things) all of the links for those sections in reverse chronological order.
+3. Metadata similar to YAML front matter in Ruby's [[https://jekyllrb.com/docs/frontmatter/][Jekyll]], containing the date a post was made, the short title, some tags, and other stuff in the future.
+4. One-push publishing and integration with org-mode. 
+
+** Folder layout
+:PROPERTIES:
+:CUSTOM_ID: directory-layout
+:END:
+
+To get myself organized, I created the following directory structure within =resources/= in my Leiningen project. 
+
+#+BEGIN_EXAMPLE
+resources
+├── home
+├── org-programming
+├── org-science
+├── programming
+├── public
+│   ├── css
+│   ├── img
+│   └── js
+├── science
+└── test
+#+END_EXAMPLE
+
+- =home/=  contains only the =index.html= for the homepage.
+- =org-programming/= contains the =index.html= for the programming posts, as well as all of my =org-mode= write-ups for programming posts.
+- =org-science/= is the same as =org-programming= but for science posts.
+- The corresponding =programming/= and =science/= pages will contain the =html= versions of the posts from =org-programming/= and =org-science=. These =html= pages will be created using =org-publish=.
+- =public/= contains all my static images, css, and js files.
+- =test/= just contains test html and org stuff that will not be included in the real site. I just use it for testing. 
+
+** Org-publish
+:PROPERTIES:
+:CUSTOM_ID: org-publish
+:END:
+
+Org-mode [[https://orgmode.org/worg/][worg]] has a nice intro post on org-publishing https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html. Starting with that, the emacs-lisp for my export looks like so:
+
+#+BEGIN_SRC emacs-lisp 
+  ;; emacs-lisp
+  ;; ~/.emacs.d/config.org
+  (setq org-publish-project-alist
+        '(("programming"
+           :base-directory "~/personal_projects/website-clj/resources/org-programming"
+           :base-extension "org"
+           :publishing-directory "~/personal_projects/website-clj/resources/programming"
+           :publishing-function org-html-publish-to-html
+           :headline-levels 4
+           :html-extension "html"
+           :body-only t)
+          ("science"
+           :base-directory "~/personal_projects/website-clj/resources/org-science"
+           :base-extension "org"
+           :publishing-directory "~/personal_projects/website-clj/resources/science"
+           :publishing-function org-html-publish-to-html
+           :headline-levels 4
+           :html-extension "html"
+           :body-only t)
+          ("clj-site" :components ("programming" "science"))))
+#+END_SRC
+
+From Emacs, =M-x org-publish= and I select the project =clj-site= this will compile (trans-pile?) all the =.org= files in =org-programming/= and =org-science/= to =html='s in the respective =programming/= and =science/= folders. Note that I set the =:body-only= argument to =t=, as all these files will inherit a [[https://github.com/weavejester/hiccup][hiccup]] based header and footer in my site generation code. 
+
+* hiccup styles
+:PROPERTIES:
+:CUSTOM_ID: hiccup-header-footer
+:END:
+
+When I started changing Christian Johansen's code, the first thing I did was make a new namespace to handle all my page processing stuff. below is the =ns= declaration on this new file
+
+#+BEGIN_SRC clojure 
+  ;; src/website-clj/process_pages.clj
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]]
+              [hiccup.page :use [html5 include-css include-js]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn]))
+
+#+END_SRC
+
+I used [[https://github.com/weavejester/hiccup][hiccup]] to generate the html for the header and footer. The html for my header and footer looks like this:
+
+#+BEGIN_EXAMPLE
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        
+        <meta charset="utf-8">
+        <title>Nicholas George</title>    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!--link to bootstrap css -->
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    
+    <body style="font-size: 16px">
+
+        <!--navbar -->
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/"> Nick George</a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+
+                    <li class="inactive"><a href="/projects/">Projects</a></li>
+                    <li class="inactive"><a href="/blog/">Posts</a></li>
+                   <li class="inactive"><a href="/notes/">Notes</a></li> 
+<li>
+  <a href="https://github.com/nkicg6">
+    <span class="fa fa-github" style="font-size:24px"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/NicholasMG">
+    <span class="fa fa-twitter-square" style="font-size:24px"></span>
+  </a>
+</li>
+                </ul>                        
+            </div>
+        </nav>
+        <div class="container">
+<!--content goes here-->            
+    
+
+<!--footer -->
+            <footer class="footer">
+                <div class="text-center">
+                    <span class="text-muted">&copy 2017 Nicholas George</span>
+                </div>
+            </footer>
+        </div>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/f2bf09f8/cloudflare-static/email-decode.min.js"></script></body>
+</html>
+
+#+END_EXAMPLE
+
+It was pretty straightforward to translate this into hiccup. I put it in a function called =layout-base-header= like so:
+
+#+BEGIN_SRC clojure 
+  ;; process-pages namespace
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]]
+              [hiccup.page :use [html5 include-css include-js]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis]))  ;; only for testing?
+  ;;header
+  (defn layout-base-header
+    "Applies a header and footer to html strings."
+    [page]
+    (html5
+     [:head
+      [:meta {:charset "utf-8"}]
+      [:meta {:name "viewport"
+              :content "width=device-width, initial-scale=1.0"}]
+      [:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
+      [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}] 
+      (include-css "/css/custom.css") 
+      [:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" :integrity "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" :crossorigin "anonymous"}]
+      ]
+     [:body
+      [:nav {:class "navbar navbar-inverse"}
+       [:div {:class "container-fluid"}
+        [:div {:class "navbar-header"}
+         (link-to  {:class "navbar-brand"} "/" "Nick George")]
+        [:ul {:class "nav navbar-nav navbar-right"}
+         [:li {:class "inactive"} (link-to "/science" "Science")]
+         [:li {:class "inactive"} (link-to "/programming" "Programming")]
+         [:li {:class "inactive"} (link-to "/" "About")]
+         [:li [:a {:href "https://github.com/nkicg6"}
+               [:span {:class "fa fa-github" :style "font-size:24px"}]]]
+         [:li [:a {:href "https://twitter.com/NicholasMG"}
+               [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]
+      [:div {:class "container"}
+       [:div.body {:style "font-size:18px"} page]]
+      [:footer {:class "footer"}
+       [:div {:class "text-center"}
+        [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
+#+END_SRC
+
+I used CDNs to deliver the bootstrap css/js this time. This works great and the page looks like so:
+[[file:img/with-header-footer.png]]
+
+The function I just defined, =layout-base-header= will be applied to every page I have on my site. I will show you later in the [[preparing pages]] section how I apply it, but for now I will just build up the base functions that perform all the incremental parts. 
+
+* preparing pages
+:PROPERTIES:
+:CUSTOM_ID: preparing-pages
+:END:
+
+Before getting started, I have my =src/= directory tree here:
+#+BEGIN_EXAMPLE
+src
+└── website_clj
+    ├── export_helpers.clj
+    ├── process_pages.clj
+    └── web.clj
+#+END_EXAMPLE
+
+=web.clj= contains the main site building and export logic. =process_pages.clj= contains functions for formatting html, parsing edn, and applying the header and footer. =export_helpers.clj= contains functions for exporting to host on github pages. I'll go over most of these here.
+
+One of the workhorse functions in [[https://github.com/magnars/stasis][stasis]] is =stasis/slurp-directory=. It takes as arguments the path to a directory and a regex pattern to match and returns a map of ={file1-path html1-text ...}= for all matching files. I already have my programming posts and science posts in separate directories, so I will use =stasis/slurp-directory= to read those into two separate maps. This is a very simple and easy to work-with representation of pages, where the path is just =root/stasis-map-key=. For a page named =page1.html=, this would be =root/page1.html=, where =root= is the url (your page address or localhost:XXXX). Great, so if I want all the programming posts to have =/programming/= prepended to them and all the science posts to have =/science/= prepended to the address, I can write a really simple function to make this happen.
+
+*Note:* I am trying to follow the [[https://github.com/bbatsov/clojure-style-guide#documentation][clojure style guide]]'s documentation guidelines. 
+#+BEGIN_SRC clojure 
+  ;; process_pages.clj ns
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]]
+              [hiccup.page :use [html5 include-css include-js]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis]))  ;; only for testing?
+
+  ;;--- snip ---
+
+  (defn format-images [html] ;; 1
+    "formats html image link to appropriately link to static website image directory.
+    `html` is a raw html string."
+    (str/replace html #"src=\"img" "src=\"/img")) 
+
+
+  (defn format-html ;; 2
+    "Composed function to apply multiple html processing steps to raw html.
+    `html` is a raw html string."
+    [html]
+    (-> html
+        (format-images))) ;; other fns for html here 
+
+  (defn fmt-page-names  ;; 3
+    "removes .html from all non-index.html pages.
+    `base-name` is whatever base name you want the string to have prepended to it. 
+    `name` is a string."
+    [base-name name]
+    (str base-name
+         (str/replace name #"(?<!index)\.html$" "")))
+
+  (defn html-pages ;; 4
+    "Composed function that performs html formatting to a map of strings for my blog.
+    The argument `base-name` is a new string that will be prepended to all keys in the 
+    `page-map` map argument. `page-map` is a map created by the function `stasis/slurp-directory`. 
+    The purpose of `html-pages` is to apply formatting to html pages meant for different sections
+    of my website. For instance, calling `html-pages` with '/programming' and the a map of pages will prepend 
+    '/programming/<page-name>' to every key in the map and strip the html end off all non-index pages."
+    [base-name page-map]
+    (zipmap (map #(fmt-page-names base-name %) (keys page-map))
+            (map #(layout-base-header %) (map #(format-html %) (vals page-map)))))
+
+#+END_SRC
+
+I'll break down these functions briefly, and note that most of them work only on the raw html strings or key name strings returned from the =stasis/slurp-directory= function. 
+
+1. =format-images= is simply to fix a silly formatting problem when exporting my image links from org-mode to html. I think it is self explanatory.
+2. =format-html= will be a function that simply composes other small html formatting functions I may want to use in the future. Right now, I only have =format-images=, but if I need more in the future, it would be trivial to write and apply them without breaking upstream code (as long as I take and return html strings). Really nice consequence of dealing with simple values rather than objects.
+3. =fmt-page-names= As the documentation says, this removes html from all html pages that do not contain =index= in them, and then prepends some =base-name= to all pages. The pages that are /already/ named =index.html= are pre-made pages that I have as the landing pages for those subjects. These pages need to retain the =.html= file endings in order to render as index pages correctly. All others can have the =.html= endings removed. This allows me to prepend =/programming/= to all pages in the programming folder, and the same for science. 
+4. =html-pages= is another composed function of all of the above functions. Instead of taking and returning a string, it takes and returns a map (which comes from =stasis/slurp-directory=). Just to demonstrate how this is used, I'll show you reading in pages in =web.clj=:
+
+#+BEGIN_SRC clojure 
+  ;;;; web.clj
+  (ns website-clj.web
+    "main namespace for building and exporting the website"
+    (:require [optimus.assets :as assets]
+              [optimus.export]
+              [optimus.link :as link] 
+              [optimus.optimizations :as optimizations]      
+              [optimus.prime :as optimus]                    
+              [optimus.strategies :refer [serve-live-assets]]
+              [clojure.java.io :as io]
+              [clojure.string :as str]
+              [stasis.core :as stasis]
+              [website-clj.export-helpers :as helpers]
+              [website-clj.process-pages :as process]))
+
+
+  ;; define page maps and link maps
+
+  (def programming-map
+    (process/html-pages "/programming"
+                        (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
+
+  ;; --- snip ---
+
+#+END_SRC
+
+
+Awesome. All of my html formatting and reading in one place. 
+** A quick note about images and resources
+:PROPERTIES:
+:CUSTOM_ID: images-and-resources
+:END:
+Although this seems simple in hindsight, it caused me a significant amount of headaches and some time to figure out.
+Looking back at my folder layout in the =resources= directory:
+#+BEGIN_EXAMPLE
+resources
+├── home
+├── org-programming
+├── org-science
+├── programming
+├── public
+│   ├── css
+│   ├── img
+│   └── js
+├── science
+└── test
+#+END_EXAMPLE
+
+How do you refer to images from a post in html?
+My first thought was this 
+
+#+BEGIN_EXAMPLE
+<h1>This is the landing page</h1>
+<p>
+ Welcome to it.
+
+Here is a test image:
+
+ <img src="../public/img/sample-img.png" alt="sample img!" />
+</p>
+
+#+END_EXAMPLE
+As I figured the working directory was within whatever page you were at, and then I just followed the path to =img=. But that does not work. Finally I figured out that images can be added by referring to them relative to public as the working directory. For example:
+
+#+BEGIN_EXAMPLE
+<img src="/img/sample-img.png" alt="sample img!" />
+
+#+END_EXAMPLE
+
+inserts the image stored in =public/img/test-img.png=
+** org-workflow: Handling images
+:PROPERTIES:
+:CUSTOM_ID: org-mode-images
+:END:
+How does this factor into my org-mode workflow?
+Let's say I have an example org-mode file, and I'll add an image in org-markup manner. 
+
+#+BEGIN_EXAMPLE
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+HTML_CONTAINER: div
+
+
+
+=* This is a test post
+Here is a test post and a link to an image. 
+
+
+[[file:~/personal_projects/website-clj/resources/public/img/test-img.png]]
+
+#+END_EXAMPLE
+
+Exporting this to html gives the following link structure in HTML:
+
+#+BEGIN_EXAMPLE
+<img src="img/test-img.png" alt="test-img.png" />
+#+END_EXAMPLE
+
+While this is /almost/ right, it doesn't render properly because all images are referred to =/img/=. To fix it, I wrote a link formatting function in [[preparing pages]] called =format-images=. Now to gather and serve all the resources, I have a function called =get-assets= which grabs everything from =public/= and hands it to [[https://github.com/magnars/optimus][optimus]] for frontend optimizations.
+
+#+BEGIN_SRC clojure 
+  ;;;; web.clj
+  (ns website-clj.web
+    "main namespace for building and exporting the website"
+    (:require [optimus.assets :as assets]
+              [optimus.export]
+              [optimus.link :as link] 
+              [optimus.optimizations :as optimizations]      
+              [optimus.prime :as optimus]                    
+              [optimus.strategies :refer [serve-live-assets]]
+              [clojure.java.io :as io]
+              [clojure.string :as str]
+              [stasis.core :as stasis]
+              [website-clj.export-helpers :as helpers]
+              [website-clj.process-pages :as process]))
+
+  ;; --- snip ---
+
+  (defn get-assets
+    "get all static assets from the public directory."
+    []
+    (assets/load-assets "public" [#".*"]))
+
+  ;;--- snip ---
+  ;; for test rendering
+  (def app
+    "renders the website for experimentation"
+    (optimus/wrap
+     (stasis/serve-pages get-pages)
+     get-assets
+     optimizations/none
+     serve-live-assets))
+#+END_SRC
+
+=get-assets= is likely why I refer to images as =/img/image.png= instead of =public/img/image.png=.
+** org-workflow: syntax highlighting
+:PROPERTIES:
+:CUSTOM_ID: org-mode-syntax-highlighting
+:END:
+ 
+  [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian Johanson]] has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing =org-mode= takes care of syntax highlighting for me when I add =(setq org-src-fontify-natively t)= to my =config.org=. So here I will just test it real quick and see how it looks. 
+
+In my HTML file, I will add a clojure code block like so:
+
+#+BEGIN_EXAMPLE
+
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+HTML_CONTAINER: div
+
+
+
+
+=* This is a test post
+Here is a test post and a link to an image. 
+
+
+[[file:~/personal_projects/website-clj/resources/public/img/test-img.png]]
+
+And below is a test code block. 
+
+#+BEGIN_SRC clojure 
+(defn format-images [html]
+  (str/replace html #"file:///Users/Nick/personal_projects/website-clj/resources/public" ""))
+
+;; main pages function.
+(defn html-pages [pages]
+  (zipmap (map #(str/replace % #"\.html$" "") (keys pages))
+          (map #(fn [req] (layout-base-header req %))
+               (map format-images (vals pages)))))
+#+END_SRC
+
+How does it look?
+
+#+END_EXAMPLE
+
+This renders upon =M-x org-publish-project clj-site= to look like this:
+
+[[file:img/syntax-highlighting.png]]
+
+=org-src-fontify-natively= uses the currently active theme to highlight your source code. I just exported this using the [[https://github.com/fniessen/emacs-leuven-theme][Leuven theme]] (great for org-mode) and I like the way it looks. However, if I wanted to change it and use =enliven= with =pygments=, I would probably use some emacs-lisp code and packages such as those described here: https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e , but for right now I dont think this is necessary for me so I will go with the raw html formatting from org-export. 
+
+At this point, I removed all the markdown file stuff from my project as I don't plan to write in markdown and I cleaned up some other stuff I probably wont use. You can see the source code for my project [[https://github.com/nkicg6/website-clj][here]], all the code that does any work is in the =web.clj= file. 
+** Summing up
+:PROPERTIES:
+:CUSTOM_ID: prepare-pages-summary
+:END:
+
+In [[preparing pages]] we addressed reading in pages with stasis, formatting html, syntax highlighting and adding resources like images. I think we can cross #1 off our list.
+
+1. +Two main categories of posts: =Programming= and =Science=.+
+2. Index pages for both Programming and Science. These pages should contain (among other things) all of the links for those sections in reverse chronological order.
+3. Metadata similar to YAML front matter in Ruby's [[https://jekyllrb.com/docs/frontmatter/][Jekyll]], containing the date a post was made, the short title, some tags, and other stuff in the future.
+4. One-push publishing and integration with org-mode. 
+
+The next section will address the metadata-related goals. 
+* parsing =edn= metadata
+:PROPERTIES:
+:CUSTOM_ID: parsing-edn
+:END:
+
+Most static site generators ([[https://jekyllrb.com/docs/frontmatter/][Jekyll]], for instance) contain some way to add metadata in markup format to posts in order to set formatting options, apply themes, add a name, etc. So referring back to my list of goals for my site: 
+
+1. +Two main categories of posts: =Programming= and =Science=.+
+2. *Index pages for both Programming and Science. These pages should contain (among other things) all of the links for those sections in reverse chronological order.*
+3. *Metadata similar to YAML front matter in Ruby's [[https://jekyllrb.com/docs/frontmatter/][Jekyll]], containing the date a post was made, the short title, some tags, and other stuff in the future.*
+4. One-push publishing and integration with org-mode. 
+
+I want to automatically generate a list of posts in reverse chronological order on index pages for the =programming= and =science= sections. In order to do this, metadata would be nice, and Clojure offers an excellent solution in the form of [[https://github.com/edn-format/edn][extensible data notation]] or =edn=. In this section I'll be tackling both *2* and *3*.
+
+** setting up the metadata in =org-mode=
+:PROPERTIES:
+:CUSTOM_ID: metadata-setup
+:END:
+
+First off, I'll put the metadata in a =div= at the top of my document with the =id= as =edn=. Since I write in org-mode, I made a [[https://github.com/joaotavora/yasnippet][YASnippet]] (awesome emacs templates, check them out) called =blog=:
+
+#+BEGIN_EXAMPLE
+;; yas snippet blog
+# -*- mode: snippet -*-
+# name: blog
+# key: blog
+# --
+#+HTML: <div id="edn">
+#+HTML: {:title "${1:title}" :date "`(format-time-string "%Y-%m-%d")`" :tags ${2:["clojure"]}}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+$0
+
+#+END_EXAMPLE
+
+when I type =blog <TAB>= it expands to the following
+
+#+BEGIN_EXAMPLE
+#+HTML: <div id="edn">
+#+HTML: {:title "title" :date "2018-08-19" :tags ["clojure"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+
+#+END_EXAMPLE
+
+The important part here is the =#+HTML:= sections. That tag tells org-mode to export that line as literal HTML. This creates a unique div id containing the metadata with a shorter title for the post, the date (automatically generated with inline =emacs-lisp=), and a vector of =tags=. For now I will only deal with the title and date, but I will likely start doing something with the tags vector later. 
+
+** parsing =edn= with =enlive= 
+:PROPERTIES:
+:CUSTOM_ID: parsing-edn
+:END:
+
+So we added metadata under a special tag, but how do we parse it?
+The functions I write work with either raw html text, or with the map of ={file1-name html1-text ...}= returned by the function =stasis/slurp-directory=, as discussed in [[preparing pages]]. In order to parse these, I'll use [[https://github.com/cgrand/enlive][enlive]], the amazing selector-based templating and html transformation library. 
+I'll add some =edn= metadata to a test html page and start playing. First I need to add =enlive= to my =project.clj=
+#+BEGIN_SRC clojure 
+  ;; project.clj
+  (defproject website-clj "0.1.0-SNAPSHOT"
+    :description "Personal website built with Clojure, Stasis, and Hiccup"
+    :url "http://nickgeorge.net"
+    :license {:name "Eclipse Public License"
+              :url "http://www.eclipse.org/legal/epl-v10.html"}
+    :dependencies [[org.clojure/clojure "1.8.0"]
+                   [stasis "1.0.0"]
+                   [ring "1.2.1"]
+                   [hiccup "1.0.5"]
+                   [optimus "0.14.2"]
+                   [enlive "1.1.6"]]
+    :ring {:handler website-clj.web/app}
+    :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}
+    :aliases {"build-site" ["run" "-m" "website-clj.web/export"]})
+
+#+END_SRC
+
+and then run =lein deps= at the command line. I'd recommend going through this [[https://github.com/swannodette/enlive-tutorial][enlive tutorial]] to figure out how to parse with =enlive=. For REPL based play and testing, my =test.org= doc looks like this:
+
+#+BEGIN_EXAMPLE
+
+#+HTML: <div class="edn">=
+#+HTML: {:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}=
+#+HTML: </div>=
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}=
+
+=* Here is my test content=
+
+and some code 
+
+#+BEGIN_SRC clojure=
+(test clj-code)
+(def test-me "test string")
+#+END_SRC=
+
+#+END_EXAMPLE
+
+When I run =org-publish-project clj-site= I get this:
+
+#+BEGIN_EXAMPLE
+<div class="edn">
+{:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
+</div>
+
+<div id="outline-container-orgd13af6f" class="outline-2">
+<h2 id="orgd13af6f">Here is my test content</h2>
+<div class="outline-text-2" id="text-orgd13af6f">
+<p>
+and some code<br />
+</p>
+
+<div class="org-src-container">
+<pre class="src src-clojure"><span style="color: #707183;">(</span><span style="color: #006FE0;">test</span> clj-code<span style="color: #707183;">)</span>
+<span style="color: #707183;">(</span><span style="color: #0000FF;">def</span> <span style="color: #BA36A5;">test-me</span> <span style="color: #036A07;">"test string"</span><span style="color: #707183;">)</span>
+</pre>
+</div>
+</div>
+</div>
+
+#+END_EXAMPLE
+
+With the useful stuff at the top in the tag. I made a new test folder for this, and I moved the test.html there. So now, I'll read that in and start messing around. 
+
+I am playing with this code at the bottom of my new =process-clj= namespace. 
+
+#+BEGIN_SRC clojure 
+  ;;;; process_pages.clj
+  ;; first step is slurping a directory, applying the path prefix and formatting html.
+
+  (def slurped-raw
+    "holds a map of formatted html pages for my website"
+    (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)"))) 
+
+  (keys slurped-raw)
+  ;; => ("/test/index.html" "/test/test" "/test/test2")
+  (vals slurped-raw)
+  ;; => html for the pages
+
+  ;; isolate html for one page
+
+  (def test-html (second (vals slurped-raw)))
+  test-html
+  ;; => html for page /test/test
+#+END_SRC
+
+Now I have raw html to play with. 
+Figuring out the parsing took some time, but eventually I figured out this code:
+
+#+BEGIN_SRC clojure 
+  ;;;; process_pages.clj
+
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]]
+              [hiccup.page :use [html5 include-css include-js]]
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis]))
+
+  ;; --- snip ---
+
+
+  (defn parse-html
+    "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
+    `html` is raw html"
+    [html] 
+    (-> html ;; 1
+        (enlive/html-snippet) ;; 2
+        (enlive/select [:#edn enlive/text-node]) ;; 3
+        (->> (apply str)) ;; 4
+        (edn/read-string) ;; 5
+        (select-keys [:title :date]))) ;; 6
+
+  ;; --- snip ---
+
+  ;; isolate html for one page
+
+  (def test-html (second (vals slurped-raw)))
+  ;; => html for page /test/test
+
+  (def metadata (parse-html test-html))
+
+  metadata
+  ;; => {:title "renamed", :date "2018-08-05"}
+
+#+END_SRC
+
+Going through =parse-html= 
+1. start threading the html
+2. turn the html into an =enlive/html-snippet=. As far as I know, this parses the html for enlive.
+3. use enlive to get the relevant node base on id. You select based on the =div id= with =#id-name=. This part is still a little confusing for me...
+4. Now I need to turn that into a string. Unfortunately, I need to use =(apply str html)=, with the html passed as the last argument. The =->= macro inserts the result of the previous form as the /first/ argument, which would result in the apply step looking like =(apply html str)= which will not work. The =->>= macro inserts the result of the previous form as the /last/ argument, so I added that macro to the =apply str= step. I've read mixing these macros is bad form, but for now it seems to work so I'll leave it be.
+5. uses =edn/read-string= to parse the resulting string into a clojure map. Note all of my =edn= metadata will be represented as strings or vectors/lists of strings for now. 
+6. I grab a few keys from the parsed =edn=. 
+
+=edn= is parsed and in memory, though in order to use it in practice I'll make one more function that takes in the map returned by =stasis/slurp-directory=, and returns a map of maps with the metadata. 
+
+In practice, =/programming/index.html= will live in the =programming/= directory that is parsed by my edn metadata parser. That means if I make links based on the raw output of =stasis/slurp-directory= I would get a link /for/ the index page, /on/ the index page, which is sloppy. The function =remove-index= removes the index page.  
+
+#+BEGIN_SRC clojure 
+  ;;;; process_pages.clj
+
+  ;; --- snip ---
+
+  ;; remove index page
+  (defn remove-index
+    "Removes /index.html from map that will be parsed for edn metadata.
+    `base-name` is the name prepended to the index.html page. For programming pages it will be '/programming'
+    `page-map` is the map returned by `html-pages`. returns `page-map` minus the index pages."
+    [base-name page-map]
+    (dissoc page-map (str base-name "/index.html")))
+
+#+END_SRC
+
+This function simply joins the =base-name= (i.e. "/programming") to the string "/index.html" and removes it from the map.
+
+The function =parse-edn= works directly with the map from =stasis/slurp-directory=, and it returns a map of maps, with ={page-name1 metadata1 ...}=
+
+#+BEGIN_SRC clojure 
+  (defn parse-edn
+    "filters the `page-map` to remove index.html and returns a map of page names and edn metadata.
+    `page-map` is returned by `stasis/slurp-directory`. 
+    `base-name` provides the prepended base for the directory you are filtering by with `remove-index`"
+    [base-name page-map]
+    (let [filtered-page-map (remove-index base-name page-map)] ;; 1 
+      (zipmap (keys filtered-page-map) ;; 2
+              (map parse-html (vals filtered-page-map))))) ;; 3
+
+
+  ;; --- snip ---
+
+  ;; useage
+
+  (def metadata (parse-edn ("/test" slurped-raw)))
+  metadata
+  ;; => {"/test/test" {:title "renamed", :date "2018-08-05"}, "/test/test2" {:title "renamed2", :date "2018-08-06"}}
+#+END_SRC
+
+1. applies =remove-index= to the =page-map=.
+2. Use the keys from the filtered page map as the keys in the new map
+3. apply =parse-html= to the values of the =filtered-page-map=. This will be the values for the new map. 
+
+** making html links
+:PROPERTIES:
+:CUSTOM_ID: making-html-links
+:END:
+
+Now we have a nice map to work with, it is time to make some links. The function below =format-html-links= demonstrates the advantage of using =hiccup= to generate html from within clojure. 
+
+#+BEGIN_SRC clojure 
+    ;;;; process_pages.clj
+    ;; --- snip ---
+  (defn format-html-links
+    "Makes a list of links in reverse chronological order using hiccup markup.
+      `metadata-map`comes from the output of `parse-edn`"
+    [metadata-map]
+    (html [:ul ;; 1
+           (for [[k v] ;; 2
+                 (reverse (sort-by #(get-in (val %) [:date]) metadata-map))] ;; 3
+             [:li ;; 4
+              (link-to k (get v :title)) (str "<em> Published: " (get v :date) "</em>")])])) ;; 5
+
+  ;; testing
+  ;; remember what metadata looks like? a map of maps
+  metadata
+  ;; => {"/test/test" {:title "renamed", :date "2018-08-05"}, "/test/test2" {:title "renamed2", :date "2018-08-06"}}
+
+  (format-html-links metadata)
+  ;; => "<ul><li><a href=\"/test/test2\">renamed2</a><em> Published: 2018-08-06</em></li><li><a href=\"/test/test\">renamed</a><em> Published: 2018-08-05</em></li></ul>"
+#+END_SRC
+
+I like this function, but it does look a little complicated. Here are what the parts do. 
+1. =html= is from =hiccup=. Here I am generating an =html= fragment, and I am initializing an un-ordered list.
+2. The start of a list comprehension in clojure.
+3. This is a really cool thing about clojure I found in the docs for sorting maps. You can sort by a value /within/ the map of maps. So I sort by the key =:date=. Then, to get reverse chronological order, I just =reverse= the list. This is all part of the main list comprehension. So =k= is the key from the now reverse chronologically ordered =metadata-map=, and =v= is the value (inner metadata map)
+4. initializes an element of a list. This will be generated for each item in the =metadata-map=
+5. make a link /to/ the original key =k= with the title of the link being the =:title= item provided by the metadata. Then, just for fun, put the published date next to it.
+
+** Hide the metadata
+:PROPERTIES:
+:CUSTOM_ID: hide-metadata
+:END:
+
+I don't want the metadata showing up at the top of every page. I made a css file called =custom.css= and had it hide all the =id=edn= =div='s.
+
+#+BEGIN_SRC css
+  // css/custom.css
+  #edn {
+      display: none;
+  }
+#+END_SRC
+
+Easy. Now I will use the =include-css= hiccup header and add the following to my =hiccup=-defined header:
+
+#+BEGIN_SRC clojure 
+  ;; process-pages ns
+  (ns website-clj.process-pages
+    (:require [clojure.string :as str]
+              [hiccup.core :refer [html]]
+              [hiccup.page :use [html5 include-css include-js]] ;; include hiccup helpers
+              [hiccup.element :refer (link-to image)]
+              [net.cgrand.enlive-html :as enlive]
+              [clojure.edn :as edn] 
+              [stasis.core :as stasis] ;; only for testing?
+              ))
+
+  ;; --- snip ---
+  (defn layout-base-header [request page]
+    (html5
+     [:head
+      [:meta {:charset "utf-8"}]
+      ;;... --- snip ---
+      (include-css "/css/custom.css") ;; the new stuff
+      ;;... --- snip ---
+      ]
+     ;;Much more here, I cut it out for simplicity
+     ))
+
+#+END_SRC
+
+** inserting the links with =enlive= 
+:PROPERTIES:
+:CUSTOM_ID: adding-the-links
+:END:
+
+Probably the coolest part of =enlive= is how it can transform html based on css selectors. I won't go into detail, but you should definitely look into this. 
+I wrote this function to add the list to my index pages. 
+
+#+BEGIN_SRC clojure 
+  ;;;; process_pages.clj
+
+  ;; -- snip --
+  (defn add-links
+    "Adds links of all pages to the index.html page and un-escapes html characters. 
+    The `page` argument is the html for a page. 
+    The `links` argument is an html string, typically generated with the `make-links` function 
+    This returns the modified html"
+    [page links] ;; 1
+    (-> page ;; 2
+        (enlive/sniptest ;; 3
+         [:#pageListDiv] ;; 4 exists only in index pages. 
+         (enlive/content links)) ;; 5
+        (str/replace #"&gt;" ">") ;; 6
+        (str/replace #"&lt;" "<")))
+#+END_SRC
+
+In the body of my =index.html= pages, I added the following div:
+#+BEGIN_EXAMPLE
+
+<div id="pageListDiv">Page nav list Here</div>
+
+#+END_EXAMPLE
+
+This =div= =id= will /only/ exist in the index.html pages, so that is the only place that will get the links. 
+
+To go through the parts of this =add-links=, I have to admit I am still not completely sure what part 3,4,5 are really doing, but I'll do my best. 
+1. This function takes the list of links generated by =format-html-links= and adds them to a =page= /if/ if contains the target =div id=.
+2. start threading with =page= as an argument.
+3. initialize a =enlive/sniptest=
+4. select the relevant =div id=,
+5. use =enlive/content= to replace the content of that =div= with the links.
+6. un-escape the greater-than (and less than) characters. 
+
+Now we have almost all the parts we need. I'll go over some caveats for publishing with GitHub Pages in [[Exporting for GitHub Pages]], then I demonstrate the workflow in [[Bringing it all together]].
+** Summing up parsing
+   In this section, we set up a system for adding =edn= metadata to files, we parsed the metadata, made a list of links, sorted them, and inserted them into our document. Check a few more options off out list!
+
+1. +Two main categories of posts: =Programming= and =Science=.+
+2. +Index pages for both Programming and Science. These pages should contain (among other things) all of the links for those sections in reverse chronological order.+
+3. +Metadata similar to YAML front matter in Ruby's [[https://jekyllrb.com/docs/frontmatter/][Jekyll]], containing the date a post was made, the short title, some tags, and other stuff in the future.+
+4. One-push publishing and integration with org-mode. 
+
+Publishing is up next. 
+
+* Exporting for GitHub Pages
+:PROPERTIES:
+:CUSTOM_ID: github-caveats
+:END:
+** publishing
+:PROPERTIES:
+:CUSTOM_ID: publishing-for-github
+:END:
+
+From =lein=, Christian gives some nice instructions, so I followed those to see how the export looks and it seems to work nicely. Now, I'd like put my website on-line. I hosted my previous site on GitHub Pages, so I know I need a few config items for hosting. The first is the =CNAME= file, for mapping your domain name to the github repo. 
+
+In Christian's example, he empties the target export directory with =(stasis/empy-directory!)= before the rest of the export. I definitely want to do this, but looking into the  [[https://github.com/magnars/stasis][Stasis code]], I don't see any options to exclude certain files. That means my =CNAME=, =.gitignore=, and =.git= repo will be wiped out every time I build! No good for GitHub Pages
+
+I decided to use shell commands to get around this for the moment, and I broke these functions out into a namespace called  =export-helpers=. 
+
+=CNAME= and =.gitignore= will live in the =resources/= and =target/= directories, respectively. Upon export, they will be copied to the export directory like so
+
+#+BEGIN_SRC clojure 
+  ;;;; export_helpers.clj
+
+  (ns website-clj.export-helpers
+    "helper functions for saving the git directory, cname, and gitignore from `stasis/empty-directory!`
+    This exists to help with rendering static sites on github." 
+    (:require [clojure.string :as str]
+              [clojure.java.shell :as shell])) ;; for shell commands from clojure
+
+
+  (defn cp-cname
+    "copy the CNAME file to the export directory.
+    `export-dir` is a var that contains the parth to the base of the website. 
+    CNAME must be in the directory for github pages domain mapping."
+    [export-dir]
+    (shell/sh "cp" "resources/CNAME" (str export-dir "/CNAME")))
+
+  (defn cp-gitignore
+    "copy the gitignore file from a safe location to the base of the github pages repo for rendering."
+    [export-dir]
+    (shell/sh "cp" "target/.gitignore" (str export-dir "/.gitignore")))
+
+  ;; --- snip ---
+
+#+END_SRC
+
+Handling the =git= repo is a little trickier, as I don't want to maintain the git repo elsewhere. Instead, I made two functions: one to copy =.git= to a save place, and another to restore it after building.
+
+#+BEGIN_SRC clojure 
+  ;;;; export_helpers.clj
+
+  ;; --- snip ---
+  (defn save-git
+    "copy .git repo to a safe directory to save it from deletion. 
+    `safe-dir` is a path to a directory that will not be emptied by `stasis/empty-directory!`
+    `export-dir` is the export directory where your site will be made."
+    [safe-dir export-dir] 
+    (shell/sh "mv" (str export-dir "/.git") (str safe-dir "/.git")))
+
+  (defn replace-git
+    "Puts the gir directory back into the export directory.
+    `safe-dir` is a path to a directory that will not be emptied by `stasis/empty-directory!`
+    `export-dir` is the export directory where your site will be made."
+    [safe-dir export-dir]
+    (shell/sh "mv" (str safe-dir "/.git") (str export-dir "/.git")))
+
+#+END_SRC
+
+Here is how these will be used in the final product:
+
+#+BEGIN_SRC clojure 
+  (ns website-clj.web
+    "main namespace for building and exporting the website"
+    (:require [optimus.assets :as assets]
+              [optimus.export]
+              [optimus.link :as link] 
+              [optimus.optimizations :as optimizations]      
+              [optimus.prime :as optimus]                    
+              [optimus.strategies :refer [serve-live-assets]]
+              [clojure.java.io :as io]
+              [clojure.string :as str]
+              [stasis.core :as stasis]
+              [website-clj.export-helpers :as helpers]
+              [website-clj.process-pages :as process]))
+
+  ;; --- snip --- 
+
+
+  ;; constants for exporting
+  (def export-dir "target/nickgeorge.net")
+  (def safe-dir "target")
+
+  ;; main export function, called by lein build-site
+  (defn export
+    "main export function for static site. See docs for functions included.
+    `website-clj.helpers/save-git`
+    `website-clj.helpers/cp-cname`
+    `website-clj.helpers/cp-gitignore`
+    `website-clj.helpers/replace-git`"
+    []
+    (helpers/save-git safe-dir export-dir)
+    (let [assets (optimizations/all (get-assets) {})]
+      (stasis/empty-directory! export-dir)
+      (optimus.export/save-assets assets export-dir)
+      (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
+    (helpers/cp-cname export-dir)
+    (helpers/cp-gitignore export-dir)
+    (helpers/replace-git safe-dir export-dir))
+
+#+END_SRC
+
+This is super hacky and not optimal. It would be better to edit =stasis/empty-directory!= to include arguments for excluding certain dirs/files-- but for now this works.  
+
+* Bringing it all together
+:PROPERTIES:
+:CUSTOM_ID: bringing-it-together
+:END:
+
+So how does this look in practice? Well just check out my [[https://github.com/nkicg6/website-clj/blob/master/src/website_clj/web.clj][web.clj]] source. The general format goes like so:
+
+1. Use =stasis/slurp-directory= and =process-pages/html-pages= to read and format the pages for each subject.
+2. pass the resulting map into =process-pages/parse-edn= to get the metadata map.
+3. pass the metadata map into =process-pages/format-html-links= to make the html links.
+4. make the get-pages function read all the relevant directories. This is where we also apply =process-pages/add-links=.
+5. export for serving. 
+
+#+BEGIN_SRC clojure 
+  ;;;; web.clj
+
+  (ns website-clj.web
+    "main namespace for building and exporting the website"
+    (:require [optimus.assets :as assets]
+              [optimus.export]
+              [optimus.link :as link] 
+              [optimus.optimizations :as optimizations]      
+              [optimus.prime :as optimus]                    
+              [optimus.strategies :refer [serve-live-assets]]
+              [clojure.java.io :as io]
+              [clojure.string :as str]
+              [stasis.core :as stasis]
+              [website-clj.export-helpers :as helpers]
+              [website-clj.process-pages :as process]))
+
+  ;; define page maps and link maps
+
+  (def programming-map
+    (process/html-pages "/programming"
+                        (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)"))) ;; 1
+  (def programming-metadata
+    (process/parse-edn "/programming" programming-map)) ;; 2
+
+  (def programming-links
+    (process/format-html-links programming-metadata)) ;; 3
+
+  ;; repeat for science...
+
+  ;; --- snip --
+  ;; load all assets
+  (defn get-assets
+    "get all static assets from the public directory."
+    []
+    (assets/load-assets "public" [#".*"]))
+
+  ;; main get pages function for render and export
+  (defn get-pages ;; 4
+    "Gathers all website pages and resources."
+    []
+    (stasis/merge-page-sources
+     {:public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$") 
+      :landing (process/home-page
+                (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
+      :programming  (zipmap (keys programming-map)
+                            (map #(process/add-links % programming-links)
+                                 (vals programming-map)))
+      :science (zipmap (keys science-map)
+                       (map #(process/add-links % science-links)
+                            (vals science-map)))}))
+
+  ;; --- snip ---
+
+  (defn export ;; 5
+    "main export function for static site. See docs for functions included.
+    `website-clj.helpers/save-git`
+    `website-clj.helpers/cp-cname`
+    `website-clj.helpers/cp-gitignore`
+    `website-clj.helpers/replace-git`"
+    []
+    (helpers/save-git safe-dir export-dir)
+    (let [assets (optimizations/all (get-assets) {})]
+      (stasis/empty-directory! export-dir)
+      (optimus.export/save-assets assets export-dir)
+      (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
+    (helpers/cp-cname export-dir)
+    (helpers/cp-gitignore export-dir)
+    (helpers/replace-git safe-dir export-dir))
+
+#+END_SRC
+
+* TODO one push publishing with Leiningen =:alias=
+:PROPERTIES:
+:CUSTOM_ID: one-push-publishing
+:END:
+
+*IN PROGRESS!! /2018-08-19/* 
+
+I can already build my website with my current alias, now I will make another to deploy!
+The steps I need to do are: 
+1. Command line build org-project
+   - =org-publish-project clj-site= from the command line
+   - remember to add a header to tell org to /not/ evaluate code like this: =#+PROPERTY: header-args :eval never-export=
+   - This should be a clojure function called with =export= from =build-site= 
+2. Then run build-site
+3. =git add= and =git push= all changes.
+   - This could also be a clojure function called with =export= from =build-site= 
+
+The idea is that I just call build-site and it all happens automatically when I run =lein build-site= 
+
+Right now, to publish, I run:
+1. =org-publish-project clj-site= from emacs.
+2. =lein build-site= from the command line in =website-clj/= dir.
+3. =cd= into =target/nickgeorge.net/= then =git add .=, =git commit -m "message"=, and =git push=. 
+
+* TODO Further improvements
+:PROPERTIES:
+:CUSTOM_ID: future-improvements
+:END:
+
+/2018-08-19/ 
+
+Will be posted here. On the near horizon:
+1. Most recent 5 posts (merge the lists of =science= and =programming=, sort, and take the top 5) on the home page.
+   - Maybe put the first 50-100 words under the title on the home page?
+2. Tests!
+

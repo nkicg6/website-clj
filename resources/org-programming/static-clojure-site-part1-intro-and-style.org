@@ -6,7 +6,6 @@
 #+PROPERTY: header-args :eval never-export
 
 * Part 1: Introduction and header/footer styles with hiccup
-
 * Static sites
 These are static collections of HTML, CSS, and JavaScript files that make up simple (but not necessarily so), fast websites. The main difference between static sites and dynamic websites is that static sites do not fetch information from a database upon requests. They simply contain all the HTML, CSS, JS, etc. files that make up the website.
 * Why?
