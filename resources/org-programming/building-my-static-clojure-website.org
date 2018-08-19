@@ -221,9 +221,9 @@ It was pretty straightforward to translate this into hiccup. I put it in a funct
 I used CDNs to deliver the bootstrap css/js this time. This works great and the page looks like so:
 [[file:img/with-header-footer.png]]
 
-The function I just defined, =layout-base-header= will be applied to every page I have on my site. I will show you later in the [[preparing pages]] section how I apply it, but for now I will just build up the base functions that perform all the incremental parts. 
+The function I just defined, =layout-base-header= will be applied to every page I have on my site. I will show you later in the [[Preaparing pages]] section how I apply it, but for now I will just build up the base functions that perform all the incremental parts. 
 
-* Preparing pages
+* Preaparing pages
 :PROPERTIES:
 :CUSTOM_ID: preparing-pages
 :END:
@@ -394,7 +394,7 @@ Exporting this to html gives the following link structure in HTML:
 img src="img/test-img.png" alt="test-img.png"
 #+END_EXAMPLE
 
-While this is /almost/ right, it doesn't render properly because all images are referred to =/img/=. To fix it, I wrote a link formatting function in [[preparing pages]] called =format-images=. Now to gather and serve all the resources, I have a function called =get-assets= which grabs everything from =public/= and hands it to [[https://github.com/magnars/optimus][optimus]] for frontend optimizations.
+While this is /almost/ right, it doesn't render properly because all images are referred to =/img/=. To fix it, I wrote a link formatting function in [[Preaparing pages]] called =format-images=. Now to gather and serve all the resources, I have a function called =get-assets= which grabs everything from =public/= and hands it to [[https://github.com/magnars/optimus][optimus]] for frontend optimizations.
 
 #+BEGIN_SRC clojure 
   ;;;; web.clj
@@ -483,7 +483,7 @@ At this point, I removed all the markdown file stuff from my project as I don't 
 :CUSTOM_ID: prepare-pages-summary
 :END:
 
-In [[preparing pages]] we addressed reading in pages with stasis, formatting html, syntax highlighting and adding resources like images. I think we can cross #1 off our list.
+In [[Preaparing pages]] we addressed reading in pages with stasis, formatting html, syntax highlighting and adding resources like images. I think we can cross #1 off our list.
 
 1. +Two main categories of posts: =Programming= and =Science=.+
 2. Index pages for both Programming and Science. These pages should contain (among other things) all of the links for those sections in reverse chronological order.
@@ -546,7 +546,7 @@ The important part here is the =#+HTML:= sections. That tag tells org-mode to ex
 :END:
 
 So we added metadata under a special tag, but how do we parse it?
-The functions I write work with either raw html text, or with the map of ={file1-name html1-text ...}= returned by the function =stasis/slurp-directory=, as discussed in [[preparing pages]]. In order to parse these, I'll use [[https://github.com/cgrand/enlive][enlive]], the amazing selector-based templating and html transformation library. 
+The functions I write work with either raw html text, or with the map of ={file1-name html1-text ...}= returned by the function =stasis/slurp-directory=, as discussed in [[Preaparing pages]]. In order to parse these, I'll use [[https://github.com/cgrand/enlive][enlive]], the amazing selector-based templating and html transformation library. 
 I'll add some =edn= metadata to a test html page and start playing. First I need to add =enlive= to my =project.clj=
 #+BEGIN_SRC clojure 
   ;; project.clj
