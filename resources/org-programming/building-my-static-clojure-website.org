@@ -11,7 +11,7 @@
 :END:
 *I* learn through projects. I have a hard time following the =text -> exercises= model of learning that is sometimes used in programming and science textbooks, but I found that learning the basics and then jumping into a project is the best (and most fun) way to learn something new (for me at least).
 This particular project is my personal website, and I am rebuilding it in Clojure. I am building a simple, static website to organize my projects and save hints for myself or others for future use. 
-* /An aside/: Why Clojure?
+* Why Clojure? (/an aside/)
 :PROPERTIES:
 :CUSTOM_ID: why-clojure
 :END:
@@ -119,7 +119,6 @@ When I started changing Christian Johansen's code, the first thing I did was mak
 I used [[https://github.com/weavejester/hiccup][hiccup]] to generate the html for the header and footer. The html for my header and footer looks like this:
 
 #+BEGIN_EXAMPLE
-<!DOCTYPE html>
 <html lang="en">
     <head>
         
@@ -171,7 +170,6 @@ I used [[https://github.com/weavejester/hiccup][hiccup]] to generate the html fo
         </div>
     <script data-cfasync="false" src="/cdn-cgi/scripts/f2bf09f8/cloudflare-static/email-decode.min.js"></script></body>
 </html>
-
 #+END_EXAMPLE
 
 It was pretty straightforward to translate this into hiccup. I put it in a function called =layout-base-header= like so:
@@ -225,7 +223,7 @@ I used CDNs to deliver the bootstrap css/js this time. This works great and the 
 
 The function I just defined, =layout-base-header= will be applied to every page I have on my site. I will show you later in the [[preparing pages]] section how I apply it, but for now I will just build up the base functions that perform all the incremental parts. 
 
-* preparing pages
+* Preparing pages
 :PROPERTIES:
 :CUSTOM_ID: preparing-pages
 :END:
@@ -393,7 +391,7 @@ Here is a test post and a link to an image.
 Exporting this to html gives the following link structure in HTML:
 
 #+BEGIN_EXAMPLE
-<img src="img/test-img.png" alt="test-img.png" />
+img src="img/test-img.png" alt="test-img.png"
 #+END_EXAMPLE
 
 While this is /almost/ right, it doesn't render properly because all images are referred to =/img/=. To fix it, I wrote a link formatting function in [[preparing pages]] called =format-images=. Now to gather and serve all the resources, I have a function called =get-assets= which grabs everything from =public/= and hands it to [[https://github.com/magnars/optimus][optimus]] for frontend optimizations.
@@ -493,7 +491,7 @@ In [[preparing pages]] we addressed reading in pages with stasis, formatting htm
 4. One-push publishing and integration with org-mode. 
 
 The next section will address the metadata-related goals. 
-* parsing =edn= metadata
+* Parsing =edn= metadata
 :PROPERTIES:
 :CUSTOM_ID: parsing-edn
 :END:
@@ -761,8 +759,12 @@ Now we have a nice map to work with, it is time to make some links. The function
   ;; => {"/test/test" {:title "renamed", :date "2018-08-05"}, "/test/test2" {:title "renamed2", :date "2018-08-06"}}
 
   (format-html-links metadata)
-  ;; => "<ul><li><a href=\"/test/test2\">renamed2</a><em> Published: 2018-08-06</em></li><li><a href=\"/test/test\">renamed</a><em> Published: 2018-08-05</em></li></ul>"
 #+END_SRC
+
+#+BEGIN_EXAMPLE
+  ;; => "<ul><li><a href=\"/test/test2\">renamed2</a><em> Published: 2018-08-06</em></li><li><a href=\"/test/test\">renamed</a><em> Published: 2018-08-05</em></li></ul>"
+#+END_EXAMPLE
+
 
 I like this function, but it does look a little complicated. Here are what the parts do. 
 1. =html= is from =hiccup=. Here I am generating an =html= fragment, and I am initializing an un-ordered list.
@@ -1062,7 +1064,7 @@ So how does this look in practice? Well just check out my [[https://github.com/n
 
 #+END_SRC
 
-* TODO one push publishing with Leiningen =:alias=
+* TODO One push publishing with Leiningen =:alias=
 :PROPERTIES:
 :CUSTOM_ID: one-push-publishing
 :END:
