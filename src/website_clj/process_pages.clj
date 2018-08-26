@@ -33,7 +33,6 @@
       [:ul {:class "nav navbar-nav navbar-right"}
        [:li {:class "inactive"} (link-to "/science" "Science")]
        [:li {:class "inactive"} (link-to "/programming" "Programming")]
-       [:li {:class "inactive"} (link-to "/" "About")]
        [:li [:a {:href "https://github.com/nkicg6"}
              [:span {:class "fa fa-github" :style "font-size:24px"}]]]
        [:li [:a {:href "https://twitter.com/NicholasMG"}
@@ -42,7 +41,7 @@
      [:div.body {:style "font-size:18px"} page]]
     [:footer {:class "footer"}
      [:div {:class "text-center"}
-      [:span {:class "text-muted"} "&copy 2018 Nick George"]]]]))
+      [:span {:class "text-muted"} "&copy 2017-2018 Nick George"]]]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
@@ -141,17 +140,17 @@
 ;; -- TESTING BELOW --
 ;; first step is slurping a directory, applying the path prefix and formatting html.
 
-(def slurped-raw
-  "holds a map of formatted html pages for my website"
-  (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
-(keys slurped-raw)
-(def test-html (second (vals slurped-raw)))
-(parse-html test-html)
+;; (def slurped-raw
+;;   "holds a map of formatted html pages for my website"
+;;   (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
+;; (keys slurped-raw)
+;; (def test-html (second (vals slurped-raw)))
+;; (parse-html test-html)
 
-;; ;; next step is parsing edn. I will use the already slurped directory for this.
-(def metadata (parse-edn "/test" slurped-raw))
-(format-html-links metadata)
-;; ;; now I need to make the links. Sorted in reverse chrono order. 
-;; (def links-to-put (format-html-links metadata))
-;; ;; now insert the links. 
-;; (zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
+;; ;; ;; next step is parsing edn. I will use the already slurped directory for this.
+;; (def metadata (parse-edn "/test" slurped-raw))
+;; (format-html-links metadata)
+;; ;; ;; now I need to make the links. Sorted in reverse chrono order. 
+;; ;; (def links-to-put (format-html-links metadata))
+;; ;; ;; now insert the links. 
+;; ;; (zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))

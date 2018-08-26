@@ -1,12 +1,11 @@
- #+HTML: <div id="edn">
+#+HTML: <div id="edn">
 #+HTML: {:title "Science without microsoft office" :date "2017-10-26" :tags ["LaTeX" "open-science", "org-mode", "programming"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
+#+DATE: 2017-10-26 Thr
 
 This is a living document. I will update it when I learn something new!
-
-last updated: 2018-08-26 Sunsrc_emacs-lisp[:exports results :eval 1]{(insert (format-time-string "%Y-%m-%d %a"))}
 
 * Links and resources
 - [[https://inkscape.org/en/][Inkscape]] (src_bash[:exports code]{brew install caskformula/caskformula/inkscape})
@@ -36,3 +35,7 @@ I decided I would make a 42inX36in poster. To set this up in Inkscape, open *Fil
 I use Emacs org-mode. see my post on org-ref.
 
 /More coming soon/
+https://www.youtube.com/watch?v=3oQTSP4FngY
+
+/First published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

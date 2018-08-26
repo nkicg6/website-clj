@@ -1,7 +1,6 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Building my static website with Clojure" :date "2018-08-18" :tags ["clojure"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-18 Sat
 
@@ -1100,5 +1099,7 @@ Will be posted here. On the near horizon:
 2. Tests!
 
 
+
 /Published: {{{date}}}/
+
 /last updated: {{{time(%Y-%m-%d %a)}}}/
