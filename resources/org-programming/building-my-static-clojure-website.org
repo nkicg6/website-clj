@@ -837,9 +837,7 @@ I wrote this function to add the list to my index pages.
     (-> page ;; 2
         (enlive/sniptest ;; 3
          [:#pageListDiv] ;; 4 exists only in index pages. 
-         (enlive/content links)) ;; 5
-        (str/replace #"&gt;" ">") ;; 6
-        (str/replace #"&lt;" "<")))
+         (enlive/html-content links)))) ;; 5
 #+END_SRC
 
 In the body of my =index.html= pages, I added the following div:
@@ -856,8 +854,8 @@ To go through the parts of this =add-links=, I have to admit I am still not comp
 2. start threading with =page= as an argument.
 3. initialize a =enlive/sniptest=
 4. select the relevant =div id=,
-5. use =enlive/content= to replace the content of that =div= with the links.
-6. un-escape the greater-than (and less than) characters. 
+5. use =enlive/html-content= to replace the content of that =div= with the links.
+
 
 Now we have almost all the parts we need. I'll go over some caveats for publishing with GitHub Pages in [[Exporting for GitHub Pages]], then I demonstrate the workflow in [[Bringing it all together]].
 ** Summing up parsing
