@@ -135,9 +135,7 @@
   (-> page
       (enlive/sniptest
        [:#pageListDiv] ;; exists only in index pages. 
-       (enlive/content links))
-      (str/replace #"&gt;" ">")
-      (str/replace #"&lt;" "<")))
+       (enlive/html-content links))))
 
 
 ;; -- TESTING BELOW --
