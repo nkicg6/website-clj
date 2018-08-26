@@ -1,0 +1,195 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Platformio and Emacs" :date "2017-07-16" :tags ["emacs", "teensy", "programming"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2017-07-16 Sun
+
+
+* Setting up PlatformIO-Emacs integration
+I play around with the [[https://www.pjrc.com/teensy/][Teensy]] development board a lot and I used to write code for it using  the Arduino IDE. Now that I use Emacs for nearly everything else, I figured it was time to setup an environment for programming these development boards as well!
+** What you need
+for this project, I decided to use [[http://docs.platformio.org/en/latest/what-is-platformio.html][PlatformIO]]. PlatformIO is an excellent python library for programming embedded devices and microcontrollers. I used it from the command line when I was writing arduino code on the raspberrypi and it worked great, so here I am setting it up for Emacs. 
+*** Links
+- [[http://docs.platformio.org/en/latest/what-is-platformio.html][PlatformIO docs]]
+- [[http://docs.platformio.org/en/latest/ide/emacs.html][Emacs PlatformIO]]
+- [[https://github.com/ZachMassia/platformio-mode][PlatformIO-mode]]
+-  [[https://www.emacswiki.org/emacs/ArduinoSupport][Arduino-mode]]
+Note that you can also program the Arduino/Teensy directly using [[https://www.emacswiki.org/emacs/ArduinoSupport][Arduino-mode]], but I wont talk about that here. I use arduino mode to edit .ino files though. 
+* Setup
+
+  This is pretty much straight out of the  [[https://github.com/ZachMassia/platformio-mode][PlatformIO-mode]] documentation, but I added the =use-package= installation and arduino-mode for editing to my [[https://github.com/nkicg6/emacs-config][emacs config]]
+
+#+BEGIN_SRC emacs-lisp 
+  ;; emacs-lisp
+  (use-package irony-eldoc)
+  (use-package irony-mode) 
+  (use-package platformio-mode)
+  ;; edit ino files with adruino mode. 
+  (add-to-list 'auto-mode-alist '("\\.ino$" . arduino-mode)) 
+  ;; Enable irony for all c++ files, and platformio-mode only
+  ;; when needed (platformio.ini present in project root).
+  (add-hook 'c++-mode-hook (lambda ()
+                             (irony-mode)
+                             (irony-eldoc)
+                             (platformio-conditionally-enable)))
+
+  ;; Use irony's completion functions.
+  (add-hook 'irony-mode-hook
+            (lambda ()
+              (define-key irony-mode-map [remap completion-at-point]
+                'irony-completion-at-point-async)
+
+              (define-key irony-mode-map [remap complete-symbol]
+                'irony-completion-at-point-async)
+
+              (irony-cdb-autosetup-compile-options)))
+
+#+END_SRC
+
+Also, you need =projectile= so make sure that is installed as well. 
+
+Make sure you install platformIO core as well
+
+#+BEGIN_SRC bash :results verbatim 
+#bash
+pip install platformio
+
+#+END_SRC
+
+I believe that PlatformIO is currently moving from legacy Python to Python 3, but the transition is not complete yet so for the time being we have to run this off legacy python. I use [[https://python-guide-pt-br.readthedocs.io/en/latest/dev/virtualenvs/][virtualenvs]] for python development, but when I install libraries that Emacs will use I typically install system wide to avoid problems.
+
+* Useage
+
+** New projects
+
+Now you can init a project by opening a shell, making a directory for your project and typing 
+
+#+BEGIN_SRC bash :results verbatim :eval no
+#bash
+platformio init --ide emacs --board teensy31
+#+END_SRC
+Replace =teensy31= with whatever board you will be using. The board IDs are listed [[http://docs.platformio.org/en/latest/quickstart.html][here]].
+PlatformIO will create a [[https://github.com/audreyr/cookiecutter][cookiecutter-like]] template project for you looking like the following
+#+BEGIN_EXAMPLE
+|--lib/
+|   |-readme.txt
+|
+|- platformio.ini
+|
+|--src/
+
+#+END_EXAMPLE
+
+Any libraries you make go in their own directories under =lib/= and your main code goes under the =src/= under the project parent directory. PlatformIO explains this with the directory tree in the readme with an example. 
+
+#+BEGIN_EXAMPLE
+|--lib
+|  |--Bar
+|  |  |--docs
+|  |  |--examples
+|  |  |--src
+|  |     |- Bar.c
+|  |     |- Bar.h
+|  |--Foo
+|  |  |- Foo.c
+|  |  |- Foo.h
+|  |- readme.txt --> THIS FILE
+|- platformio.ini
+|--src
+   |- main.c
+
+Then in `src/main.c` you should use:
+
+#include <Foo.h>
+#include <Bar.h>
+
+// rest H/C/CPP code
+
+#+END_EXAMPLE
+
+If you are using a Teensy31 and use cookiecutter, try my (rough) [[https://github.com/nkicg6/cookiecutter-platformio-emacs][cookiecutter template]], which will make automatically create the main.ino file and .projectile for Emacs integration.
+
+** Compiling and uploading
+
+from a shell, you would type 
+
+#+BEGIN_SRC bash :results verbatim :eval no
+# bash
+platformio run
+platformio run target upload
+#+END_SRC
+
+easy enough. In the Emacs version, you =M-x platformio-build= and =M-x platformio-upload=.
+*Quick caveat* you need to be in a git or projectile project for this to work. So the base directory has to have .git directory or a .projectile. This is included with my [[https://github.com/nkicg6/cookiecutter-platformio-emacs][cookiecutter template]]. 
+ 
+** Serial monitor
+
+One of the main reasons I kept using the Arduino IDE was the excellent serial port monitoring support. Well it turns out platformIO does that too! To setup, open a shell and type
+
+#+BEGIN_SRC bash :results verbatim 
+#bash
+platformio device list
+#+END_SRC
+
+
+#+begin_example
+/dev/cu.Bluetooth-Incoming-Port
+-------------------------------
+Hardware ID: n/a
+Description: n/a
+
+/dev/cu.usbmodem2589921
+-----------------------
+Hardware ID: USB VID:PID=16C0:0483 SER=2589920 LOCATION=20-2
+Description: USB Serial
+
+#+end_example
+
+ 
+As you can see platformio detects my Bluetooth port and the serial usb port that the device is connected to. 
+
+To test, I added the simple serial program as main.ino
+
+#+BEGIN_SRC c :eval no
+  // C or arduino language
+  void setup() {
+    // put your setup code here, to run once:
+    Serial.begin(9600);
+  }
+
+  void loop() {
+    Serial.println("Hello platformio");
+    delay(1000);
+    // put your main code here, to run repeatedly:
+
+  }
+
+#+END_SRC
+
+Then I monitored with 
+
+#+BEGIN_SRC bash :results verbatim 
+# bash
+platformio device monitor
+#+END_SRC
+ 
+
+#+BEGIN_EXAMPLE
+-- Miniterm on /dev/cu.usbmodem2589921  9600,8,N,1 ---
+--- Quit: Ctrl+C | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H ---
+Hello platformio
+Hello platformio
+Hello platformio
+Hello platformio
+
+--- exit ---
+
+#+END_EXAMPLE
+and it will then begin to monitor the port just like Arduino IDE does!
+For options, see the [[http://docs.platformio.org/en/latest/userguide/cmd_device.html][documentation]]. 
+
+That's it for now, I will update this as I use more features.
+
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

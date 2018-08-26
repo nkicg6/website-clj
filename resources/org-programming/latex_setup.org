@@ -1,0 +1,50 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Setting up LaTeX on a Mac" :date "2017-07-04" :tags ["tutorial", "bash", "LaTeX"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export :exports both 
+#+DATE: 2018-07-04 Tue
+
+* Setup
+  Quick setup for src_latex[:exports results]{\LaTeX} {{{results(@@latex:\LaTeX@@)}}} using =homebrew= on a mac. I used BasicTex because MacTeX is a massive file and I can manually manage any additional packages I need using the TeX package manager =tlmgr=. If you are just getting started with LaTeX and want to use a GUI and some of the other helpful tools then I would still recommend MacTex. 
+
+** Step 1: Install BasicTex
+for this step, I used =homebrew=, the "missing package manager for macOS". Get =homebrew= [[https://brew.sh/][here]].
+once =homebrew= is installed and setup, the following commands will install BasicTeX. 
+
+#+BEGIN_SRC bash :results verbatim 
+brew install caskroom/cask/brew-cask
+brew cask install basictex --verbose # verbose flag so I can see what is happening. 
+#+END_SRC
+
+You will have to enter your password at some point. =homebrew= wont allow you to =brew install= with sudo. 
+This should install the basictex files under =/Library/TeX/texbin=. At this point, quit your terminal session and re-open it. Type the following:
+** Step 2: Verify the install
+#+BEGIN_SRC bash :results verbatim 
+which pdflatex
+#+END_SRC
+
+if you get the path to pdflatex, =/Library/TeX/texbin/pdflatex= then you are all set! However, I had to manually add this to my path. Open you favorite terminal editor and add the following to the bottom of your =.bash_profile= 
+
+** Step 3: Add BasicTex to your PATH. 
+
+#+BEGIN_SRC bash :results verbatim 
+# for basictex
+export PATH=$PATH:/Library/TeX/texbin
+#+END_SRC
+
+This assigns the variable PATH to =$PATH= which is whatever else you already have on your PATH, and then appends the path to basictex.
+Now restart your terminal (or run src_bash[:exports code]{source .bash_profile}) and try src_bash[:exports code]{which pdflatex} again, you should now get the path and you have a working version of \LaTeX on your computer. I did this so I could use [[http://pandoc.org/][pandoc]] and the org-mode exporter.
+
+** tlmgr TeX package manager
+
+    I love package managers. =tlmgr= is the package manager for TeX. It seems like most =tlmgr= commands have to be run as sudo. For example, here is how you install [[https://github.com/gpoore/minted][minted]], for source code highlighting in LaTeX.
+
+#+BEGIN_SRC bash :results verbatim 
+sudo tlmgr install minted
+#+END_SRC
+ 
+Make sure you src_bash[:exports code]{pip install pygments} as well!
+
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

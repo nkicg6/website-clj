@@ -3,6 +3,7 @@
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
+#+DATE: 2018-08-18 Sat
 
 * Building my static site
 * Learning through projects
@@ -1100,3 +1101,6 @@ Will be posted here. On the near horizon:
    - Maybe put the first 50-100 words under the title on the home page?
 2. Tests!
 
+
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

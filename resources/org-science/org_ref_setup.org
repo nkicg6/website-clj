@@ -1,0 +1,167 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Setting up and configuring org-ref" :date "2017-07-14" :tags ["LaTeX" "open-science", "org-mode", "science", "programming"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2017-07-14 Fri
+
+
+* Org-ref
+I use org-mode to write research papers, grants, etc. 
+ [[https://github.com/jkitchin/org-ref/blob/master/org-ref.org][Org-ref]] is an excellent Emacs minor-mode made by [[http://kitchingroup.cheme.cmu.edu/][John Kitchin]] that makes it easy to format citations in org-mode. I started using org-ref a few months ago but being a beginner to Emacs-lisp I had some problems figuring out how to customize the settings and export citations in a usable manner. John's documentation is great but I think it is lacking a few points that may be clear to experienced bibtex/org-mode users but were certainly not clear to me. Here I will describe what I learned about customizing org-ref citations. 
+
+* Setup
+   
+This is quite well documented [[https://github.com/jkitchin/org-ref/blob/master/org-ref.org][elsewhere]] and on the github [[https://github.com/jkitchin/org-ref][page]] but here is how I set mine up.
+First, install it. I use =use-package= for almost all my packages after watching [[https://www.youtube.com/watch?v=VIuOwIBL-ZU][this video]].
+
+#+BEGIN_SRC emacs-lisp 
+  ;; emacs-lisp from https://github.com/nkicg6/emacs-config
+  ;; org-bibtex
+  (require 'ox-bibtex)
+
+    ;; reftex
+     (use-package reftex
+                  :commands turn-on-reftex
+                  :init
+                  (progn
+                    (setq reftex-default-bibliography '("/Users/Nick/Dropbox/bibliography/library.bib"))
+                    (setq reftex-plug-intoAUCTex t))
+                  )
+       (use-package org-ref
+           :after org
+           :init
+           (setq reftex-default-bibliography '("~/Dropbox/bibliography/library.bib"))
+           (setq org-ref-default-bibliography '("~/Dropbox/bibliography/library.bib"))
+           (setq org-ref-pdf-directory '("~/PDFs")))
+
+#+END_SRC
+
+Here I installed and set-up =ox-bibtex=, =reftex=, and =org-ref=. Honestly I am not sure if you need the first two, but I installed em and it works now. Set your default bibliography location while you are setting up the other two as well, =use-pacakge= allows you to do it at the same time. 
+Next, make sure you setup you LaTeX to properly process your file with bibliography. 
+
+#+BEGIN_SRC emacs-lisp 
+     (setq org-latex-pdf-process
+           '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+             "bibtex %b"
+             "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+             "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+#+END_SRC
+
+When compiling a LaTeX document with citations, you actually need to run the compiler 4 times in order to get all the formatting and intermediate documents correct. This command takes care of that for you. To be honest I am not sure what the %o %f mean. I am fairly certain they are not Emacs-lisp string formatting specification, because =%o= is a base-eight representation of an unsigned integer... so they likely mean something to pdflatex instead. See my post on LaTeX setup for installing pdflatex with BasicTeX.
+
+#+BEGIN_SRC emacs-lisp 
+  (setq org-latex-logfiles-extensions (quote ("lof" "lot" "tex" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "pygtex" "pygstyle")))
+#+END_SRC
+
+I found that default on the internet and it makes org-mode get rid of all the temporary LaTeX files made on export.
+
+* Use
+
+   Refer to John's video and guide for useage. Basically, =C-c ]= brings you to the helm references menu where you can choose the reference or type a key to narrow it. =RET= selects the citation. Note, You can choose multiple citations by selecting with =C-SPC= over the different citations in one turn. You can also just =C-c ]= when the cursor is over an already inserted citation to put another in. 
+   A cool feature is the ability to choose the citation style. When you select a citation =C-SPC= push =C-u RET=. This will bring up a menu of different citation options like =citep citet citeyear= etc. These options are explained [[https://www.economics.utoronto.ca/osborne/latex/BIBTEX.HTM][here]] but they allow you to format the in-text citations almost any way you want! 
+Now, just insert the path to your bibliography and a style link like so:
+
+#+BEGIN_EXAMPLE
+  bibliographystyle:apalike
+  bibliography:~/Dropbox/bibliography/library.bib
+#+END_EXAMPLE
+
+wherever you want your bibliography to go. The style is any [[http://sites.stat.psu.edu/~surajit/present/bib.htm][bibtex]] style you install or want, and the path is the path to your bibtex bibliography. I use Mendeley and I have it 'watching' my PDF directory and store my bibtex citations in my Dropbox folder as shown above. 
+ 
+* It's just bibtex!
+
+Org-ref is definitely not 'just bibtex' but after some frustrating searching, I finally realized that the customizations are! If you try exporting with vanilla settings as is, you will get citations, but they will look horrible. 
+
+For instance this setup
+
+#+BEGIN_EXAMPLE
+#+TITLE: test
+#+DATE: 2017-07-13
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+
+
+#* Test
+citep:Benusa2017 and other like 
+ of multiple sclerosis. These domains are involved with the initiation and propagation of action potentials and are structurally and functionally quite similar cite:Clark2016. Although they are similar in terms of their protein composition and function, previous work from 
+here is a link to my [[https://nickgeorge.net][website]]
+
+
+bibliographystyle:apalike
+bibliography:~/Dropbox/bibliography/library.bib
+
+#+END_EXAMPLE
+
+Produces this
+
+#+CAPTION: Whats with the brackets?
+#+NAME: ugly citations
+#+ATTR_HTML: :width 50% :height 50%
+[[file:img/bad_ref_export.png]]
+
+Why brackets? I was really disappointed with the style on export. I looked all over for ways to specify the correct options in org-ref, getting more frustrated all the time.Then I realized... This is a bibtex setting, not an org-ref setting! I searched for ways to make the brackets round, no way does every bibtex user use square brackets, and I found the answer:
+=\usepackage[round]{natbib}= 
+If you want to style your org-ref citations, add the proper commands to your =#+LATEX_HEADER=!
+I made a [[https://github.com/joaotavora/yasnippet][YASnippet]] to format this with my common settings.
+
+#+BEGIN_EXAMPLE
+#+TITLE: ${1:insert title}
+#+DATE: `(format-time-string "%Y-%m-%d")`
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :exports both :eval no
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+#+LATEX_HEADER: \hypersetup{citecolor=black,colorlinks=true,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+#+LATEX_HEADER: \usepackage[round]{natbib}
+#+LATEX_HEADER: \renewcommand{\bibsection}
+
+
+$0
+
+*References*
+  bibliographystyle:apalike
+  bibliography:~/Dropbox/bibliography/library.bib
+
+#+END_EXAMPLE
+
+I often change =#+OPTIONS= but I like having the list to remind me what I can do. =#+PROPERTY= options are also common, as I don't want to add a ton of formatting to my source code blocks. Any =header-args= you specify will apply to all source code in the document. NOTE the =:eval no= argument prevents evaluating any source code, even interactively. So disable and refresh if you need this. 
+
+=\usepackage[margins=1.0]{geometry}= so I can customize margins. =\hypersetup= is super important for citations and links. you may have to =tlmgr= install it first. =citecolor = black= is needed because for some reason the default is light green... Search for the other options, but basically they are to style my links. 
+
+=\usepackage[round]{natbib}= makes your citations round =(George 2017)= instead of =[George 2017]=. 
+=\renewcommand{\bibsection}= allows you to prevent the addition of a separate section called *References* before the bibliography. Explained [[https://tex.stackexchange.com/questions/277377/how-to-keep-reference-heading-in-uppercase-with-natbib-package][in this tex stackexchange]]. 
+
+#+BEGIN_EXAMPLE
+#+TITLE: test
+#+DATE: 2017-07-13
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+PROPERTY: header-args :exports both :eval no
+#+LATEX_HEADER: \usepackage[margin=1.0in]{geometry}
+#+LATEX_HEADER: \hypersetup{citecolor=black,colorlinks=true,urlcolor=blue,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+#+LATEX_HEADER: \usepackage[round]{natbib}
+#+LATEX_HEADER: \renewcommand{\bibsection}
+
+
+#* Test
+cite:Benusa2017 and other like 
+ of multiple sclerosis. These domains are involved with the initiation and propagation of action potentials and are structurally and functionally quite similar cite:Clark2016. Although they are similar in terms of their protein composition and function, previous work from 
+here is a link to my [[https://nickgeorge.net][website]]
+
+
+bibliographystyle:apalike
+bibliography:~/Dropbox/bibliography/library.bib
+
+#+END_EXAMPLE
+
+
+Now the export should look much better. So use org-ref, but use BibTeX to specify styling!
+
+
+#+CAPTION: Better!
+#+NAME: Better formatting
+#+ATTR_HTML: :width 50% :height 50%
+[[file:img/better_export.png]]
+
+
+/First published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

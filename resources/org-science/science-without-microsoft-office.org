@@ -1,0 +1,38 @@
+ #+HTML: <div id="edn">
+#+HTML: {:title "Science without microsoft office" :date "2017-10-26" :tags ["LaTeX" "open-science", "org-mode", "programming"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+
+This is a living document. I will update it when I learn something new!
+
+last updated: 2018-08-26 Sunsrc_emacs-lisp[:exports results :eval 1]{(insert (format-time-string "%Y-%m-%d %a"))}
+
+* Links and resources
+- [[https://inkscape.org/en/][Inkscape]] (src_bash[:exports code]{brew install caskformula/caskformula/inkscape})
+- [[http://bethmcmillan.com/blog/?p=1592][nice post]] on making posters with Inkscape
+- [[https://neuroscience.telenczuk.pl/?p=331][Vector graphics]] with python and matplotlib
+- [[https://colinpurrington.com/wp-content/uploads/2011/09/scientific-poster-advice-purrington.jpg][Making posters]] guide
+
+* Why?
+I recently had the freeing feeling that comes from wiping your hard drive and getting a fresh start. I have been using emacs and org-mode for virtually everything from programming to making documents and presentations, so when I was installing things on my newly cleaned computer, I just didn't find myself missing anything from the Microsoft Office suite. 
+
+However, just because I'm off the microsoft train doesn't mean everyone else is... I still need to look at other people's office stuff (mostly =.docx=, and =.xlsx=), but I /really/ didn't want to install the whole suite just for that. So I used =homebrew= to download the LibreOffice suite, and despite some minor problems with rendering powerpoints, this has worked great!
+
+* Posters with Inkscape
+However, I'd like to move away from using PowerPoint or Impress to make posters, and with a retreat coming up, I need to figure out a new way to make a poster.
+** Size and title
+First I will try Inkscape, the free vector graphics program. I started using this [[http://bethmcmillan.com/blog/?p=1592][post]] as a guide. 
+
+*Poster size* 
+
+I decided I would make a 42inX36in poster. To set this up in Inkscape, open *File>Document Properties* then select Page size. I used a custom size in mm as 1066X914.
+
+*Title* 
+
+/More coming soon/
+
+* Writing
+I use Emacs org-mode. see my post on org-ref.
+
+/More coming soon/

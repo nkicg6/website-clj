@@ -1,0 +1,45 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Org-reveal and GitHub Pages" :date "2017-09-28" :tags ["org-mode", "emacs"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2017-09-28 Thr
+
+
+* Presentations on github pages
+
+I recently started using reveal.js and org-reveal to make presentations. They work great so far, but I also wanted to host these on my website so they would be easier to share. There aren't a lot of great guides out there, but after a couple hours of playing I figured it out.
+
+Below is a [[https://github.com/joaotavora/yasnippet][YASnippet]] for my org-reveal presentations
+
+#+BEGIN_EXAMPLE
+
+# -*- mode: snippet -*-
+# name: reveal
+# key: reveal
+# --
+#+TITLE: $1
+#+OPTIONS: ^:{} num:nil toc:nil
+#+REVEAL_TRANS: ${2:none|default|cube|page|concave|zoom|linear|fade}
+#+REVEAL_THEME: ${3:nick_white,black,white,league,beige,sky,night,serif,simple,solarized}
+#+REVEAL_ROOT: file:.///reveal.js
+#+HTML: <link rel="stylesheet" href="reveal.js/css/reveal.css">
+#+HTML: <link rel="stylesheet" href="reveal.js/css/theme/$3.css" id="theme">
+#+HTML: <script src="reveal.js/lib/js/head.min.js"></script>
+#+HTML:<script src="reveal.js/js/reveal.js"></script>
+
+$0
+
+#+END_EXAMPLE
+
+=reveal<tab>= completes this header. The =REVEAL_= tags are for setting up the reveal.js settings on my local machine and for my presentation. 
+
+I have a private domain mapped to my github as nickgeorge.net. Any repository pages will start with =nickgeorge.net/repository-name/<page>.html=
+
+In order to get this to render correctly, I needed to add the script and css links to the HTML directly with the =#+HTML= tags. Then I added the reveal.js source to my repo, re-uploaded and it works. 
+First presentation:
+
+http://nickgeorge.net/github-lab-setup/getting_started_git.html
+
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

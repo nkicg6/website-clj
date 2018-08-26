@@ -3,9 +3,14 @@
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
+#+DATE: 2018-08-18 Sat
 
 *Updated:* /2018-08-18/
 
 * Links
 - [[https://orgmode.org/worg/]] the org-mode worg. Community contributed examples and excellent instructions. /2018-08-18/ 
 - http://ehneilsen.net/notebook/orgExamples/org-examples.html One of the best org-mode cookbooks I've seen! /2018-08-18/ 
+
+
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

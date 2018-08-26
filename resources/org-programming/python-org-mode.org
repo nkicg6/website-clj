@@ -1,0 +1,70 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Using python in org-mode" :date "2017-08-27" :tags ["python", "org-mode", "programming"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2017-08-27
+
+
+* Purpose
+I have become accustomed to doing my exploratory data analysis in the awesome [[https://jupyter.org/][Jupyter notebooks]], which are amazing tools. However, I am using Emacs org-mode for virtually everything I do on the computer now and I figured it was time to move my analysis here too.
+
+* Alternatives
+I love the idea of [[https://github.com/gregsexton/ob-ipython][ob-ipython]], but after a few hours of work I keep getting an http parsing error and no output so I gave up. 
+
+* Snippets
+
+[[https://github.com/joaotavora/yasnippet][YASnippet]]for plotting session setup
+
+#+BEGIN_EXAMPLE
+# -*- mode: snippet -*-
+# name: preplot
+# key: preplot
+# --
+#+BEGIN_SRC python :session ${1:new} :results silent
+  import os
+  import matplotlib
+  matplotlib.use('Agg')
+  import matplotlib.pyplot as plt
+   if not 'img' in os.listdir("."):
+      os.mkdir('img')
+#+END_SRC $0
+
+#+END_EXAMPLE
+
+*rendered:*
+
+#+BEGIN_SRC python :session new :results silent
+  import os
+  import matplotlib
+  matplotlib.use('Agg')
+  import matplotlib.pyplot as plt
+  if not 'img' in os.listdir("."):
+      os.mkdir('img')
+#+END_SRC 
+
+Plotting snippet
+
+#+BEGIN_EXAMPLE
+# -*- mode: snippet -*-
+# name: plot
+# key: plot
+# --
+#+BEGIN_SRC python :session ${1:new} :results drawer :exports both
+$0
+print(plt.savefig('img/$2.png'))
+#+END_SRC
+#+END_EXAMPLE
+
+*rendered* 
+
+#+BEGIN_SRC python :session new :results drawer :exports both
+
+  print(plt.savefig('img/fig.png'))
+  #+END_SRC
+
+
+I intend to explore John Kitchin's =pysce= module more (demo [[http://kitchingroup.cheme.cmu.edu/blog/2016/05/29/Expanding-orgmode-py-to-get-better-org-python-integration/][here]]), but for now these snippets will do!
+
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/

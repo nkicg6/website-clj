@@ -3,6 +3,7 @@
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
+#+DATE: 2018-08-13 Mon
 
 * =git= 
 
@@ -16,3 +17,6 @@
 - [[http://nickgeorge.net/github-lab-setup/getting_started_git][A quick presentation I made]] promoting using git. I gave this at a lab meeting. 
 
 More coming soon. 
+
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/
