@@ -17,7 +17,7 @@ However, I do want to build a static site so that I can host on Github pages and
 
 However, as far as I can tell, Flask is not widely used for static websites hosted on Github pages. It took me a little while to figure out, but I now have a workable solution for my website which I will talk about on this page. Here are some of the resources I have been using:
 
-*** Flask tools
+** Flask tools
 - [[http://flask.pocoo.org/][Flask]] powerful micro-framework written in Python
 - [[https://pythonhosted.org/Flask-FlatPages/][Flask-FlatPages]] generate the pages
 - [[https://pythonhosted.org/Frozen-Flask/][Frozen-Flask]] for making the static site out of your Flask app
@@ -28,39 +28,33 @@ However, as far as I can tell, Flask is not widely used for static websites host
 - [[https://nicolas.perriault.net/code/2012/dead-easy-yet-powerful-static-website-generator-with-flask/][Nicolas Perriault]] has an excellent and clear walk through. I learned a ton about Jinja2, the templating engine Flask uses by following along with these code examples.
 - [[https://exyr.org/2010/Flask-Static/][Flask static]] basics
 - [[http://www.jamesharding.ca/posts/simple-static-markdown-blog-in-flask/][Routes and stuff]] very helpful site for setting up a more complex indexing structure. 
-*** Website Design Resources
+** Website Design Resources
 - [[https://v4-alpha.getbootstrap.com/][Bootstrap]]
 From the folks at Twitter, this super popular HTML/JS/CSS framework for making beautiful responsive websites. 
 - [[https://www.w3schools.com/][W3 Schools]]
 For learning HTML, CSS, and how to use Bootstrap
 
-*** Emacs and org-mode
+** Emacs and org-mode
 - [[https://www.gnu.org/software/emacs/][Emacs]] text editor
 - [[http://orgmode.org/][Org-mode]]
   - [[http://orgmode.org/worg/][community driven]] org tutorials
   - [[http://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][Org-publish]] I use a modified version of this framework to build this website.
   - [[http://orgmode.org/worg/org-tutorials/org-jekyll.html][org-jekyll blog]] is described here. I started using this then modified the workflow for Flask here. 
 
-** Disclaimer
-/A lot of this will be paraphrased or copied form the links above. This website is a work in progress, and I will continue working on it and will try to keep this updated as I go./
 
-* TODO Site Overview
+* Site Overview
 Flask is an incredibly light-weight and simple option for creating applications. I am just learning it so I thought building this static website would be a great way to get introduced. There are tons of great tutorials on Youtube and other blogs, some of which I linked to above. I will go through the basics for getting a site on Github pages using Flask, Flask-FlatPages, and Frozen-Flask. My workflow includes using Emacs and org-mode to create my pages in a separate directory, which I then use org-publish to convert these changes to html for the website. First I will describe how too setup your directories and Flask app, then I will show how I have integrated Emacs org-mode to make it all easy and painless. 
 ** Walk through design
 *** I made a cookiecutter!
  [[file:~/personal_projects/cookiecutter-static-flask/][cookiecutter]] in a venv called cookiecutter
-**** directory structure explination
-**** What goes where
-*** app.py explination
-*** templates
-*** static
-*** Emacs Org mode exports to these locations
- publish all https://stackoverflow.com/questions/21258769/using-emacs-org-mode-how-to-publish-the-unchanged-files-in-a-project
-*** DNS stuff
- I use namecheap to manage my custom domain ([[https://nickgeorge.net][nickgeorge.net]]), but unfortunately when I created a CNAME file to connect my github pages to it, I got a horrible network certificate warning from Chrome. To address this, I set this up https://www.timble.net/blog/2016/04/setting-up-ssl-on-github-pages/
- namecheap instructions
- https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages
-* More coming soon...
+BELOW is not yet done. I will 
+
+** Emacs Org mode exports to these locations
+publish all https://stackoverflow.com/questions/21258769/using-emacs-org-mode-how-to-publish-the-unchanged-files-in-a-project
+** DNS stuff
+I use namecheap to manage my custom domain ([[https://nickgeorge.net][nickgeorge.net]]), but unfortunately when I created a CNAME file to connect my github pages to it, I got a horrible network certificate warning from Chrome. To address this, I set this up https://www.timble.net/blog/2016/04/setting-up-ssl-on-github-pages/
+namecheap instructions
+https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages
 
 /First published: {{{date}}}/
 /last updated: {{{time(%Y-%m-%d %a)}}}/
