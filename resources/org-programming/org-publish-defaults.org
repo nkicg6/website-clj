@@ -1,0 +1,66 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "A YASnippet for org-mode publishing" :date "2018-08-26" :tags ["clojure", "static website"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2018-08-26 Sun
+
+* /A YASnippet for org-mode publishing/
+
+I love standards and templates. [[https://github.com/audreyr/cookiecutter][Cookiecutter]] is my favorite command line template generator and I use a custom template for my [[https://github.com/nkicg6/cookiecutter-lab-project/tree/master/%257B%257B%2520cookiecutter.repo_name%2520%257D%257D][lab projects]]. 
+
+When it comes to emacs programming and org-mode, I use the amazing [[https://github.com/joaotavora/yasnippet][YASnippet]] for generating templates from files called snippets. I introduced a simple snippet in my post on [[http://nickgeorge.net/programming/building-my-static-clojure-website/#parsing-edn][adding and parsing edn metadata]] for my static website, and here I have an expanded version that I am happy with for posts to my website. 
+
+I have a standard format for all my pages on my website, and the default org-mode export options and standard format rarely change. The format requires the following:
+1. =edn= metadata at the top with a set of specific keys
+2. Standard org-mode export options
+3. The date the page was created
+4. A note as to whether the page was updated and when
+
+** The snippet
+
+   Below is the text of my snippet. I will add comments in the lisp style with =;;=. Anything following the =;;= is NOT part of the snippet, but is only there for annotation. 
+
+#+BEGIN_EXAMPLE
+# -*- mode: snippet -*-
+# name: blog
+# key: blog
+# --
+#+HTML: <div id="edn">
+#+HTML: {:title "${1:title}" :date "`(format-time-string "%Y-%m-%d")`" :tags ${2:["clojure"]}}
+#+HTML: </div> ;; 1
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} ;; 2
+#+PROPERTY: header-args :eval never-export ;; 2
+#+DATE: `(format-time-string "%Y-%m-%d %a")` ;; 3
+
+\* /$1/ ;; 4
+
+$0 ;; end with cursor here
+
+
+/First published: {{{date}}}/ ;; 5
+/last updated: {{{time(%Y-%m-%d %a)}}}/ ;; 6
+
+
+#+END_EXAMPLE
+
+You can activate a snippet by typing its =key= and then pushing =TAB=. So whenever I make a new blog post, I type =blog<TAB>= and this snippet expands and prompts me for input. 
+1. This is where the =div= for my =edn= metadata is generated. I wrote about it briefly in this [[http://nickgeorge.net/programming/building-my-static-clojure-website/#parsing-edn][post]]. In org-mode, =#+HTML= will export as literal html. So I am first prompted to enter a title ="${1:title}"= , then the =:date= is automatically inserted with the emacs-lisp code snippet surrounded by back ticks, and I am then prompted to enter a few tags in what will be parsed as a Clojure vector.
+2. The =#+OPTIONS= line and =#+PROPERTY= set some sane defaults for org-mode export.
+3. =#+DATE= is an org-mode metadata item where I have also inserted emacs-lisp code to generate the date.
+4. This line will mirror whatever my title is (=$1= mirrors =${1:title}=). I also insert it as an org-mode <h1> with the =*= (ignore the =\=  in front of that particular line, that is to get around a formatting problem).
+5. The ={{{}}}= is for org-mode [[https://orgmode.org/manual/Macro-replacement.html][org-mode macro replacement]]. The =date= inside this replacement macro will insert the value =#+DATE= variable into that location upon export.
+6. This org-mode macro inserts the date of last export.
+
+I really like this format. It allows me to standardize the metadata of my files and provides a really nice automatic record of when I posted and updated different posts. When I first publish an article, the =date= and macro described in #6 will be the same, as =#+DATE= is set once when the snippet is first generated. If I ever update and re-export a file, then #6 will re-evaluate and display the date of the most recent export! 
+
+
+
+** more snippets
+   I have a bunch more snippets, which you can see in my [[https://github.com/nkicg6/emacs-config/tree/master/snippets][emacs-config]]. I stole a lot from different places on the internet, but most of these are customized to address specific problems I had or to optimize for a specific workflow. For example, I made another snippet for my regular science writing workflow called [[https://github.com/nkicg6/emacs-config/blob/master/snippets/org-mode/preamble][pre]] sets up all of my normal export options and =org-ref= settings.
+
+YASnippet's are just another reason why org-mode and emacs rock!
+
+/First published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/
+
