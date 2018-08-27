@@ -43,7 +43,7 @@
            [:div.body {:style "font-size:18px"} page]]
           [:footer {:class "footer"}
            [:div {:class "text-center"}
-            [:span {:class "text-muted"} "&copy Nick George 2017-2018"]]]]))
+            [:span {:class "text-muted"} "&copy; Nick George 2017-2018"]]]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
