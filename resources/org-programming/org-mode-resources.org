@@ -5,7 +5,7 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-18 Sat
 
-
+* /Org-mode changed my life. Resources and notes/ 
 * Links
 - http://bcwells.net/software/org-tex-define/define.html Great explanation of org-mode macros for that will execute on export /2018-08-26/ 
 - [[https://orgmode.org/worg/]] the org-mode worg. Community contributed examples and excellent instructions. /2018-08-18/ 

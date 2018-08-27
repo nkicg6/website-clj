@@ -5,7 +5,7 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-09-28 Thr
 
-
+* /Org-reveal and GitHub Pages/
 * Presentations on github pages
 
 I recently started using reveal.js and org-reveal to make presentations. They work great so far, but I also wanted to host these on my website so they would be easier to share. There aren't a lot of great guides out there, but after a couple hours of playing I figured it out.

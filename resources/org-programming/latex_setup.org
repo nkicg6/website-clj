@@ -4,9 +4,9 @@
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export :exports both 
 #+DATE: 2018-07-04 Tue
-
+* /Setting up LaTeX on my Mac/ 
 * Setup
-  Quick setup for src_latex[:exports results]{\LaTeX} {{{results(@@latex:\LaTeX@@)}}} using =homebrew= on a mac. I used BasicTex because MacTeX is a massive file and I can manually manage any additional packages I need using the TeX package manager =tlmgr=. If you are just getting started with LaTeX and want to use a GUI and some of the other helpful tools then I would still recommend MacTex. 
+  Quick setup for LaTeX using =homebrew= on Mac OSX. I used BasicTex because MacTeX is a massive file and I can manually manage any additional packages I need using the TeX package manager =tlmgr=. If you are just getting started with LaTeX and want to use a GUI and some of the other helpful tools then I would still recommend MacTex. 
 
 ** Step 1: Install BasicTex
 for this step, I used =homebrew=, the "missing package manager for macOS". Get =homebrew= [[https://brew.sh/][here]].

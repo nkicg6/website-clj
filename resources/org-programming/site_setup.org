@@ -6,7 +6,7 @@
 #+DATE: 2017-06-26 Mon
 
 This describes my pre-clojure static website. My website is now written in Clojure. See [[http://nickgeorge.net/programming/building-my-static-clojure-website/][here]] for my current implementation
-
+* /Building a static website with Flask/
 * Website- goals
 I want place to publicly share my projects, notes, and CV. This way I can display what I am working on, and learn about web development with Flask.
 Once I am up and running, I will continue writing my posts in Emacs org-mode and will update the site using org-publish and git-hooks. 
@@ -43,11 +43,9 @@ For learning HTML, CSS, and how to use Bootstrap
 
 
 * Site Overview
-Flask is an incredibly light-weight and simple option for creating applications. I am just learning it so I thought building this static website would be a great way to get introduced. There are tons of great tutorials on Youtube and other blogs, some of which I linked to above. I will go through the basics for getting a site on Github pages using Flask, Flask-FlatPages, and Frozen-Flask. My workflow includes using Emacs and org-mode to create my pages in a separate directory, which I then use org-publish to convert these changes to html for the website. First I will describe how too setup your directories and Flask app, then I will show how I have integrated Emacs org-mode to make it all easy and painless. 
+Flask is a light-weight and simple option for creating applications. I am just learning it so I thought building this static website would be a great way to get introduced. There are tons of great tutorials on Youtube and other blogs, some of which I linked to above. I will go through the basics for getting a site on Github pages using Flask, Flask-FlatPages, and Frozen-Flask. My workflow includes using Emacs and org-mode to create my pages in a separate directory, which I then use org-publish to convert these changes to html for the website. First I will describe how too setup your directories and Flask app, then I will show how I have integrated Emacs org-mode to make it all easy and painless. 
 ** Walk through design
-*** I made a cookiecutter!
- [[file:~/personal_projects/cookiecutter-static-flask/][cookiecutter]] in a venv called cookiecutter
-BELOW is not yet done. I will 
+I made a [[https://github.com/nkicg6/cookiecutter-static-flask][cookiecutter]] to streamline making static flask sites. It needs a lot of work, I wouldn't recommend it yet, but it is a nice starting point for me. 
 
 ** Emacs Org mode exports to these locations
 publish all https://stackoverflow.com/questions/21258769/using-emacs-org-mode-how-to-publish-the-unchanged-files-in-a-project

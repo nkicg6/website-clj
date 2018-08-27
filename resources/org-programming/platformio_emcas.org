@@ -5,7 +5,7 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-07-16 Sun
 
-
+* /PlatformIO and Emacs/
 * Setting up PlatformIO-Emacs integration
 I play around with the [[https://www.pjrc.com/teensy/][Teensy]] development board a lot and I used to write code for it using  the Arduino IDE. Now that I use Emacs for nearly everything else, I figured it was time to setup an environment for programming these development boards as well!
 ** What you need

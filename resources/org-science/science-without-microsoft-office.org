@@ -7,6 +7,7 @@
 
 This is a living document. I will update it when I learn something new!
 
+* /Science without Microsoft Office/
 * Links and resources
 - [[https://inkscape.org/en/][Inkscape]] (src_bash[:exports code]{brew install caskformula/caskformula/inkscape})
 - [[http://bethmcmillan.com/blog/?p=1592][nice post]] on making posters with Inkscape

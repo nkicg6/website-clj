@@ -4,7 +4,7 @@
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-13 Mon
-
+* /Helpful git links and hints/ 
 * =git= 
 
   This is a collection of helpful links and tips I am aggregating as a kind of cheat sheet for using =git= version control. 

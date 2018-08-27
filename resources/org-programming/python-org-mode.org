@@ -5,7 +5,7 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-08-27
 
-
+* /Using python in =org-mode=/
 * Purpose
 I have become accustomed to doing my exploratory data analysis in the awesome [[https://jupyter.org/][Jupyter notebooks]], which are amazing tools. However, I am using Emacs org-mode for virtually everything I do on the computer now and I figured it was time to move my analysis here too.
 

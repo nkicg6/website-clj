@@ -1,12 +1,12 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Journey to a static site" :date "2018-08-07" :tags ["clojure" "static-site"]}
+#+HTML: {:title "Journey to a static site with Clojure" :date "2018-08-07" :tags ["clojure" "static-site"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+OPTIONS: toc:t author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-07 Tue
 
-
+* /Journey to a static site with Clojure/  
 * Note!
 :PROPERTIES:
 :CUSTOM_ID: note
