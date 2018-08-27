@@ -571,20 +571,19 @@ I'll add some =edn= metadata to a test html page and start playing. First I need
 and then run =lein deps= at the command line. I'd recommend going through this [[https://github.com/swannodette/enlive-tutorial][enlive tutorial]] to figure out how to parse with =enlive=. For REPL based play and testing, my =test.org= doc looks like this:
 
 #+BEGIN_EXAMPLE
+#+HTML: <div class="edn">
+#+HTML: {:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 
-#+HTML: <div class="edn">=
-#+HTML: {:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}=
-#+HTML: </div>=
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}=
-
-=* Here is my test content=
+Here is my test content
 
 and some code 
 
-#+BEGIN_SRC clojure=
+#+BEGIN_SRC clojure
 (test clj-code)
 (def test-me "test string")
-#+END_SRC=
+#+END_SRC
 
 #+END_EXAMPLE
 
@@ -592,7 +591,7 @@ When I run =org-publish-project clj-site= I get this:
 
 #+BEGIN_EXAMPLE
 <div class="edn">
-{:title "renamed" :date 2018-08-05 :tags (clojure testing post)}
+{:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
 </div>
 
 <div id="outline-container-orgd13af6f" class="outline-2">

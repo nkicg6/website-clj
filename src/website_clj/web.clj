@@ -22,7 +22,7 @@
   (process/html-pages "/programming"
                       (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
 (def programming-metadata
-  (process/parse-edn "/programming" programming-map))
+  (process/make-edn-page-map "/programming" programming-map))
 
 (def programming-links
   (process/format-html-links programming-metadata))
@@ -31,7 +31,7 @@
   (process/html-pages "/science"
                       (stasis/slurp-directory "resources/science" #".*\.(html|css|js)")))
 (def science-metadata
-  (process/parse-edn "/science" science-map))
+  (process/make-edn-page-map "/science" science-map))
 
 (def science-links
   (process/format-html-links science-metadata))
@@ -51,11 +51,13 @@
     :landing (process/home-page
               (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
     :programming  (zipmap (keys programming-map)
-                          (map #(process/add-links % programming-links)
-                               (vals programming-map)))
+                          (map process/insert-page-title
+                               (map #(process/add-links % programming-links)
+                                    (vals programming-map))))
     :science (zipmap (keys science-map)
-                     (map #(process/add-links % science-links)
-                          (vals science-map)))}))
+                     (map process/insert-page-title
+                          (map #(process/add-links % science-links)
+                               (vals science-map))))}))
 
 ;; for test rendering
 (def app

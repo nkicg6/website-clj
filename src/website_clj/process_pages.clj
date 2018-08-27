@@ -16,34 +16,34 @@
 (defn layout-base-header
   "Applies a header and footer to html strings."
   [page]
-  (html5
-   [:head
-    [:title "Nick's site"]
-    [:meta {:charset "utf-8"}]
-    [:meta {:name "viewport"
-            :content "width=device-width, initial-scale=1.0"}]
-    [:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
-    [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}] 
-    (include-css "/css/custom.css") 
-    [:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" :integrity "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" :crossorigin "anonymous"}]
-    ]
-   [:body
-    [:nav {:class "navbar navbar-inverse"}
-     [:div {:class "container-fluid"}
-      [:div {:class "navbar-header"}
-       (link-to  {:class "navbar-brand"} "/" "Nick George")]
-      [:ul {:class "nav navbar-nav navbar-right"}
-       [:li {:class "inactive"} (link-to "/science" "Science")]
-       [:li {:class "inactive"} (link-to "/programming" "Programming")]
-       [:li [:a {:href "https://github.com/nkicg6"}
-             [:span {:class "fa fa-github" :style "font-size:24px"}]]]
-       [:li [:a {:href "https://twitter.com/NicholasMG"}
-             [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]
-    [:div {:class "container"}
-     [:div.body {:style "font-size:18px"} page]]
-    [:footer {:class "footer"}
-     [:div {:class "text-center"}
-      [:span {:class "text-muted"} "&copy Nick George 2017-2018"]]]]))
+  (html5 {:lang "en"}
+         [:head
+          [:title "Nick's site"]
+          [:meta {:charset "utf-8"}]
+          [:meta {:name "viewport"
+                  :content "width=device-width, initial-scale=1.0"}]
+          [:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
+          [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}] 
+          (include-css "/css/custom.css") 
+          [:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" :integrity "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" :crossorigin "anonymous"}]
+          ]
+         [:body
+          [:nav {:class "navbar navbar-inverse"}
+           [:div {:class "container-fluid"}
+            [:div {:class "navbar-header"}
+             (link-to  {:class "navbar-brand"} "/" "Nick George")]
+            [:ul {:class "nav navbar-nav navbar-right"}
+             [:li {:class "inactive"} (link-to "/science" "Science")]
+             [:li {:class "inactive"} (link-to "/programming" "Programming")]
+             [:li [:a {:href "https://github.com/nkicg6"}
+                   [:span {:class "fa fa-github" :style "font-size:24px"}]]]
+             [:li [:a {:href "https://twitter.com/NicholasMG"}
+                   [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]
+          [:div {:class "container"}
+           [:div.body {:style "font-size:18px"} page]]
+          [:footer {:class "footer"}
+           [:div {:class "text-center"}
+            [:span {:class "text-muted"} "&copy Nick George 2017-2018"]]]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
@@ -106,7 +106,7 @@
       (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
       (edn/read-string)))
 
-(defn parse-edn
+(defn make-edn-page-map
   "filters the `page-map` to remove index.html and returns a map of page names and edn metadata.
   `page-map` is returned by `stasis/slurp-directory`. 
   `base-name` provides the prepended base for the directory you are filtering by with `remove-index`"
@@ -119,10 +119,19 @@
 
 (defn format-html-links
   "Makes a list of links in reverse chronological order using hiccup markup.
-  `metadata-map`comes from the output of `parse-edn`"
+  `metadata-map`comes from the output of `make-edn-page-map`"
   [metadata-map]
   (html [:ul (for [[k v] (reverse (sort-by #(get-in (val %) [:date]) metadata-map))] ;; reverse chrono order
                [:li (link-to k (get v :title)) (str "<em> Published: " (get v :date) "</em>")])]))
+
+(defn insert-page-title
+  "`insert-page-title` parses edn metadata and return the html with a title inserted
+  `page` is the raw HTML of a page including the header."
+  [page]
+  (let [meta-title (get (parse-html page) :title "Nick's site")]
+    (-> page
+        (enlive/sniptest [:title]
+                         (enlive/html-content meta-title)))))
 
 ;; --- insert links ---
 
@@ -145,11 +154,15 @@
   "holds a map of formatted html pages for my website"
   (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
 ;; (keys slurped-raw)
-;; (def test-html (second (vals slurped-raw)))
-;; (parse-html test-html)
+(def test-html (layout-base-header (second (vals slurped-raw))))
+
+(parse-html test-html)
+
+
+;;(rename-page test-html)
 
 ;; ;; next step is parsing edn. I will use the already slurped directory for this.
-(def metadata (parse-edn "/test" slurped-raw))
+(def metadata (make-edn-page-map "/test" slurped-raw))
 metadata
 (format-html-links metadata)
 ;; now I need to make the links. Sorted in reverse chrono order. 
