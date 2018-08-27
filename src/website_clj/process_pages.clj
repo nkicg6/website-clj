@@ -1,5 +1,6 @@
 ;; also, add recent posts to home page! previous five?
 ;; another metadata thing could be the first 50 words of the post. very easy to work with this now. 
+;; TODO! add enlive to add a title to the head of the doc using the :title metadata
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
             [hiccup.core :refer [html]]
@@ -17,6 +18,7 @@
   [page]
   (html5
    [:head
+    [:title "Nick's site"]
     [:meta {:charset "utf-8"}]
     [:meta {:name "viewport"
             :content "width=device-width, initial-scale=1.0"}]
@@ -41,7 +43,7 @@
      [:div.body {:style "font-size:18px"} page]]
     [:footer {:class "footer"}
      [:div {:class "text-center"}
-      [:span {:class "text-muted"} "&copy 2017-2018 Nick George"]]]]))
+      [:span {:class "text-muted"} "&copy Nick George 2017-2018"]]]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
@@ -102,8 +104,7 @@
       (enlive/html-snippet)
       (enlive/select [:#edn enlive/text-node])
       (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
-      (edn/read-string)
-      (select-keys [:title :date])))
+      (edn/read-string)))
 
 (defn parse-edn
   "filters the `page-map` to remove index.html and returns a map of page names and edn metadata.
@@ -140,17 +141,18 @@
 ;; -- TESTING BELOW --
 ;; first step is slurping a directory, applying the path prefix and formatting html.
 
-;; (def slurped-raw
-;;   "holds a map of formatted html pages for my website"
-;;   (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
+(def slurped-raw
+  "holds a map of formatted html pages for my website"
+  (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
 ;; (keys slurped-raw)
 ;; (def test-html (second (vals slurped-raw)))
 ;; (parse-html test-html)
 
-;; ;; ;; next step is parsing edn. I will use the already slurped directory for this.
-;; (def metadata (parse-edn "/test" slurped-raw))
-;; (format-html-links metadata)
-;; ;; ;; now I need to make the links. Sorted in reverse chrono order. 
-;; ;; (def links-to-put (format-html-links metadata))
-;; ;; ;; now insert the links. 
-;; ;; (zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
+;; ;; next step is parsing edn. I will use the already slurped directory for this.
+(def metadata (parse-edn "/test" slurped-raw))
+metadata
+(format-html-links metadata)
+;; now I need to make the links. Sorted in reverse chrono order. 
+(def links-to-put (format-html-links metadata))
+;; now insert the links. 
+(zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
