@@ -140,6 +140,12 @@
     (-> page
         (enlive/sniptest [:title]
                          (enlive/html-content meta-title)))))
+;; --- merge and sort ---
+
+(defn merge-maps-sort-take-five
+  [metadata1 metadata2]
+  (let [merged (merge metadata1 metadata2)]
+    (take 5 (reverse (sort-by #(get-in (val %) [:date]) merged)))))
 
 ;; --- insert links ---
 
@@ -148,10 +154,10 @@
   The `page` argument is the html for a page. 
   The `links` argument is an html string, typically generated with the `make-links` function 
   This returns the modified html"
-  [page links]
+  [page links div]
   (-> page
       (enlive/sniptest
-       [:#pageListDiv] ;; exists only in index pages. 
+       [div] ;; exists only in index pages. 
        (enlive/html-content links))))
 
 
@@ -171,9 +177,8 @@
 
 ;; ;; next step is parsing edn. I will use the already slurped directory for this.
 (def metadata (make-edn-page-map "/test" slurped-raw))
-metadata
 (format-html-links metadata)
 ;; now I need to make the links. Sorted in reverse chrono order. 
 (def links-to-put (format-html-links metadata))
 ;; now insert the links. 
-(zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
+                                        ;(zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
