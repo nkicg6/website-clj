@@ -62,17 +62,22 @@
   []
   (stasis/merge-page-sources
    {:public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$") 
+
     :landing  (let [home-map (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))]
-                (zipmap (keys home-map) (map #(process/add-links % first-five-links :#recentPosts) (vals home-map))))
+                (zipmap (keys home-map)
+                        (map #(process/add-links % first-five-links :#recentPosts)
+                             (vals home-map))))
+    
     :programming  (zipmap (keys programming-map)
-                          (map process/insert-page-title
-                               (map #(process/add-links % programming-links :#pageListDiv)
-                                    (vals programming-map))))
+                          (map #(process/add-links % programming-links :#pageListDiv)
+                               (vals programming-map)))
+
     :science (zipmap (keys science-map)
-                     (map process/insert-page-title
-                          (map #(process/add-links % science-links :#pageListDiv)
-                               (vals science-map))))
+                     (map #(process/add-links % science-links :#pageListDiv)
+                          (vals science-map)))
+
     :robots (hash-map "/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt")
+
     :sitemap (hash-map "/sitemap.txt" site-map)}))
 
 ;; for test rendering
