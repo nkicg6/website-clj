@@ -1,13 +1,18 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Science without microsoft office" :date "2017-10-26" :tags ["LaTeX" "open-science", "org-mode", "programming"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-10-26 Thr
+#+TITLE: Science without microsoft office
+#+HTML:<h1 id="mainTitle">Science without microsoft office</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
 
 This is a living document. I will update it when I learn something new!
 
-* /Science without Microsoft Office/
 * Links and resources
 - [[https://inkscape.org/en/][Inkscape]] (src_bash[:exports code]{brew install caskformula/caskformula/inkscape})
 - [[http://bethmcmillan.com/blog/?p=1592][nice post]] on making posters with Inkscape
@@ -33,10 +38,7 @@ I decided I would make a 42inX36in poster. To set this up in Inkscape, open *Fil
 /More coming soon/
 
 * Writing
-I use Emacs org-mode. see my post on org-ref.
+I use Emacs org-mode. see my post on org-ref https://nickgeorge.net/science/org_ref_setup/
 
 /More coming soon/
-https://www.youtube.com/watch?v=3oQTSP4FngY
 
-/First published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

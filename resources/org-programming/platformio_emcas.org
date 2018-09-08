@@ -1,11 +1,17 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Platformio and Emacs" :date "2017-07-16" :tags ["emacs", "teensy", "programming"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-07-16 Sun
+#+TITLE: Platformio and Emacs
+#+HTML:<h1 id="mainTitle">Platformio and Emacs</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
 
-* /PlatformIO and Emacs/
+
 * Setting up PlatformIO-Emacs integration
 I play around with the [[https://www.pjrc.com/teensy/][Teensy]] development board a lot and I used to write code for it using  the Arduino IDE. Now that I use Emacs for nearly everything else, I figured it was time to setup an environment for programming these development boards as well!
 ** What you need
@@ -190,6 +196,3 @@ and it will then begin to monitor the port just like Arduino IDE does!
 For options, see the [[http://docs.platformio.org/en/latest/userguide/cmd_device.html][documentation]]. 
 
 That's it for now, I will update this as I use more features.
-
-/Published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

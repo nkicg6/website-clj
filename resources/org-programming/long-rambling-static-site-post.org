@@ -1,12 +1,18 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Journey to a static site with Clojure" :date "2018-08-07" :tags ["clojure" "static-site"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
-#+OPTIONS: toc:t author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-07 Tue
+#+TITLE: Journey to a static site with Clojure
+#+HTML:<h1 id="mainTitle">Journey to a static site with Clojure</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
 
-* /Journey to a static site with Clojure/  
 * Note!
 :PROPERTIES:
 :CUSTOM_ID: note
@@ -1214,6 +1220,3 @@ This works well for my purposes. I need to refactor and work with this a lot, be
   - Also his post here is similar with some (useful) differences https://github.com/cjohansen/cjohansen-no/blob/master/resources/md/building-static-sites-in-clojure-with-stasis.md
 - [[https://8thlight.com/blog/colin-jones/2010/12/05/clojure-libs-and-namespaces-require-use-import-and-ns.html][Clojure namespaces]]
 - add more org-mode links!
-
-/Published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

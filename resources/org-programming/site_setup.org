@@ -1,12 +1,18 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Building a static website with Flask" :date "2017-06-26" :tags ["python", "flask", "org-mode"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-06-26 Mon
+#+TITLE: Building a static website with Flask
+#+HTML:<h1 id="mainTitle">Building a static website with Flask</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
 
 This describes my pre-clojure static website. My website is now written in Clojure. See [[http://nickgeorge.net/programming/building-my-static-clojure-website/][here]] for my current implementation
-* /Building a static website with Flask/
+
 * Website- goals
 I want place to publicly share my projects, notes, and CV. This way I can display what I am working on, and learn about web development with Flask.
 Once I am up and running, I will continue writing my posts in Emacs org-mode and will update the site using org-publish and git-hooks. 
@@ -53,6 +59,3 @@ publish all https://stackoverflow.com/questions/21258769/using-emacs-org-mode-ho
 I use namecheap to manage my custom domain ([[https://nickgeorge.net][nickgeorge.net]]), but unfortunately when I created a CNAME file to connect my github pages to it, I got a horrible network certificate warning from Chrome. To address this, I set this up https://www.timble.net/blog/2016/04/setting-up-ssl-on-github-pages/
 namecheap instructions
 https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages
-
-/First published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

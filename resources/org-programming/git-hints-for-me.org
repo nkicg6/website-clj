@@ -1,10 +1,16 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "helpful git links and hints" :date "2018-08-13" :tags ("git")}
+#+HTML: {:title "Helpful git links and hints" :date "2018-08-13" :tags ("git")}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-13 Mon
-* /Helpful git links and hints/ 
+#+TITLE: Helpful git links and hints
+#+HTML:<h1 id="mainTitle">Helpful git links and hints</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
 * =git= 
 
   This is a collection of helpful links and tips I am aggregating as a kind of cheat sheet for using =git= version control. 
@@ -17,6 +23,3 @@
 - [[http://nickgeorge.net/github-lab-setup/getting_started_git][A quick presentation I made]] promoting using git. I gave this at a lab meeting. 
 
 More coming soon. 
-
-/Published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

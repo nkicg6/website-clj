@@ -1,5 +1,40 @@
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+h2 {
+    font-size: 1.6em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+h3 {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
 #edn {
     display: none;
+}
+
+.figure{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+img{
+    padding: 2em;
+}
+
+.footer{
+    margin-top: 2em;
+    margin-bottom: 2em;
 }
 
 .navbar-right
@@ -10,4 +45,19 @@
 .navbar-brand
 {
   font-size: 20px;
+}
+#mainTitle {
+    font-size: 1.8em;
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0.2em;
+
+}
+
+#table-of-contents {
+    h2: 0.9em;
+}
+#timedate {
+    font-size: 0.7em;
+    margin-bottom: 2em;
 }

@@ -1,11 +1,15 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Setting up and configuring org-ref" :date "2017-07-14" :tags ["LaTeX" "open-science", "org-mode", "science", "programming"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-07-14 Fri
-
-* /Setting up and configuring =org-ref=/
+#+TITLE: Setting up and configuring org-ref
+#+HTML:<h1 id="mainTitle">Setting up and configuring org-ref</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
 * Org-ref
 I use org-mode to write research papers, grants, etc. 
  [[https://github.com/jkitchin/org-ref/blob/master/org-ref.org][Org-ref]] is an excellent Emacs minor-mode made by [[http://kitchingroup.cheme.cmu.edu/][John Kitchin]] that makes it easy to format citations in org-mode. I started using org-ref a few months ago but being a beginner to Emacs-lisp I had some problems figuring out how to customize the settings and export citations in a usable manner. John's documentation is great but I think it is lacking a few points that may be clear to experienced bibtex/org-mode users but were certainly not clear to me. Here I will describe what I learned about customizing org-ref citations. 
@@ -161,7 +165,3 @@ Now the export should look much better. So use org-ref, but use BibTeX to specif
 #+NAME: Better formatting
 #+ATTR_HTML: :width 50% :height 50%
 [[file:img/better_export.png]]
-
-
-/First published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

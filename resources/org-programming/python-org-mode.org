@@ -1,11 +1,16 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Using python in org-mode" :date "2017-08-27" :tags ["python", "org-mode", "programming"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-08-27
+#+TITLE: Using python in org-mode
+#+HTML:<h1 id="mainTitle">Using python in org-mode</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
 
-* /Using python in =org-mode=/
 * Purpose
 I have become accustomed to doing my exploratory data analysis in the awesome [[https://jupyter.org/][Jupyter notebooks]], which are amazing tools. However, I am using Emacs org-mode for virtually everything I do on the computer now and I figured it was time to move my analysis here too.
 
@@ -65,6 +70,3 @@ print(plt.savefig('img/$2.png'))
 
 
 I intend to explore John Kitchin's =pysce= module more (demo [[http://kitchingroup.cheme.cmu.edu/blog/2016/05/29/Expanding-orgmode-py-to-get-better-org-python-integration/][here]]), but for now these snippets will do!
-
-/Published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

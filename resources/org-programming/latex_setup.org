@@ -1,10 +1,17 @@
 #+HTML: <div id="edn">
 #+HTML: {:title "Setting up LaTeX on a Mac" :date "2017-07-04" :tags ["tutorial", "bash", "LaTeX"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export :exports both 
 #+DATE: 2018-07-04 Tue
-* /Setting up LaTeX on my Mac/ 
+#+TITLE: Setting up LaTeX on a Mac
+#+HTML:<h1 id="mainTitle">Setting up LaTeX on a Mac</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+
 * Setup
   Quick setup for LaTeX using =homebrew= on Mac OSX. I used BasicTex because MacTeX is a massive file and I can manually manage any additional packages I need using the TeX package manager =tlmgr=. If you are just getting started with LaTeX and want to use a GUI and some of the other helpful tools then I would still recommend MacTex. 
 
@@ -45,6 +52,3 @@ sudo tlmgr install minted
 #+END_SRC
  
 Make sure you src_bash[:exports code]{pip install pygments} as well!
-
-/Published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/

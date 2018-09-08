@@ -2,24 +2,24 @@
 #+HTML: {:title "Building my static website with Clojure" :date "2018-08-18" :tags ["clojure"]}
 #+HTML: </div>
 #+PROPERTY: header-args :eval never-export
-#+OPTIONS: \n:1 toc:t num:0 todo:nil ^:{}
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:t
 #+DATE: 2018-08-18 Sat
-
-* /Building my static website with Clojure/
+#+TITLE: /Building my static website with Clojure/
+#+HTML:<h1 id="mainTitle">Building my static website with Clojure
+#+HTML:</h1>
+#+HTML:<div id="timedate">
+/Published: {{{date}}}/
+/last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
 * Learning through projects
 :PROPERTIES:
 :CUSTOM_ID: intro
 :END:
 *I* learn through projects. I have a hard time following the =text -> exercises= model of learning that is sometimes used in programming and science textbooks, but I found that learning the basics and then jumping into a project is the best (and most fun) way to learn something new (for me at least).
 This particular project is my personal website, and I am rebuilding it in Clojure. I am building a simple, static website to organize my projects and save hints for myself or others for future use. 
-* Why Clojure? (/an aside/)
-:PROPERTIES:
-:CUSTOM_ID: why-clojure
-:END:
-/small rant/
 
-I am currently learning Clojure, mostly because I wanted to learn functional programming principles and Rich Hickey gives [[https://github.com/tallesl/Rich-Hickey-fanclub][amazing talks]], but also because it is a functional-focused lisp-dialect that can be hosted both on the web with *ClojureScript* (via JavaScript) and the on the JVM (via *Clojure*). *Why not just learn JavaScript?* I don't really want to learn JavaScript in depth, and this is mostly because I have limited time, and it doesn't seem to offer any interesting new paradigms or ideas apart from what I already know from Python, R, etc. All I get from JavaScript would be a new syntax and more of the same headaches (and apparently a lot more headaches-- see Gary Bernhardt's [[https://www.destroyallsoftware.com/talks/wat][wat]] and [[https://www.destroyallsoftware.com/talks/the-birth-and-death-of-javascript][the birth and death of javascript]]). Clojure, on the other hand, appears to be an extremely well thought out language that allows me to explore the mysterious world of Lisp and functional programming with immutable data structures. The icing on the cake is that Clojure can compile to and leverage all of JavaScript with *ClojureScript*. So by learning Clojure, I get /a lot/ more leverage (all of the JVM, Lisp, functional programming, /and/ web programming/JavaScript) than I would get from any other langauge!
-** org-mode
+* org-mode
 
 [[file:img/org-mode-unicorn-logo.png]]
 
@@ -1097,7 +1097,6 @@ Will be posted here. On the near horizon:
 1. Most recent 5 posts (merge the lists of =science= and =programming=, sort, and take the top 5) on the home page.
    - Maybe put the first 50-100 words under the title on the home page?
 2. Tests!
-
 
 
 /Published: {{{date}}}/
