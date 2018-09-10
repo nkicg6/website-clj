@@ -60,6 +60,7 @@
 
 ;; --- edn parsing for metadata---
 
+;; !!! use as-> instead! see https://learnxinyminutes.com/docs/clojure/
 (defn parse-html
   "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
   `html` is raw html"
