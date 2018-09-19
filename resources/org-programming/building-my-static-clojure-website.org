@@ -918,7 +918,7 @@ Next I wrote =insert-page-title=:
                            (enlive/html-content meta-title))))) ;; 3
 #+END_SRC
  
-1. parse the html and grab the =:title= tag. Store in a =let= as =meta-title=
+1. parse the html and grab the =:title= tag. Store in a =let= as =meta-title=. Note that I provided a default value for =get= in case I didn't put a title in the metadata. 
 2. Start threading with the raw html (note this will have to be /after/ I applied =layout-base-header=).
 3. swap out the title tag contents with my parsed title. 
 
@@ -1185,7 +1185,7 @@ So how does this look in practice? Well just check out my [[https://github.com/n
 :CUSTOM_ID: one-push-publishing
 :END:
 
-*IN PROGRESS!! /2018-08-19/* 
+*IN PROGRESS!! /2018-09-19/* 
 
 I can already build my website with my current alias, now I will make another to deploy!
 The steps I need to do are: 
@@ -1209,13 +1209,6 @@ Right now, to publish, I run:
 :CUSTOM_ID: future-improvements
 :END:
 
-/2018-08-19/ 
 
 Will be posted here. On the near horizon:
-1. Most recent 5 posts (merge the lists of =science= and =programming=, sort, and take the top 5) on the home page.
-   - Maybe put the first 50-100 words under the title on the home page?
-2. Tests!
-
-
-/Published: {{{date}}}/
-/last updated: {{{time(%Y-%m-%d %a)}}}/
+1. Tests!
