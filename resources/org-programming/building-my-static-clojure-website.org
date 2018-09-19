@@ -12,18 +12,22 @@
 /last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
 #+TOC: headlines 2
+
+/quick note/ 
+I made some changes, mostly to align this with what I know now and get rid of some sloppy code. I don't have /everything/ about my website explained here (robots.txt, five links on the home page, and my site map are not included), but I think the hard parts are covered. The most up-to-date and complete version will be the source code https://github.com/nkicg6/website-clj. If I do anything else that I think is interesting or hard, I will add it here in the future. Hopefully it is becoming better-formed and simpler as I go! 
+
 * Learning through projects
 :PROPERTIES:
 :CUSTOM_ID: intro
 :END:
-*I* learn through projects. I have a hard time following the =text -> exercises= model of learning that is sometimes used in programming and science textbooks, but I found that learning the basics and then jumping into a project is the best (and most fun) way to learn something new (for me at least).
-This particular project is my personal website, and I am rebuilding it in Clojure. I am building a simple, static website to organize my projects and save hints for myself or others for future use. 
+*I* learn through projects. I have a hard time following the =text -> exercises= model of learning that is sometimes used in programming and science textbooks, but I found that learning the basics and then jumping into a project is the best (and most fun) way to learn something new.
+This particular project is my personal website, which I am rebuilding in Clojure ([[https://nickgeorge.net/programming/why-learn-clojure][why Clojure?]]). I am building a simple, static website to organize my projects and save hints for myself or others for future use. 
 
 * org-mode
 
 [[file:img/org-mode-unicorn-logo.png]]
 
-Emacs [[https://orgmode.org/][org-mode]] has taken over my life. I will write more about org mode soon, but I plan to write content and publish my site with =org-publish=, so my org-mode settings will be included throughout this document.
+Emacs and [[https://orgmode.org/][org-mode]] have taken over my life. I will write more about org mode soon, but I plan to write content and publish my site with =org-publish=, so my org-mode settings will be included throughout this page.
 
 * Getting started 
 :PROPERTIES:
@@ -56,6 +60,7 @@ resources
 │   ├── img
 │   └── js
 ├── science
+├── staging-in-progress
 └── test
 #+END_EXAMPLE
 
@@ -64,7 +69,32 @@ resources
 - =org-science/= is the same as =org-programming= but for science posts.
 - The corresponding =programming/= and =science/= pages will contain the =html= versions of the posts from =org-programming/= and =org-science=. These =html= pages will be created using =org-publish=.
 - =public/= contains all my static images, css, and js files.
+- =staging-in-progress/= contains all the posts I am workin on but don't want to be exported and published yet. 
 - =test/= just contains test html and org stuff that will not be included in the real site. I just use it for testing. 
+For reference, here is what the complete directory tree looks like:
+
+#+BEGIN_EXAMPLE
+
+├── doc
+│   └── img
+├── resources
+│   ├── home
+│   ├── org-programming
+│   ├── org-science
+│   ├── programming
+│   ├── public
+│   │   ├── css
+│   │   ├── img
+│   │   └── js
+│   ├── science
+│   ├── staging-in-progress
+│   └── test
+├── src
+│   └── website_clj
+├── target
+└── test
+    └── website_clj
+#+END_EXAMPLE
 
 ** Org-publish
 :PROPERTIES:
@@ -267,7 +297,8 @@ One of the workhorse functions in [[https://github.com/magnars/stasis][stasis]] 
     `html` is a raw html string."
     [html]
     (-> html
-        (format-images))) ;; other fns for html here 
+        format-images
+        layout-base-header)) ;; other fns for html here 
 
   (defn fmt-page-names  ;; 3
     "removes .html from all non-index.html pages.
@@ -286,14 +317,14 @@ One of the workhorse functions in [[https://github.com/magnars/stasis][stasis]] 
     '/programming/<page-name>' to every key in the map and strip the html end off all non-index pages."
     [base-name page-map]
     (zipmap (map #(fmt-page-names base-name %) (keys page-map))
-            (map #(layout-base-header %) (map #(format-html %) (vals page-map)))))
+            (map #(format-html %) (vals page-map))))
 
 #+END_SRC
 
 I'll break down these functions briefly, and note that most of them work only on the raw html strings or key name strings returned from the =stasis/slurp-directory= function. 
 
-1. =format-images= is simply to fix a silly formatting problem when exporting my image links from org-mode to html. I think it is self explanatory.
-2. =format-html= will be a function that simply composes other small html formatting functions I may want to use in the future. Right now, I only have =format-images=, but if I need more in the future, it would be trivial to write and apply them without breaking upstream code (as long as I take and return html strings). Really nice consequence of dealing with simple values rather than objects.
+1. =format-images= is simply to fix a silly formatting problem when exporting my image links from org-mode to html (see [[org-workflow: Handling images]]). I think it is self explanatory.
+2. =format-html= will be a function that simply composes other small html formatting functions I may want to use in the future. Right now, I only have =format-images= and =layout-base-header=. If I need more in the future, it will be trivial to write and apply them without breaking upstream code (as long as I take and return html strings). Really nice consequence of dealing with simple values rather than objects.
 3. =fmt-page-names= As the documentation says, this removes html from all html pages that do not contain =index= in them, and then prepends some =base-name= to all pages. The pages that are /already/ named =index.html= are pre-made pages that I have as the landing pages for those subjects. These pages need to retain the =.html= file endings in order to render as index pages correctly. All others can have the =.html= endings removed. This allows me to prepend =/programming/= to all pages in the programming folder, and the same for science. 
 4. =html-pages= is another composed function of all of the above functions. Instead of taking and returning a string, it takes and returns a map (which comes from =stasis/slurp-directory=). Just to demonstrate how this is used, I'll show you reading in pages in =web.clj=:
 
@@ -360,6 +391,7 @@ Here is a test image:
 </p>
 
 #+END_EXAMPLE
+
 As I figured the working directory was within whatever page you were at, and then I just followed the path to =img=. But that does not work. Finally I figured out that images can be added by referring to them relative to public as the working directory. For example:
 
 #+BEGIN_EXAMPLE
@@ -367,7 +399,7 @@ As I figured the working directory was within whatever page you were at, and the
 
 #+END_EXAMPLE
 
-inserts the image stored in =public/img/test-img.png=
+inserts the image stored in =public/img/test-img.png=. This makes sense (in hindsight), as with =stasis= I slurped the whole =public/= directory.
 ** org-workflow: Handling images
 :PROPERTIES:
 :CUSTOM_ID: org-mode-images
@@ -392,7 +424,7 @@ Here is a test post and a link to an image.
 Exporting this to html gives the following link structure in HTML:
 
 #+BEGIN_EXAMPLE
-img src="img/test-img.png" alt="test-img.png"
+<img src="img/test-img.png" alt="test-img.png"/>
 #+END_EXAMPLE
 
 While this is /almost/ right, it doesn't render properly because all images are referred to =/img/=. To fix it, I wrote a link formatting function in [[Preaparing pages]] called =format-images=. Now to gather and serve all the resources, I have a function called =get-assets= which grabs everything from =public/= and hands it to [[https://github.com/magnars/optimus][optimus]] for frontend optimizations.
@@ -437,7 +469,7 @@ While this is /almost/ right, it doesn't render properly because all images are 
 :CUSTOM_ID: org-mode-syntax-highlighting
 :END:
  
-  [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian Johanson]] has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing =org-mode= takes care of syntax highlighting for me when I add =(setq org-src-fontify-natively t)= to my =config.org=. So here I will just test it real quick and see how it looks. 
+  [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian Johanson]] has an excellent description of formatting markdown fenced code blocks with pygments for nice display on his static site. His approach uses pygments and enliven and is very detailed and nice. However, the amazing =org-mode= takes care of syntax highlighting for me when I add =(setq org-src-fontify-natively t)= to my [[https://github.com/nkicg6/emacs-config/blob/master/config.org#basics][config.org]]. So here I will just test it real quick and see how it looks. 
 
 In my HTML file, I will add a clojure code block like so:
 
@@ -478,7 +510,7 @@ This renders upon =M-x org-publish-project clj-site= to look like this:
 
 =org-src-fontify-natively= uses the currently active theme to highlight your source code. I just exported this using the [[https://github.com/fniessen/emacs-leuven-theme][Leuven theme]] (great for org-mode) and I like the way it looks. However, if I wanted to change it and use =enliven= with =pygments=, I would probably use some emacs-lisp code and packages such as those described here: https://emacs.stackexchange.com/questions/31439/how-to-get-colored-syntax-highlighting-of-code-blocks-in-asynchronous-org-mode-e , but for right now I dont think this is necessary for me so I will go with the raw html formatting from org-export. 
 
-At this point, I removed all the markdown file stuff from my project as I don't plan to write in markdown and I cleaned up some other stuff I probably wont use. You can see the source code for my project [[https://github.com/nkicg6/website-clj][here]], all the code that does any work is in the =web.clj= file. 
+You can see the source code for my project [[https://github.com/nkicg6/website-clj][here]]
 ** Summing up
 :PROPERTIES:
 :CUSTOM_ID: prepare-pages-summary
@@ -528,7 +560,7 @@ $0
 
 #+END_EXAMPLE
 
-when I type =blog <TAB>= it expands to the following
+when I type =blog<TAB>= it expands to the following
 
 #+BEGIN_EXAMPLE
 #+HTML: <div id="edn">
@@ -586,7 +618,7 @@ and some code
 #+END_SRC
 
 #+END_EXAMPLE
-
+and I put that in the =test-org/= folder and added an export line to my org-mode export file in the project =clj-site=.
 When I run =org-publish-project clj-site= I get this:
 
 #+BEGIN_EXAMPLE
@@ -617,7 +649,7 @@ I am playing with this code at the bottom of my new =process-clj= namespace.
 
 #+BEGIN_SRC clojure 
   ;;;; process_pages.clj
-  ;; first step is slurping a directory, applying the path prefix and formatting html.
+  ;; first step is slurping a directory, applying the path prefix and formatting html. Make sure to add stasis to the ns declaration for testing!
 
   (def slurped-raw
     "holds a map of formatted html pages for my website"
@@ -652,17 +684,16 @@ Figuring out the parsing took some time, but eventually I figured out this code:
 
   ;; --- snip ---
 
-
   (defn parse-html
     "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
     `html` is raw html"
-    [html] 
-    (-> html ;; 1
-        (enlive/html-snippet) ;; 2
-        (enlive/select [:#edn enlive/text-node]) ;; 3
-        (->> (apply str)) ;; 4
-        (edn/read-string) ;; 5
-        (select-keys [:title :date]))) ;; 6
+    [html]
+    (as-> html raw-text ;; 1
+      (enlive/html-snippet raw-text) ;; 2
+      (enlive/select raw-text [:#edn enlive/text-node]) ;; 3
+      (apply str raw-text) ;; 4
+      (edn/read-string raw-text))) ;; 5
+
 
   ;; --- snip ---
 
@@ -674,17 +705,16 @@ Figuring out the parsing took some time, but eventually I figured out this code:
   (def metadata (parse-html test-html))
 
   metadata
-  ;; => {:title "renamed", :date "2018-08-05"}
+  ;; => {:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
 
 #+END_SRC
 
 Going through =parse-html= 
-1. start threading the html
+1. start threading the html using the =as->= macro. I recently refactored to use this rather than thread first =->= because I have one place (#4) where the html needs to be the last argument. Rather than mixing thread first and thread last, I used =as->= to overcome this limitation. 
 2. turn the html into an =enlive/html-snippet=. As far as I know, this parses the html for enlive.
 3. use enlive to get the relevant node base on id. You select based on the =div id= with =#id-name=. This part is still a little confusing for me...
-4. Now I need to turn that into a string. Unfortunately, I need to use =(apply str html)=, with the html passed as the last argument. The =->= macro inserts the result of the previous form as the /first/ argument, which would result in the apply step looking like =(apply html str)= which will not work. The =->>= macro inserts the result of the previous form as the /last/ argument, so I added that macro to the =apply str= step. I've read mixing these macros is bad form, but for now it seems to work so I'll leave it be.
-5. uses =edn/read-string= to parse the resulting string into a clojure map. Note all of my =edn= metadata will be represented as strings or vectors/lists of strings for now. 
-6. I grab a few keys from the parsed =edn=. 
+4. Now I need to turn that into a string, so I use =apply str=
+5. uses =edn/read-string= to parse the resulting string into a clojure map. Note all of my =edn= metadata will be represented as strings or vectors/lists of strings for now, as I can select some for inserting later. 
 
 =edn= is parsed and in memory, though in order to use it in practice I'll make one more function that takes in the map returned by =stasis/slurp-directory=, and returns a map of maps with the metadata. 
 
@@ -707,18 +737,17 @@ In practice, =/programming/index.html= will live in the =programming/= directory
 
 This function simply joins the =base-name= (i.e. "/programming") to the string "/index.html" and removes it from the map.
 
-The function =parse-edn= works directly with the map from =stasis/slurp-directory=, and it returns a map of maps, with ={page-name1 metadata1 ...}=
+The function =make-edn-page-map= works directly with the map from =stasis/slurp-directory=, and it returns a map of maps, with ={page-name1 metadata1 ...}=
 
 #+BEGIN_SRC clojure 
-  (defn parse-edn
+  (defn make-edn-page-map
     "filters the `page-map` to remove index.html and returns a map of page names and edn metadata.
     `page-map` is returned by `stasis/slurp-directory`. 
     `base-name` provides the prepended base for the directory you are filtering by with `remove-index`"
     [base-name page-map]
-    (let [filtered-page-map (remove-index base-name page-map)] ;; 1 
+    (let [filtered-page-map (remove-index base-name page-map)] ;; 1
       (zipmap (keys filtered-page-map) ;; 2
               (map parse-html (vals filtered-page-map))))) ;; 3
-
 
   ;; --- snip ---
 
@@ -726,12 +755,12 @@ The function =parse-edn= works directly with the map from =stasis/slurp-director
 
   (def metadata (parse-edn ("/test" slurped-raw)))
   metadata
-  ;; => {"/test/test" {:title "renamed", :date "2018-08-05"}, "/test/test2" {:title "renamed2", :date "2018-08-06"}}
+  ;; => {"/test/test" {:title "renamed" :date "2018-08-05" :tags ["tag1" "tag2"]}, "/test/test2" {:title "renamed2" :date "2018-08-06" ...}}
 #+END_SRC
 
 1. applies =remove-index= to the =page-map=.
-2. Use the keys from the filtered page map as the keys in the new map
-3. apply =parse-html= to the values of the =filtered-page-map=. This will be the values for the new map. 
+2. Use the keys from the newly filtered page map as the keys in the new map
+3. apply =parse-html= to the values of the =filtered-page-map=. This will be the values for the new map.
 
 ** making html links
 :PROPERTIES:
@@ -767,7 +796,7 @@ Now we have a nice map to work with, it is time to make some links. The function
 
 
 I like this function, but it does look a little complicated. Here are what the parts do. 
-1. =html= is from =hiccup=. Here I am generating an =html= fragment, and I am initializing an un-ordered list.
+1. =html= is from =hiccup=. Here I am generating an =html= fragment, and I am initializing an un-ordered html list.
 2. The start of a list comprehension in clojure.
 3. This is a really cool thing about clojure I found in the docs for sorting maps. You can sort by a value /within/ the map of maps. So I sort by the key =:date=. Then, to get reverse chronological order, I just =reverse= the list. This is all part of the main list comprehension. So =k= is the key from the now reverse chronologically ordered =metadata-map=, and =v= is the value (inner metadata map)
 4. initializes an element of a list. This will be generated for each item in the =metadata-map=
@@ -832,10 +861,10 @@ I wrote this function to add the list to my index pages.
     The `page` argument is the html for a page. 
     The `links` argument is an html string, typically generated with the `make-links` function 
     This returns the modified html"
-    [page links] ;; 1
+    [page links div] ;; 1
     (-> page ;; 2
         (enlive/sniptest ;; 3
-         [:#pageListDiv] ;; 4 exists only in index pages. 
+         [div] ;; 4 exists only in index pages. 
          (enlive/html-content links)))) ;; 5
 #+END_SRC
 
@@ -852,8 +881,92 @@ To go through the parts of this =add-links=, I have to admit I am still not comp
 1. This function takes the list of links generated by =format-html-links= and adds them to a =page= /if/ if contains the target =div id=.
 2. start threading with =page= as an argument.
 3. initialize a =enlive/sniptest=
-4. select the relevant =div id=,
+4. select the relevant =div id=, In this case it will be =:#pageListDiv=, but I made it generic so you just provide =div= as an argument. 
 5. use =enlive/html-content= to replace the content of that =div= with the links.
+
+** Page titles
+:PROPERTIES:
+:CUSTOM_ID: page-titles
+:END:
+Now to make good, well-formed html you have to have one last part-- a =<title>=. To add a title, I will use the parsed edn metadata similar to how I did it with the page links. 
+
+We have already written =parse-html=, a function which returns the metadata map. I added a =title= tag to my =layout-base-header= that looks like this =[:title "Nick's site"]=. This is there both to provide a template for =enlive= to replace, and to ensure that every page has a title even if I am missing a title in the metadata (I read that it is good for search engine ratings to have well-formed html).
+Next I wrote =insert-page-title=:
+
+#+BEGIN_SRC clojure 
+  ;; process_pages.clj
+
+  ;; ---snip---
+  (defn parse-html
+    "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
+    `html` is raw html"
+    [html]
+    (as-> html raw-text
+      (enlive/html-snippet raw-text)
+      (enlive/select raw-text [:#edn enlive/text-node])
+      (apply str raw-text)
+      (edn/read-string raw-text)))
+
+
+  (defn insert-page-title
+    "`insert-page-title` parses edn metadata and return the html with a title inserted
+    `page` is the raw HTML of a page including the header."
+    [page]
+    (let [meta-title (get (parse-html page) :title "Nick's site")] ;; 1
+      (-> page ;; 2
+          (enlive/sniptest [:title]
+                           (enlive/html-content meta-title))))) ;; 3
+#+END_SRC
+ 
+1. parse the html and grab the =:title= tag. Store in a =let= as =meta-title=
+2. Start threading with the raw html (note this will have to be /after/ I applied =layout-base-header=).
+3. swap out the title tag contents with my parsed title. 
+
+Great! Now since this is another html processing function, I can add it to =format-html= to put it right into the normal pipeline without changing anything else!
+
+#+BEGIN_SRC clojure 
+  ;; process_pages.clj
+
+  ;; --- snip --- 
+
+  (defn format-images [html]
+    "formats html image link to appropriately link to static website image directory.
+    `html` is a raw html string."
+    (str/replace html #"src=\"img" "src=\"/img"))
+
+  ;; --- edn parsing for metadata---
+
+  ;; !!! use as-> instead! see https://learnxinyminutes.com/docs/clojure/
+  (defn parse-html
+    "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
+    `html` is raw html"
+    [html]
+    (as-> html raw-text
+      (enlive/html-snippet raw-text)
+      (enlive/select raw-text [:#edn enlive/text-node])
+      (apply str raw-text)
+      (edn/read-string raw-text)))
+
+  (defn insert-page-title
+    "`insert-page-title` parses edn metadata and return the html with a title inserted
+    `page` is the raw HTML of a page including the header."
+    [page]
+    (let [meta-title (get (parse-html page) :title "Nick's site")]
+      (-> page
+          (enlive/sniptest [:title]
+                           (enlive/html-content meta-title)))))
+
+  (defn format-html 
+    "Composed function to apply multiple html processing steps to raw html.
+    `html` is a raw html string."
+    [html]
+    (-> html
+        format-images
+        layout-base-header
+        insert-page-title)) ;; other fns for html here
+#+END_SRC
+
+Note that insert-page-title is /after/ the base header is applied. 
 
 
 Now we have almost all the parts we need. I'll go over some caveats for publishing with GitHub Pages in [[Exporting for GitHub Pages]], then I demonstrate the workflow in [[Bringing it all together]].
@@ -1008,15 +1121,20 @@ So how does this look in practice? Well just check out my [[https://github.com/n
               [website-clj.process-pages :as process]))
 
   ;; define page maps and link maps
+  ;; define page maps and link maps
 
   (def programming-map
+    "constant for all links holding programming pages"
     (process/html-pages "/programming"
-                        (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)"))) ;; 1
+                        (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
   (def programming-metadata
-    (process/parse-edn "/programming" programming-map)) ;; 2
+    "constant for all programming-metadata"
+    (process/make-edn-page-map "/programming" programming-map))
 
   (def programming-links
-    (process/format-html-links programming-metadata)) ;; 3
+    "constant for all programming links"
+    (process/format-html-links programming-metadata))
+
 
   ;; repeat for science...
 
@@ -1036,10 +1154,10 @@ So how does this look in practice? Well just check out my [[https://github.com/n
       :landing (process/home-page
                 (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))
       :programming  (zipmap (keys programming-map)
-                            (map #(process/add-links % programming-links)
+                            (map #(process/add-links % programming-links :#pageListDiv)
                                  (vals programming-map)))
       :science (zipmap (keys science-map)
-                       (map #(process/add-links % science-links)
+                       (map #(process/add-links % science-links :#pageListDiv)
                             (vals science-map)))}))
 
   ;; --- snip ---
