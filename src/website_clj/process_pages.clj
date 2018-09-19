@@ -1,6 +1,5 @@
 ;; also, add recent posts to home page! previous five?
 ;; another metadata thing could be the first 50 words of the post. very easy to work with this now. 
-;; TODO! add enlive to add a title to the head of the doc using the :title metadata
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
             [hiccup.core :refer [html]]
@@ -65,11 +64,11 @@
   "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
   `html` is raw html"
   [html]
-  (-> html
-      (enlive/html-snippet)
-      (enlive/select [:#edn enlive/text-node])
-      (->> (apply str)) ;; I know this is bad form, but it is the best way I know how to do it..
-      (edn/read-string)))
+  (as-> html raw-text
+    (enlive/html-snippet raw-text)
+    (enlive/select raw-text [:#edn enlive/text-node])
+    (apply str raw-text)
+    (edn/read-string raw-text)))
 
 (defn insert-page-title
   "`insert-page-title` parses edn metadata and return the html with a title inserted
