@@ -78,7 +78,7 @@ Now you can test your environment using this code from the ImageJ [[http://image
 
 and then when you =cider-jack-in= and =cider-eval-file=, the image should pop right up!
 
-[[file:~/personal_projects/website-clj/resources/public/img/simple-plugin-test.png]]
+[[file:img/simple-plugin-test.png]]
 
 Very cool. Next I'll start working with a graphical interface. 
 
