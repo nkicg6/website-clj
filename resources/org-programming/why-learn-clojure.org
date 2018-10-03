@@ -19,7 +19,9 @@ I am currently learning Clojure, mostly because I wanted to learn functional pro
 
 * Leverage, new paradigms and a rich ecosystem
 
-  Compared to JavaScript (or really any other language I have seen) Clojure appears to be an /extremely well thought out language/ that allows me to explore the world of Lisp and functional programming with immutable data structures. The icing on the cake is that Clojure can compile to and leverage all of JavaScript with *ClojureScript*. By learning Clojure, I get /a lot/ more leverage (all of the JVM, Lisp, functional programming, /and/ web programming/JavaScript) than I would get from any other language!
+  Compared to JavaScript (or really any other language I have seen) Clojure appears to be an /extremely well thought out language/ that allows me to explore the world of Lisp and functional programming with immutable data structures. The icing on the cake is that Clojure can compile to and leverage all of JavaScript with *ClojureScript*. 
+/Note:/ I think this [[https://www.youtube.com/watch?v=j-kj2qwJa_E][figwheel]] for ClojureScript development demo by Bruce Hauman is reason alone to learn Clojure(Script)!  
+By learning Clojure, I get /a lot/ more leverage (all of the JVM, Lisp, functional programming, /and/ web programming/JavaScript) than I would get from any other language!
 
 * Learning a craft rather than getting a thing 
 

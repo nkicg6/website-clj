@@ -1,0 +1,84 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Building ImageJ/Fiji Plugins with Clojure" :date "2018-10-01" :tags ["clojure", "ImageJ", "Fiji"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2018-10-01 Mon
+#+TITLE: Building ImageJ/Fiji Plugins with Clojure
+#+HTML:<h1 id="mainTitle">Building ImageJ/Fiji Plugins with Clojure</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+
+* ImageJ and Fiji
+
+[[https://imagej.net/ImageJ][ImageJ (and Fiji, batteries included ImageJ)]] are amazing pieces of free software originally developed at the National Institutes of Health by Wayne Rasband (who still maintains the original ImageJ software), with newer versions currently developed by [[https://github.com/ctrueden][Curtis Reuden]] et al.
+Here are some papers about the ImageJ ecosystem:
+- [[https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-017-1934-z]["ImageJ2: ImageJ for the next generation of scientific image data"]]
+- [[https://www.nature.com/articles/nmeth.2019]["Fiji: an open-source platform for biological-image analysis"]]
+- More listed: https://imagej.net/Citing
+
+This powerful and vibrant ecosystem is build around the Java Virtual Machine to allow for fast, cross-platform scientific image analysis. One of the best parts of this software is the extensibility. ImageJ [[http://imagej.net/Plugins][plugins]] allow users to extend ImageJ functionality and ImageJ provides the means to easily [[http://imagej.net/Update_Sites][share]] those changes with others.
+I want to develop plugins using Clojure, so in this *work in progress* I will document how I set up my environment and any issues I had while developing and compiling a plugin. 
+
+* Setting up the REPL and development environment
+
+** Dependencies and FunImageJ (Lisp for ImageJ)
+I write Clojure in Emacs using [[https://cider.readthedocs.io/en/latest/][Cider]], and that is how I would like to develop plugins. After some fiddling, I realized that setting up the environment to develop from Cider was super easy! ImageJ (and SciJava) are available from Maven, so to work with them you should just have to add them to your =project.clj= in your Leiningen project. 
+
+First, I'll setup a Leiningen project.
+
+#+BEGIN_SRC bash :results verbatim 
+lein new app test_plugin
+#+END_SRC
+Now there are a lot of dependencies I may need to work with ImageJ, [[http://scijava.org/][SciJava]], [[http://imagej.net/ImgLib2][ImageLib2]], etc. I will add just the basic ImageJ ones at this point, along with a really cool project called [[https://github.com/kephale/fun.imagej][FunImageJ]], which provides a Lisp (Clojure) interface for image analysis in ImageJ. Kyle Harrington, Curtis Rueden, and Kevin W. Eliceiri wrote a paper about it https://doi.org/10.1093/bioinformatics/btx710 . 
+
+I am new to the Java ecosystem and build tools, so I am still not sure how the different maven repos work as everything I have needed has been in Maven central (default with Leiningen). I found [[https://mvnrepository.com/artifact/net.imagej][this respository]], which looks like exactly what I needed, but it turned out I needed to add an external repository to my =project.clj= first. Luckily, the [[https://github.com/kephale/fun.imagej][FunImageJ]] repository gave me a hint and I added the following to get started:
+
+#+BEGIN_SRC clojure 
+(defproject test_plugin "0.1.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :repositories [["imagej-releases"       ;; external "ID"
+                  "http://maven.imagej.net/content/repositories/releases/"]  ;; external url
+                 ["imagej-snapshots" "http://maven.imagej.net/content/repositories/snapshots/"]]
+  :dependencies [[org.clojure/clojure "1.8.0"]
+                 [net.imagej/ij "1.52g"] ;; main imagej
+                 [net.imagej/imagej-common "0.26.0"] ;; not sure if I need it. 
+                 [fun.imagej/fun.imagej "0.2.1"]] ;; lisp for imagej!
+  
+  :main ^:skip-aot test-plugin.core
+  :target-path "target/%s"
+  :profiles {:uberjar {:aot :all}})
+
+#+END_SRC
+
+Alternatively, you can use only the stuff in the default Maven with these two artifacts
+
+#+BEGIN_SRC clojure 
+  ;; ...
+   [org.scijava/scijava-common "2.75.1"] ;; for scijava
+   [gov.nih.imagej/imagej "1.45"] ;; for imagej
+  ;; ...
+#+END_SRC
+
+
+Now you can test your environment using this code from the ImageJ [[http://imagej.net/Clojure_Scripting#JVM_arguments][Clojure scripting]] guide:
+
+#+BEGIN_SRC clojure 
+(import '(ij IJ))
+(def gold (IJ/openImage "http://imagej.net/images/AuPbSn40.jpg"))
+(.show gold)
+#+END_SRC
+
+and then when you =cider-jack-in= and =cider-eval-file=, the image should pop right up!
+
+[[file:~/personal_projects/website-clj/resources/public/img/simple-plugin-test.png]]
+
+Very cool. Next I'll start working with a graphical interface. 
+
