@@ -15,6 +15,14 @@
 
   This is a collection of helpful links and tips I am aggregating as a kind of cheat sheet for using =git= version control. 
 
+** Un-doing changes for specific files
+This is a really common action and actually one of the more useful parts of version control. 
+Here is a minimal (from scratch example)
+
+#+HTML: <script src="https://asciinema.org/a/206385.js" id="asciicast-206385" async></script>
+
+- [[https://www.atlassian.com/git/tutorials/undoing-changes][Undoing changes tutorial]]
+- [[https://coderwall.com/p/pgqlkq/git-checkout-a-single-file-from-a-specific-commit][checking out a single file from an older commit]]
 ** Merging and branches
 - [[https://stackoverflow.com/a/14168817/6032156][Merge dev/master before master/dev]]
 - [[https://stackoverflow.com/a/5772882/6032156][OMG DETACHED HEAD?!!]] Amazing explanation for how to get around and work with detached head without panicking. 
