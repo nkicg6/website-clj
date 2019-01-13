@@ -1,0 +1,428 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Making Figures with R: common things I need to look up and tricks" :date "2019-01-13" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["R" "science" "graphics"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil tex:t
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2019-01-13 Fri
+#+TITLE: Making figures with R: common things I need to look up and tricks
+#+HTML:<h1 id="mainTitle">Making Figures with R: common things I need to look up and tricks</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+I use R for most of my data analysis and especially for making figures. There are a few things I constantly need to look up when it comes to fine-grained figure editing and graphics, as well as some best practices I picked up which have made my life easier. I'll present them below in the form of an example problem. 
+
+*Disclaimer!* I am mostly self taught when it comes to R and statistics. So if I misuse any statistics or mangle any R code, please let me know (email listed on my home page) and I will fix it!
+
+** Making the data
+:PROPERTIES:
+:CUSTOM_ID: making-the-data
+:END:
+
+In the spirit of making a [[https://stackoverflow.com/help/mcve][reproducible example]] that you can follow along with, we will make the data from scratch. 
+
+For my PhD thesis project, I work on investigating neuron-glia interactions. This is fake data, but I recently wrote my comprehensive exam so this data is modeled after what I was working with for my project. Basically, I was measuring part of the neuron called the Axon initial segment and wanted to compare two different treatments. 
+
+To model this problem, I will just use two normal distributions with different means with separate labels. In this case, the names will be purposely awful so that we can rename them later. I'll also add other grouping categories so that we can segment the data  in different ways. 
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  # make two normal distributions with different means and n's
+  set.seed(42) # reproducibility
+  vals <- c(rnorm(mean=22,sd = 3, n=120), rnorm(mean=18,sd=3, n=120))
+  # now labels
+  names <- c(rep("untreated", times=120), rep("treated", times=120))
+  samples <- rep(c(rep("a1", times=40),rep("a2", times=40), rep("a3", times=40)), times=2)
+  data <- data.frame(names, vals, samples)
+  head(data)
+#+END_SRC
+
+#+RESULTS:
+:       names     vals samples
+: 1 untreated 26.11288      a1
+: 2 untreated 20.30591      a1
+: 3 untreated 23.08939      a1
+: 4 untreated 23.89859      a1
+: 5 untreated 23.21280      a1
+: 6 untreated 21.68163      a1
+
+** Useful libraries and standardizing settings
+:PROPERTIES:
+:CUSTOM_ID: libraries-and-standard-settings
+:END:
+
+ Now that we made the data, let's start playing with it. Here are the libraries I commonly use for figures. 
+
+ #+BEGIN_SRC R :session rsesh :results output :exports both
+ library(dplyr) # essential!
+ library(ggplot2) # plots
+ library(ggpubr) # signif levels on plots
+ library(cowplot) # prettier plots
+ library(latex2exp) # annotating plots
+ #+END_SRC
+
+You'll see what we use these for as we go, but briefly:
+- [[https://dplyr.tidyverse.org/][dplyr]] is essential for organizing data for plotting.
+- [[https://rpkgs.datanovia.com/ggpubr/index.html][ggpubr]] for adding statistical significance and testing directly to plots.
+- [[https://cran.r-project.org/web/packages/latex2exp/vignettes/using-latex2exp.html][latex2exp]] adding \LaTeX{} symbols to your plots
+
+You want the figures you make to have a standard look and feel to them. I use [[https://ggplot2.tidyverse.org/][ggplot2]] along with [[https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html][cowplot]], which provides nice defaults on top of ggplot for scientific plotting. 
+
+However, I might make a lot of drafts of plots before I decide on a common style. I like to set my defaults at the top of my script and then add it to all my plots as I go. That way, if I want to change a color or font size, I can change it in one place and ensure consistency. 
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  base_file_save <- "~/personal_projects/website-clj/resources/public/img/"
+  theme_and_axis_size <- theme(legend.position = "None", 
+                               text=element_text(size=16), 
+                               axis.text = element_text(size=16)) 
+
+  color2_standard <- scale_color_manual(values=c("black", "red"))
+  fill2_standard <- scale_fill_manual(values=c("black", "red"))
+  base_pallett <- "Paired" # BuGn is also good and BrBG 
+
+  statsize <- 6
+  starsize <- 9
+#+END_SRC
+
+You'll see how we use these variables will be explained as we go, but the idea is that we just add them to our plots, and then we can change them all at once as we go through. 
+
+=base_file_save= stores the base path where all my files will be saved. We will use this inside of =ggsave(file.path(base_file_save, "this-plot-name.png"))= later on to simplify and standardize save locations for a particular project (in this case for the website). 
+=theme_and_axis_size= stores a =ggplot2= standard size and legend options. This one is really important for having the same text size for your plots. I add this to every plot, and if I want a particular option changed (i.e. I do want a legend) I can specifically add that below. 
+
+Since I am only plotting two classes for most of this example, I used black and red as my color options in =scale_color_manual= and =scale_fill_manual=. I would otherwise use http://colorbrewer2.org/ to pick a colorblind-safe and pretty palette like [[http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=4][Paired]] or [[http://colorbrewer2.org/#type=diverging&scheme=PRGn&n=11][PRGn]]. Storing it as a variable makes it easy to change for all your plots. 
+=statsize= and =starsize= are for the significance plots. 
+** renaming variables, re-ordering columns, and renaming columns
+:PROPERTIES:
+:CUSTOM_ID: renaming-variables-reordering-columns
+:END:
+
+The data looks like so:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  head(data)
+#+END_SRC
+
+#+RESULTS:
+:       names     vals samples
+: 1 untreated 26.11288      a1
+: 2 untreated 20.30591      a1
+: 3 untreated 23.08939      a1
+: 4 untreated 23.89859      a1
+: 5 untreated 23.21280      a1
+: 6 untreated 21.68163      a1
+
+If we make a quick plot of it, say a boxplot:
+#+BEGIN_SRC R :session rsesh :file ../public/img/wrong.png :results output graphics :exports both
+
+  ggplot(data, aes(x=names, y=vals, color=names)) +
+      geom_boxplot() +
+      theme_and_axis_size +
+      color2_standard
+
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/wrong.png]]
+
+*** Option 1: Renaming variables
+:PROPERTIES:
+:CUSTOM_ID: renaming-variables
+:END:
+
+ggplot2 orders variables in alphabetical order, so our =untreated= (aka control) is shown before our =treated= (aka experimental). Not ideal. One way to fix this is to *rename the variables.* This can be done like so:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  data  %>%
+      mutate(names = if_else(names=="untreated", "control", "treated"))  %>%
+      head()
+#+END_SRC
+
+#+RESULTS:
+:     names     vals samples
+: 1 control 26.11288      a1
+: 2 control 20.30591      a1
+: 3 control 23.08939      a1
+: 4 control 23.89859      a1
+: 5 control 23.21280      a1
+: 6 control 21.68163      a1
+
+That would solve the problem. But a more general, less destructive solution would be to re-level the factors. I will use [[https://forcats.tidyverse.org/][forcats]] to accomplish this. 
+
+*** Option 2: Reordering factors
+:PROPERTIES:
+:CUSTOM_ID: reordering-factors
+:END:
+
+*Note*: in the code below I am not going to import the entire =forcats= library, because I only need one function. Instead, I will use 'inline import' to grab the one function I need. This is useful if you only need one function and don't want to load the whole library, or if you think that two libraries have functions with the same name and you aren't sure which you loaded first. In R, you inline import like so: =libraryName::functionName=. Read it as, "from =libraryName= use =functionName=". You can do this with any function from any library, including base R. This is actually great to do because it is more explicit.
+
+=fct_relevel= is the function we need ([[https://forcats.tidyverse.org/reference/fct_relevel.html][docs]]). 
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  data$names <- forcats::fct_relevel(data$names, "untreated")
+#+END_SRC
+
+Now plot it again:
+
+#+BEGIN_SRC R :session rsesh :file ../public/img/releveled.png :results output graphics :exports both
+
+  ggplot(data, aes(x=names, y=vals, color=names)) +
+      geom_boxplot() +
+      theme_and_axis_size +
+      color2_standard
+
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/releveled.png]]
+
+We just re-ordered the variables without re-naming them. Note that =fct_relevel= accepts a vector, so from our data frame, we selected the column, then just put the variable we wanted first as the next argument. Then we assigned it back to the original column name.
+
+*** Renaming columns
+:PROPERTIES:
+:CUSTOM_ID: renaming-columns
+:END:
+
+ #+BEGIN_SRC R :session rsesh :results output :exports both
+   data  %>%
+       rename(NewNames = names)  %>%
+       head()
+ #+END_SRC
+
+ #+RESULTS:
+ :    NewNames     vals samples
+ : 1 untreated 26.11288      a1
+ : 2 untreated 20.30591      a1
+ : 3 untreated 23.08939      a1
+ : 4 untreated 23.89859      a1
+ : 5 untreated 23.21280      a1
+ : 6 untreated 21.68163      a1
+
+[[https://dplyr.tidyverse.org/reference/select.html][rename]] is from =dplyr=. The argument order is =NewColumnName= = =OldColumnName=
+
+** Paired plots
+:PROPERTIES:
+:CUSTOM_ID: paired-plots
+:END:
+
+We have two grouping variables in this dataset. Let's say measurements were paired, and we wanted to show both the paired differences and the overall boxplot. 
+
+*** Summarizing and making a paired plot
+:PROPERTIES:
+:CUSTOM_ID: summarizing-and-paired-plot
+:END:
+
+We could first summarize like so:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  summarized_data <- data  %>%
+      group_by(names, samples)  %>%
+      summarize(mean_val = mean(vals),
+                sd_vals = sd(vals), n = n())  %>%
+      mutate(sem_vals = sd_vals/sqrt(n))
+  summarized_data
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+# A tibble: 6 x 6
+# Groups:   names [2]
+      names samples mean_val  sd_vals     n  sem_vals
+     <fctr>  <fctr>    <dbl>    <dbl> <int>     <dbl>
+1 untreated      a1 21.88139 3.667164    40 0.5798295
+2 untreated      a2 22.23953 2.748078    40 0.4345093
+3 untreated      a3 22.14594 2.904321    40 0.4592135
+4   treated      a1 17.22540 2.556320    40 0.4041897
+5   treated      a2 18.09546 2.638866    40 0.4172414
+6   treated      a3 17.71718 2.811301    40 0.4445057
+#+end_example
+
+We made a summary of the data in two steps. First, we grouped by both the treatment group and the individual samples. Then, used [[https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/summarise][dplyr::summarize]] to make some summary vars. The =mutate= step adds the standard error of the mean, a measure of the spread of our sample mean around the population mean. The formula is $SEM=\dfrac{s}{\sqrt{n}}$. Where $s$ is the standard deviation. 
+
+Using these data, let's make a summary boxplot. 
+
+#+BEGIN_SRC R :session rsesh :file ../public/img/paired-boxplot.png :results output graphics :exports both
+  ggplot(summarized_data, aes(x=names, y=mean_val, color=names)) +
+      geom_boxplot() +
+      geom_errorbar(width=0.05, aes(ymin=mean_val - sem_vals,
+                                    ymax=mean_val + sem_vals, alpha=0.4)) +
+      geom_line(inherit.aes = FALSE, aes(x=names, y=mean_val, group=samples)) +
+      color2_standard +
+      theme_and_axis_size +
+      labs(x="", y=TeX("Length $\\mu{}m$"))
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/paired-boxplot.png]]
+
+Note the use of =TeX()= in the axis label. 
+*** Significance test with R 
+:PROPERTIES:
+:CUSTOM_ID: p-values
+:END:
+
+let's do a two-tailed /t/-test to see whether we can conclude that the difference between the groups is unlikely to occur by chance (significance arbitrarily set to $\alpha{}=0.05$).
+We will use the R formula interface.
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  t.test(mean_val~names, data=summarized_data, paired=TRUE)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+
+	Paired t-test
+
+data:  mean_val by names
+t = 29.777, df = 2, p-value = 0.001126
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 3.772432 5.046781
+sample estimates:
+mean of the differences 
+               4.409607
+#+end_example
+
+We can reject the null hypothesis that the true difference in the means is equal to 0 with $\alpha{}=0.05$.
+
+*Be careful when interpreting /p/-values!* Below are my favorite papers on this contentious subject:
+- [[https://www.nature.com/articles/nn.2886][Erroneous analysis of interactions in neuroscience: a problem of significance]]
+- [[https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4877414/][Statistical tests, P values, confidence intervals, and power: a guide to misinterpretations]]
+- [[https://www.tandfonline.com/doi/abs/10.1198/000313006X152649][The Difference Between "Significant" and "Not Significant" is not Itself Statistically Significant]] (Paywall)
+- Nice explanation of /p/-values http://statisticsbyjim.com/hypothesis-testing/interpreting-p-values/
+
+*** Significance stars and stats with *ggpubr*
+:PROPERTIES:
+:CUSTOM_ID: significance-with-ggpubr
+:END:
+
+Using ggpubr, we can add this same information to our plot. 
+
+#+BEGIN_SRC R :session rsesh :file ../public/img/paired-boxplot-signif.png :results output graphics :exports both
+  ggplot(summarized_data, aes(x=names, y=mean_val, color=names)) +
+      geom_boxplot() +
+      geom_errorbar(width=0.05, aes(ymin=mean_val - sem_vals,
+                                    ymax=mean_val + sem_vals, alpha=0.4)) +
+      geom_line(inherit.aes = FALSE, aes(x=names, y=mean_val, group=samples)) +
+      color2_standard +
+      theme_and_axis_size +
+      stat_compare_means(method="t.test", paired=TRUE, label="p.signif", size=starsize) + # NEW!
+      labs(x="", y=TeX("Length $\\mu{}m$"))
+
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/paired-boxplot-signif.png]]
+
+See the docs for [[https://rpkgs.datanovia.com/ggpubr/index.html][ggpubr]] for more options (types of tests, pairing, etc.). This is a really awesome library. 
+But this looks ok, however it could use some tweaking. Let's move the stars around and add the p-value and test name
+
+#+BEGIN_SRC R :session rsesh :file ../public/img/paired-signif2.png :results output graphics :exports both
+  ggplot(summarized_data, aes(x=names, y=mean_val, color=names)) +
+      geom_boxplot() +
+      geom_errorbar(width=0.05, aes(ymin=mean_val - sem_vals,
+                                    ymax=mean_val + sem_vals, alpha=0.4)) +
+      geom_line(inherit.aes = FALSE, aes(x=names, y=mean_val, group=samples)) +
+      color2_standard +
+      theme_and_axis_size +
+      stat_compare_means(method="t.test", paired=TRUE, label="p.signif", # edited
+                         label.x = 1.97, label.y=23, size=starsize) +
+      stat_compare_means(method="t.test", paired=TRUE, size=statsize, # New!
+                         label.x=2.05, label.y=23.5) +
+      labs(x="", y=TeX("Length $\\mu{}m$"))
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/paired-signif2.png]]
+We added a new call to =ggpubr= to add the test name, and we moved both labels so they looked nicer. 
+
+** Stats within ggplot2 and custom legend movements
+:PROPERTIES:
+:CUSTOM_ID: custom-legend-and-stats
+:END:
+
+   Let's say we wanted to make a plot of the cumulative distribution for all the data. The cumulative distribution function (CDF) maps a value to the probability that a random variable is less than or equal to that value (you can also say, the function maps a value to its percentile rank. See Allen Downey's book /Think Stats/ for an excellent, simple explanation http://www.greenteapress.com/thinkstats/, and [[https://en.wikipedia.org/wiki/Cumulative_distribution_function][wikipedia]]). You can approximate the true CDF by calculating the /empirical/ CDF (ECDF) with R using the base function [[https://stat.ethz.ch/R-manual/R-devel/library/stats/html/ecdf.html][stats::ecdf()]]. 
+   However, =ggplot2= also provides a number of methods for calculating /and/ plotting data summaries like the ECDF with the [[https://ggplot2.tidyverse.org/reference/#section-layer-stats][stats_*]] layers. Let's use [[https://ggplot2.tidyverse.org/reference/stat_ecdf.html][stats_ecdf]] to plot the ECDF. 
+
+*** Plotting the /ecdf/ with ggplot2
+:PROPERTIES:
+:CUSTOM_ID: plotting-ecdf
+:END:
+
+
+#+BEGIN_SRC R :session rsesh :file ../public/img/cdf-raw.png :results output graphics :exports both
+  ggplot(data, aes(vals, color=names)) +
+      stat_ecdf(geom="step", pad=TRUE) +
+      color2_standard +
+      theme_and_axis_size +
+      labs(x=TeX("Length ($\\mu{}m$)"), y="Probability")
+
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/cdf-raw.png]]
+
+*** Custom legend movements
+:PROPERTIES:
+:CUSTOM_ID: custom-legend-movement
+:END:
+
+We previously removed the legend with our =theme_and_axis_size= presets. Here, we can add it back. 
+
+
+#+BEGIN_SRC R :session rsesh :file ../public/img/cdf-with-legend.png :results output graphics :exports both
+  ggplot(data, aes(vals, color=names)) +
+      stat_ecdf(geom="step", pad=TRUE) +
+      color2_standard +
+      theme_and_axis_size +
+      theme(legend.position="right")+
+      labs(x=TeX("Length ($\\mu{}m$)"), y="Probability")
+
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/cdf-with-legend.png]]
+
+Looks ok, but I want to remove the title and move it to the left more. 
+
+
+#+BEGIN_SRC R :session rsesh :file ../public/img/cdf-with-legend-moved.png :results output graphics :exports both
+  ggplot(data, aes(vals, color=names)) +
+      stat_ecdf(geom="step", pad=TRUE) +
+      color2_standard +
+      theme_and_axis_size +
+      theme(legend.position=c(0.65, 0.5), legend.title = element_blank())+
+      labs(x=TeX("Length ($\\mu{}m$)"), y="Probability")
+
+#+END_SRC
+
+#+RESULTS:
+[[file:../public/img/cdf-with-legend-moved.png]]
+
+=legend.position= accepts coordinates, which are between 0 and 1, and relative to the bottom left origin (0,0) of the plot (legend position is well explained [[http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software][here]]). 
+
+Another great resource for legends and all other things R is the [[http://www.cookbook-r.com/Graphs/Legends_(ggplot2)/][r cookbook]] website. 
+
+*** Kolmogorov-Smirnov Test 
+:PROPERTIES:
+:CUSTOM_ID: ks-test
+:END:
+
+Want to compare the distributions with a [[https://en.wikipedia.org/wiki/Kolmogorov%25E2%2580%2593Smirnov_test][Kolmogorov-Smirnov Test]]?
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  test_vals <- filter(data, names == "treated")$vals
+  control_vals <- filter(data, names == "untreated")$vals
+  ks.test(control_vals, test_vals)
+
+#+END_SRC
+
+#+RESULTS:
+: 
+: 	Two-sample Kolmogorov-Smirnov test
+: 
+: data:  control_vals and test_vals
+: D = 0.6, p-value < 2.2e-16
+: alternative hypothesis: two-sided
+
+/This is a work in progress. As I come across other problems, I will add them here!/
+

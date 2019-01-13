@@ -13,3 +13,4 @@ pom.xml.asc
 /nkicg6.github.io/*
 *.html
 /resources/staging-in-progress
+.RHistory

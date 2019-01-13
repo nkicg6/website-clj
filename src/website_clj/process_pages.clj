@@ -25,6 +25,7 @@
          [:head
           [:script {:src "https://www.googletagmanager.com/gtag/js?id=UA-124749948-1" :async "async"}]
           [:script google-analytics]
+          [:script {:src  "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" :async "async"}]
           [:title "Nick's site"]
           [:meta {:charset "utf-8"}]
           [:meta {:name "viewport"
@@ -50,12 +51,13 @@
            [:div.body {:style "font-size:18px"} page]]
           [:footer {:class "footer"}
            [:div {:class "text-center"}
-            [:span {:class "text-muted"} "&copy; Nick George 2017-2018"]]]]))
+            [:span {:class "text-muted"} "&copy; Nick George 2017-2019"]]]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
   `html` is a raw html string."
-  (str/replace html #"src=\"img" "src=\"/img"))
+  (str/replace html #"src=\"img" "src=\"/img")
+  (str/replace html #"../public" ""))
 
 ;; --- edn parsing for metadata---
 
