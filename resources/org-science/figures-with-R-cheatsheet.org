@@ -124,7 +124,7 @@ If we make a quick plot of it, say a boxplot:
 #+RESULTS:
 [[file:../public/img/wrong.png]]
 
-*** Option 1: Renaming variables
+*** Option 1: Renaming variables with =if_else()= and =case_when()= 
 :PROPERTIES:
 :CUSTOM_ID: renaming-variables
 :END:
@@ -146,7 +146,25 @@ ggplot2 orders variables in alphabetical order, so our =untreated= (aka control)
 : 5 control 23.21280      a1
 : 6 control 21.68163      a1
 
-That would solve the problem. But a more general, less destructive solution would be to re-level the factors. I will use [[https://forcats.tidyverse.org/][forcats]] to accomplish this. 
+[[https://dplyr.tidyverse.org/reference/if_else.html][if_else()]]works great for dichotomous variables. However, if you have a bunch and you want to rename them all, use [[https://dplyr.tidyverse.org/reference/case_when.html][case_when()]]. 
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  data  %>%
+      mutate(names = case_when(names == "untreated" ~ "control",
+                               names ==  "treated" ~ "experimental"))  %>% # and so on for more cases
+      head()
+#+END_SRC
+
+#+RESULTS:
+:     names     vals samples
+: 1 control 26.11288      a1
+: 2 control 20.30591      a1
+: 3 control 23.08939      a1
+: 4 control 23.89859      a1
+: 5 control 23.21280      a1
+: 6 control 21.68163      a1
+
+=if_else= and =case_when()= would solve the problem. But a more general, less destructive solution would be to re-level the factors. I will use [[https://forcats.tidyverse.org/][forcats]] to demonstrate this. 
 
 *** Option 2: Reordering factors
 :PROPERTIES:
