@@ -353,7 +353,7 @@ But this looks ok, however it could use some tweaking. Let's move the stars arou
 [[file:../public/img/paired-signif2.png]]
 We added a new call to =ggpubr= to add the test name, and we moved both labels so they looked nicer. 
 
-** Stats within ggplot2 and custom legend movements
+** Stats within ggplot2 and custom legend positions
 :PROPERTIES:
 :CUSTOM_ID: custom-legend-and-stats
 :END:
@@ -379,7 +379,7 @@ We added a new call to =ggpubr= to add the test name, and we moved both labels s
 #+RESULTS:
 [[file:../public/img/cdf-raw.png]]
 
-*** Custom legend movements
+*** Custom legend positions
 :PROPERTIES:
 :CUSTOM_ID: custom-legend-movement
 :END:
