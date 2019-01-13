@@ -3,9 +3,9 @@
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil tex:t
 #+PROPERTY: header-args :eval never-export
-#+DATE: 2019-01-13 Fri
+#+DATE: 2019-01-13 Sun
 #+TITLE: Making figures with R: common things I need to look up and tricks
-#+HTML:<h1 id="mainTitle">Making Figures with R: common things I need to look up and tricks</h1>
+#+HTML:<h1 id="mainTitle">Making figures with R: common things I need to look up and tricks</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
