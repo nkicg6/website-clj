@@ -140,6 +140,8 @@
 
 ;; --- make links to insert ---
 
+;; TODO edit this function. Get 'updated' unless the page doesn't have that tag. In
+;; that case, use date. 
 (defn format-html-links
   "Makes a list of links in reverse chronological order using hiccup markup.
   `metadata-map`comes from the output of `make-edn-page-map`"
