@@ -29,6 +29,12 @@ This powerful and vibrant ecosystem is build around the Java Virtual Machine (JV
 I want to develop ImageJ plugins using Clojure, and compile them to native Java bytecode. In this *work in progress* I will document how I set up my environment and any issues I had while developing and compiling a plugin. 
 
 I'll refer to ImageJ and Fiji interchangeably in this document, but note that I am using Fiji Version =2.0.0-rc-69/1.52i= on Mac OSX. I'd recommend using [[http://fiji.sc/][Fiji]] if you are following along. 
+* Read this before getting started
+:PROPERTIES:
+:CUSTOM_ID: note
+:END:
+
+Before looking at this, you should really check out Albert Cardona's ([[https://www.janelia.org/lab/cardona-lab][lab website]], [[https://www.janelia.org/people/albert-cardona][HHMI page]], [[https://albert.rierol.net/index.html][website]]) excellent guide to working in ImageJ with Clojure https://imagej.net/Clojure_Scripting (he also has great ImageJ [[https://albert.rierol.net/jython_imagej_examples.html][Jython]] tutorials). He put a lot of work into that guide and it is comprehensive and has been extremely helpful for me as I continue to learn Clojure and Java. This is meant to supplement Albert's guide and to show you explicitly how to develop a compiled plugin for ImageJ in Clojure. 
 
 * Setting up the REPL and development environment
   :PROPERTIES:
