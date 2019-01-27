@@ -58,7 +58,6 @@ To model this problem, I will just use two normal distributions with different m
  library(dplyr) # essential!
  library(ggplot2) # plots
  library(ggpubr) # signif levels on plots
- library(cowplot) # prettier plots
  library(latex2exp) # annotating plots
  #+END_SRC
 
@@ -67,27 +66,28 @@ You'll see what we use these for as we go, but briefly:
 - [[https://rpkgs.datanovia.com/ggpubr/index.html][ggpubr]] for adding statistical significance and testing directly to plots.
 - [[https://cran.r-project.org/web/packages/latex2exp/vignettes/using-latex2exp.html][latex2exp]] adding \LaTeX{} symbols to your plots
 
-You want the figures you make to have a standard look and feel to them. I use [[https://ggplot2.tidyverse.org/][ggplot2]] along with [[https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html][cowplot]], which provides nice defaults on top of ggplot for scientific plotting. 
+You want the figures you make to have a standard look and feel to them. I typically use [[https://ggplot2.tidyverse.org/][ggplot2]] along with [[https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html][cowplot]], which provides nice defaults on top of ggplot for scientific plotting. If you just want clean plots and granular control over your styles, I'd recommend using =theme_set(theme_classic())= and then some of my code below to set the sizes of your plots. 
 
 However, I might make a lot of drafts of plots before I decide on a common style. I like to set my defaults at the top of my script and then add it to all my plots as I go. That way, if I want to change a color or font size, I can change it in one place and ensure consistency. 
 #+BEGIN_SRC R :session rsesh :results output :exports both
-  base_file_save <- "~/personal_projects/website-clj/resources/public/img/"
+
+  ####### defaults for lots of plots #########
+  theme_set(theme_classic()) # basic, clear plot setup
+  base_pallett <- "Paired" # BuGn is also good and BrBG 
   theme_and_axis_size <- theme(legend.position = "None", 
-                               text=element_text(size=16), 
-                               axis.text = element_text(size=16)) 
+          text=element_text(size=16), 
+          axis.text = element_text(size=15, face="bold", color="black"), 
+          axis.line = element_line(color = 'black', size = 0.6))
 
   color2_standard <- scale_color_manual(values=c("black", "red"))
   fill2_standard <- scale_fill_manual(values=c("black", "red"))
-  base_pallett <- "Paired" # BuGn is also good and BrBG 
-
-  statsize <- 6
-  starsize <- 9
+  statsize <- 5
+  starsize <- 10
 #+END_SRC
 
 You'll see how we use these variables will be explained as we go, but the idea is that we just add them to our plots, and then we can change them all at once as we go through. 
-
-=base_file_save= stores the base path where all my files will be saved. We will use this inside of =ggsave(file.path(base_file_save, "this-plot-name.png"))= later on to simplify and standardize save locations for a particular project (in this case for the website). 
-=theme_and_axis_size= stores a =ggplot2= standard size and legend options. This one is really important for having the same text size for your plots. I add this to every plot, and if I want a particular option changed (i.e. I do want a legend) I can specifically add that below. 
+=theme_set(theme_classic())= sets a basic, clear plot style. 
+=theme_and_axis_size= stores =ggplot2= standard size and legend options. This one is really important for having the same text size for your plots (this can also be set inside =theme_set()=, but here it allows different styles per plot should you need it). I add this to every plot, and if I want a particular option changed (i.e. I do want a legend) I can specifically add that below these options. 
 
 Since I am only plotting two classes for most of this example, I used black and red as my color options in =scale_color_manual= and =scale_fill_manual=. I would otherwise use http://colorbrewer2.org/ to pick a colorblind-safe and pretty palette like [[http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=4][Paired]] or [[http://colorbrewer2.org/#type=diverging&scheme=PRGn&n=11][PRGn]]. Storing it as a variable makes it easy to change for all your plots. 
 =statsize= and =starsize= are for the significance plots. 
