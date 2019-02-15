@@ -24,9 +24,7 @@ I made some changes, mostly to align this with what I know now and get rid of so
 This particular project is my personal website, which I am rebuilding in Clojure ([[https://nickgeorge.net/programming/why-learn-clojure][why Clojure?]]). I am building a simple, static website to organize my projects and save hints for myself or others for future use. 
 
 * org-mode
-
-[[file:img/org-mode-unicorn-logo.png]]
-
+[[file:~/personal_projects/website-clj/resources/public/img/org-mode-unicorn-logo.png]]
 Emacs and [[https://orgmode.org/][org-mode]] have taken over my life. I will write more about org mode soon, but I plan to write content and publish my site with =org-publish=, so my org-mode settings will be included throughout this page.
 
 * Getting started 

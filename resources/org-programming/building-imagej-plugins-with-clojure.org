@@ -217,6 +217,20 @@ Created /Users/Nick/personal_projects/imagej_plugin/target/imagej_plugin-0.1.0-S
 Now, we need to copy this to our =Fiji.app= Plugins directory. 
 Also, notice how we referred to this =Jar= in our =plugins.config= as =imagej_plugin.The_Test=, not as =imagej_plugin-0.1.0-SNAPSHOT.The_Test=, which is what Leiningen automatically names the compiled =Jar=. For this to work, we need to rename the =Jar= in the Plugins folder from =imagej_plugin-0.1.0-SNAPSHOT.jar= to =imagej_plugin.jar=. 
 
+** /Update!/ 
+
+You can tell lein what to name your Jar (or Uberjar) with the following in your =project.clj= 
+
+#+BEGIN_SRC clojure 
+;; project.clj
+...
+:jar-name "The_Test.jar"
+:uberjar-name "The_Test.jar"
+...
+#+END_SRC
+
+Now the compiled jar will be named appropriately for ImageJ. 
+
 Let's restart ImageJ and see how it looks.
 [[file:../public/img/test-in-the-menu.png]]
 
