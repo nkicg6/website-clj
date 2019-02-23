@@ -161,7 +161,8 @@ ggplot2 orders variables in alphabetical order, so our =untreated= (aka control)
 #+BEGIN_SRC R :session rsesh :results output :exports both
   data  %>%
       mutate(names = case_when(names == "untreated" ~ "control",
-                               names ==  "treated" ~ "experimental"))  %>% # and so on for more cases
+                               names ==  "treated" ~ "experimental",
+                               TRUE ~ "UNKNOWN"))  %>% # and so on for more cases. Add the TRUE case to catch all others.
       head()
 #+END_SRC
 
@@ -174,7 +175,9 @@ ggplot2 orders variables in alphabetical order, so our =untreated= (aka control)
 : 5 control 23.21280      a1
 : 6 control 21.68163      a1
 
-=if_else= and =case_when()= would solve the problem. But a more general, less destructive solution would be to re-level the factors. I will use [[https://forcats.tidyverse.org/][forcats]] to demonstrate this. 
+=if_else= and =case_when()= would solve the problem. Note when using case_when() if you don't catch all the cases the other rows will become =NA=. Assign your own "just in case" value which you can easily check for later. 
+
+A more general, less destructive solution would be to re-level the factors. I will use [[https://forcats.tidyverse.org/][forcats]] to demonstrate this. 
 
 *** Option 2: Reordering factors
 :PROPERTIES:
