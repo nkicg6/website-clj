@@ -66,31 +66,42 @@ You'll see what we use these for as we go, but briefly:
 - [[https://rpkgs.datanovia.com/ggpubr/index.html][ggpubr]] for adding statistical significance and testing directly to plots.
 - [[https://cran.r-project.org/web/packages/latex2exp/vignettes/using-latex2exp.html][latex2exp]] adding \LaTeX{} symbols to your plots
 
-You want the figures you make to have a standard look and feel to them. I typically use [[https://ggplot2.tidyverse.org/][ggplot2]] along with [[https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html][cowplot]], which provides nice defaults on top of ggplot for scientific plotting. If you just want clean plots and granular control over your styles, I'd recommend using =theme_set(theme_classic())= and then some of my code below to set the sizes of your plots. 
+You want the figures you make to have a standard look and style to them. I typically use [[https://ggplot2.tidyverse.org/][ggplot2]] along with [[https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html][cowplot]], which provides nice defaults on top of ggplot for scientific plotting.
 
-However, I might make a lot of drafts of plots before I decide on a common style. I like to set my defaults at the top of my script and then add it to all my plots as I go. That way, if I want to change a color or font size, I can change it in one place and ensure consistency. 
+If you want clean plots and granular control over your styles, see the code block below which I add to almost every script or RMarkdown document I make. 
+
 #+BEGIN_SRC R :session rsesh :results output :exports both
 
   ####### defaults for lots of plots #########
-  theme_set(theme_classic()) # basic, clear plot setup
-  base_pallett <- "Paired" # BuGn is also good and BrBG 
-  theme_and_axis_size <- theme(legend.position = "None", 
+  theme_and_axis_size <- theme(legend.position = "None", # you can add legends to your plots by adding +theme(legend.position = ...) where ... is the position. 
           text=element_text(size=16), 
           axis.text = element_text(size=15, face="bold", color="black"), 
           axis.line = element_line(color = 'black', size = 0.6))
 
+  theme_set(theme_classic() + theme_and_axis_size) # Global setup for ggplot2 of your defaults.
+
   color2_standard <- scale_color_manual(values=c("black", "red"))
   fill2_standard <- scale_fill_manual(values=c("black", "red"))
+  base_pallett <- "Paired" # BuGn is also good and BrBG 
   statsize <- 5
   starsize <- 10
 #+END_SRC
 
-You'll see how we use these variables will be explained as we go, but the idea is that we just add them to our plots, and then we can change them all at once as we go through. 
-=theme_set(theme_classic())= sets a basic, clear plot style. 
-=theme_and_axis_size= stores =ggplot2= standard size and legend options. This one is really important for having the same text size for your plots (this can also be set inside =theme_set()=, but here it allows different styles per plot should you need it). I add this to every plot, and if I want a particular option changed (i.e. I do want a legend) I can specifically add that below these options. 
+
+You'll see how we use these variables will be explained as we go, but the idea is that we set the main plot style variables globally, and then we can adjust the groups by changing these settings in one place and propagate to all the plots we make. 
+
+=theme_and_axis_size= stores =ggplot2= standard size and legend options. This one is really important for having the same text size and style for all your your plots 
+
+=theme_classic()= is a is a white background plot without gridlines, as opposed to the grey plot with gridlines in default ggplot2.
+
+=theme_set()= sets the theme variables globally for your session. When I type =theme_set(theme_classic()+ theme_and_axis_size)= I set all those variables as defaults without needing to add them to every plot. 
+Of course, if you want to add more specific values or things to individual charts (maybe you do want a legend), it is easy to add a separate =theme()= option to that specific plot with your options. 
 
 Since I am only plotting two classes for most of this example, I used black and red as my color options in =scale_color_manual= and =scale_fill_manual=. I would otherwise use http://colorbrewer2.org/ to pick a colorblind-safe and pretty palette like [[http://colorbrewer2.org/#type=qualitative&scheme=Paired&n=4][Paired]] or [[http://colorbrewer2.org/#type=diverging&scheme=PRGn&n=11][PRGn]]. Storing it as a variable makes it easy to change for all your plots. 
 =statsize= and =starsize= are for the significance plots. 
+
+I might make a lot of drafts of plots before I decide on a common style. I like this method of setting my defaults at the top of my script and then customizing them as I go. A consistent clean style makes a really big difference and shows you care about your data and your presentation. 
+
 ** renaming variables, re-ordering columns, and renaming columns
 :PROPERTIES:
 :CUSTOM_ID: renaming-variables-reordering-columns
@@ -116,7 +127,6 @@ If we make a quick plot of it, say a boxplot:
 
   ggplot(data, aes(x=names, y=vals, color=names)) +
       geom_boxplot() +
-      theme_and_axis_size +
       color2_standard
 
 #+END_SRC
@@ -179,13 +189,14 @@ ggplot2 orders variables in alphabetical order, so our =untreated= (aka control)
   data$names <- forcats::fct_relevel(data$names, "untreated")
 #+END_SRC
 
+#+RESULTS:
+
 Now plot it again:
 
 #+BEGIN_SRC R :session rsesh :file ../public/img/releveled.png :results output graphics :exports both
 
   ggplot(data, aes(x=names, y=vals, color=names)) +
       geom_boxplot() +
-      theme_and_axis_size +
       color2_standard
 
 #+END_SRC
@@ -228,8 +239,8 @@ We have two grouping variables in this dataset. Let's say measurements were pair
 :PROPERTIES:
 :CUSTOM_ID: summarizing-and-paired-plot
 :END:
-
-We could first summarize like so:
+/NOTE/ this can be done more simply with built-in ggplot functions like =stat_summary()=, which will be added in a future post. 
+We can brute force this problem by making a summary like so:
 
 #+BEGIN_SRC R :session rsesh :results output :exports both
   summarized_data <- data  %>%
@@ -265,7 +276,6 @@ Using these data, let's make a summary boxplot.
                                     ymax=mean_val + sem_vals, alpha=0.4)) +
       geom_line(inherit.aes = FALSE, aes(x=names, y=mean_val, group=samples)) +
       color2_standard +
-      theme_and_axis_size +
       labs(x="", y=TeX("Length $\\mu{}m$"))
 #+END_SRC
 
@@ -322,7 +332,6 @@ Using ggpubr, we can add this same information to our plot.
                                     ymax=mean_val + sem_vals, alpha=0.4)) +
       geom_line(inherit.aes = FALSE, aes(x=names, y=mean_val, group=samples)) +
       color2_standard +
-      theme_and_axis_size +
       stat_compare_means(method="t.test", paired=TRUE, label="p.signif", size=starsize) + # NEW!
       labs(x="", y=TeX("Length $\\mu{}m$"))
 
@@ -371,7 +380,6 @@ We added a new call to =ggpubr= to add the test name, and we moved both labels s
   ggplot(data, aes(vals, color=names)) +
       stat_ecdf(geom="step", pad=TRUE) +
       color2_standard +
-      theme_and_axis_size +
       labs(x=TeX("Length ($\\mu{}m$)"), y="Probability")
 
 #+END_SRC
@@ -391,7 +399,6 @@ We previously removed the legend with our =theme_and_axis_size= presets. Here, w
   ggplot(data, aes(vals, color=names)) +
       stat_ecdf(geom="step", pad=TRUE) +
       color2_standard +
-      theme_and_axis_size +
       theme(legend.position="right")+
       labs(x=TeX("Length ($\\mu{}m$)"), y="Probability")
 
@@ -407,8 +414,7 @@ Looks ok, but I want to remove the title and move it to the left more.
   ggplot(data, aes(vals, color=names)) +
       stat_ecdf(geom="step", pad=TRUE) +
       color2_standard +
-      theme_and_axis_size +
-      theme(legend.position=c(0.65, 0.5), legend.title = element_blank())+
+      theme(legend.position=c(0.7, 0.5), legend.title = element_blank())+
       labs(x=TeX("Length ($\\mu{}m$)"), y="Probability")
 
 #+END_SRC
@@ -442,5 +448,121 @@ Want to compare the distributions with a [[https://en.wikipedia.org/wiki/Kolmogo
 : D = 0.6, p-value < 2.2e-16
 : alternative hypothesis: two-sided
 
-/This is a work in progress. As I come across other problems, I will add them here!/
 
+
+** =tidyr::gather= is confusing but useful
+:PROPERTIES:
+:CUSTOM_ID: tidyr::gather
+:END:
+
+One function I have never been able to figure out is tidyr's =gather=. Every time I need to use it I try every permutation of arguments until I get it to look how I want it to. 
+Here is how it works. Let's say your data frame looks like this:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  library(tidyr)
+
+  long_data <- data.frame("animal" = c("E1", "E2", "E3"),
+                          "left_slope" = c(0.2,0.5,0.26), "right_slope"= c(0.3,0.4, 0.77),
+                          "treatment" = c("control", "experimental", "control"))
+  long_data
+#+END_SRC
+
+#+RESULTS:
+:   animal left_slope right_slope    treatment
+: 1     E1       0.20        0.30      control
+: 2     E2       0.50        0.40 experimental
+: 3     E3       0.26        0.77      control
+
+I want to plot the slope with color indicating side (right_ or left_) for each animal and treatment condition. 
+tidyr's =gather= is great for this. 
+
+Here is how it works (arguments renamed by me for clarity):
+=gather(dataFrame, name_of_new_key_column, name_of_new_value_column, column_to_combine1, column_to_combine2, ...)=
+
+So if I want =left_slope= and =right_slope= values to be combined into a column, but keep the associated column name (left_slope, right_slope) as a key, I would type this:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  long_data %>%
+      gather("slope_side", "slope", left_slope, right_slope)
+#+END_SRC
+
+#+RESULTS:
+:   animal    treatment  slope_side slope
+: 1     E1      control  left_slope  0.20
+: 2     E2 experimental  left_slope  0.50
+: 3     E3      control  left_slope  0.26
+: 4     E1      control right_slope  0.30
+: 5     E2 experimental right_slope  0.40
+: 6     E3      control right_slope  0.77
+
+Alternatively, You can tell gather which columns to /not/ combine like so:
+ 
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  long_data %>%
+      gather("slope_side", "slope", -treatment, -animal)
+#+END_SRC
+
+#+RESULTS:
+:   animal    treatment  slope_side slope
+: 1     E1      control  left_slope  0.20
+: 2     E2 experimental  left_slope  0.50
+: 3     E3      control  left_slope  0.26
+: 4     E1      control right_slope  0.30
+: 5     E2 experimental right_slope  0.40
+: 6     E3      control right_slope  0.77
+
+giving the same result. 
+
+** what's wrong with =tidyr::gather= 
+=gather= is not intuitive, and I think some of it comes from it's permissive, flexible parameter acceptance. For example, if I just type =left_slope=, =right_slope=, unquoted, without the name_of_new_key, or name_of_new_value, look what happens:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  long_data %>%
+      gather(left_slope, right_slope)
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+  left_slope right_slope left_slope  right_slope
+1       0.20        0.30     animal           E1
+2       0.50        0.40     animal           E2
+3       0.26        0.77     animal           E3
+4       0.20        0.30  treatment      control
+5       0.50        0.40  treatment experimental
+6       0.26        0.77  treatment      control
+Warning message:
+attributes are not identical across measure variables;
+they will be dropped
+#+end_example
+
+quoting them doesn't help:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  long_data %>%
+      gather("left_slope", "right_slope")
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+  left_slope right_slope left_slope  right_slope
+1       0.20        0.30     animal           E1
+2       0.50        0.40     animal           E2
+3       0.26        0.77     animal           E3
+4       0.20        0.30  treatment      control
+5       0.50        0.40  treatment experimental
+6       0.26        0.77  treatment      control
+Warning message:
+attributes are not identical across measure variables;
+they will be dropped
+#+end_example
+
+
+What in the world does that mean???! The error message is totally unclear, and it worked despite me only providing two arguments to what at the very least should require four. 
+
+I have no idea why you would design a function to work like this. What I think is happening is that tidyr is quoting the first two arguments and using them as the name_of_new_key and name_of_new_value arguments, but then it is copying them straight into the "combine columns" positions and running like everything is ok. This has led to infinite confusion for me and is a case where the function should DEFINITELY fail and throw an error rather than trying to do magic. I love the tidyverse, but it took me a long time to figure this one out. 
+
+I mainly wrote this for future me, and I am sure I will be back here next time I mess with =gather=.
+
+
+
+/This is a work in progress. As I come across other problems, I will add them here!/
