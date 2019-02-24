@@ -517,7 +517,7 @@ Alternatively, You can tell gather which columns to /not/ combine like so:
 giving the same result. 
 
 ** what's wrong with =tidyr::gather= 
-=gather= is not intuitive, and I think some of it comes from it's permissive, flexible parameter acceptance. For example, if I just type =left_slope=, =right_slope=, unquoted, without the name_of_new_key, or name_of_new_value, look what happens:
+=gather= is not intuitive, and I think some of it comes from its permissive, flexible, parameter acceptance and strange defaults. For example, if I just pass the terms =left_slope=, =right_slope=, (quoted or unquoted, as gather supports [[https://rlang.r-lib.org/reference/quasiquotation.html][quasiquotation]]), without specifying anything else, look what happens:
 
 #+BEGIN_SRC R :session rsesh :results output :exports both
   long_data %>%
@@ -538,34 +538,13 @@ attributes are not identical across measure variables;
 they will be dropped
 #+end_example
 
-quoting them doesn't help:
 
-#+BEGIN_SRC R :session rsesh :results output :exports both
-  long_data %>%
-      gather("left_slope", "right_slope")
-#+END_SRC
+What in the world is going on???! The error message is unclear, but the really bad part is that the function ran despite me only providing two arguments to what at the very least should require four.
 
-#+RESULTS:
-#+begin_example
-  left_slope right_slope left_slope  right_slope
-1       0.20        0.30     animal           E1
-2       0.50        0.40     animal           E2
-3       0.26        0.77     animal           E3
-4       0.20        0.30  treatment      control
-5       0.50        0.40  treatment experimental
-6       0.26        0.77  treatment      control
-Warning message:
-attributes are not identical across measure variables;
-they will be dropped
-#+end_example
+I have no idea why you would design a function to work like this. I think tidyr is quoting the first two arguments and using them as the =name_of_new_key= and =name_of_new_value= arguments (like you would expect with positional arguments), but upon looking closer at the [[https://tidyr.tidyverse.org/reference/gather.html][documentation]], I see that leaving the "columns" selection blank just selects all the columns and runs like everything is OK. This has led to way too much confusion for me and many others I work with, and I think demonstrates a case where the function should DEFINITELY fail and throw an exception rather than using this confusing default (why would you want to gather /all/ the columns?). 
 
-
-What in the world does that mean???! The error message is totally unclear, and it worked despite me only providing two arguments to what at the very least should require four. 
-
-I have no idea why you would design a function to work like this. What I think is happening is that tidyr is quoting the first two arguments and using them as the name_of_new_key and name_of_new_value arguments, but then it is copying them straight into the "combine columns" positions and running like everything is ok. This has led to infinite confusion for me and is a case where the function should DEFINITELY fail and throw an error rather than trying to do magic. I love the tidyverse, but it took me a long time to figure this one out. 
+I love the tidyverse, but it took me a long time to figure this one out. 
 
 I mainly wrote this for future me, and I am sure I will be back here next time I mess with =gather=.
-
-
 
 /This is a work in progress. As I come across other problems, I will add them here!/
