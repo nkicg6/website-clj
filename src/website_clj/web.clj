@@ -18,39 +18,27 @@
 
 ;; define page maps and link maps
 
-(def programming-map
-  "constant for all links holding programming pages"
-  (process/html-pages "/programming"
-                      (stasis/slurp-directory "resources/programming" #".*\.(html|css|js)")))
-(def programming-metadata
-  "constant for all programming-metadata"
-  (process/make-edn-page-map "/programming" programming-map))
+(defn make-page-map
+  "makes page map for a topic"
+  [base-name relative-path]
+  (process/html-pages base-name
+                      (stasis/slurp-directory relative-path  #".*\.(html|css|js)")))
 
-(def programming-links
-  "constant for all programming links"
-  (process/format-html-links programming-metadata))
+(defn get-links-and-metadata
+  [base-name page-map-output]
+  (let [metad (process/make-edn-page-map base-name page-map-output) links (process/format-html-links metad)]
+    {:metadata metad :links links}))
 
-(def science-map
-  "constant for all science pages"
-  (process/html-pages "/science"
-                      (stasis/slurp-directory "resources/science" #".*\.(html|css|js)")))
-(def science-metadata
-  "constant for all science metadata"
-  (process/make-edn-page-map "/science" science-map))
+(defn get-first-five-links
+  [sci-metadata prog-metadata]
+  (process/format-html-links
+   (process/merge-maps-sort-take-five sci-metadata prog-metadata)))
 
-(def science-links
-  "constant for all science links"
-  (process/format-html-links science-metadata))
+(defn make-site-map
+  [sci-metadata prog-metadata]
+  (apply str (for [x (keys (merge prog-metadata sci-metadata))]
+               (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
 
-(def first-five-links
-  "first five links to put on home page"
-  (process/format-html-links (process/merge-maps-sort-take-five science-metadata programming-metadata)))
-
-(def site-map
-  "Generate site map urls"
-  (apply str (for [x (keys (merge programming-metadata science-metadata))] (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
-
-;; load all assets
 (defn get-assets
   "get all static assets from the public directory."
   []
@@ -60,25 +48,31 @@
 (defn get-pages
   "Gathers all website pages and resources, including sitemap and robots.txt."
   []
-  (stasis/merge-page-sources
-   {:public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$") 
+  ;; big let here, so I don't have to re-load for everything. will get rid of the other lets in the keys.
+  (let [programming-map  (make-page-map "/programming" "resources/programming")
+        programming-links-and-meta (get-links-and-metadata "/programming" "resources/programming")
+        science-map (make-page-map "/science" "resources/science")
+        science-links-and-meta (get-links-and-metadata "/science" "resources/science")]
+   (stasis/merge-page-sources
+    {:public (stasis/slurp-directory "resources/public" #".*\.(html|css|js)$") 
 
-    :landing  (let [home-map (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))]
-                (zipmap (keys home-map)
-                        (map #(process/add-links % first-five-links :#recentPosts)
-                             (vals home-map))))
-    
-    :programming  (zipmap (keys programming-map)
-                          (map #(process/add-links % programming-links :#pageListDiv)
-                               (vals programming-map)))
+     :landing  (let [home-map (process/home-page (stasis/slurp-directory "resources/home" #".*\.(html|css|js)$"))]
+                 (zipmap (keys home-map)
+                         (map #(process/add-links % (get-first-five-links (:metadata programming-links-and-meta)
+                                                                          (:metadata science-links-and-meta)) :#recentPosts)
+                              (vals home-map))))
+     
+     :programming  (zipmap (keys programming-map)
+                           (map #(process/add-links % (:links programming-links-and-meta) :#pageListDiv)
+                                (vals programming-map)))
 
-    :science (zipmap (keys science-map)
-                     (map #(process/add-links % science-links :#pageListDiv)
-                          (vals science-map)))
+     :science (zipmap (keys science-map)
+                      (map #(process/add-links % (:links science-links-and-meta) :#pageListDiv)
+                           (vals science-map)))
 
-    :robots (hash-map "/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt")
+     :robots (hash-map "/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt")
 
-    :sitemap (hash-map "/sitemap.txt" site-map)}))
+     :sitemap (hash-map "/sitemap.txt" (make-site-map  (:metadata programming-links-and-meta) (:metadata science-links-and-meta)))})))
 
 ;; for test rendering
 (def app

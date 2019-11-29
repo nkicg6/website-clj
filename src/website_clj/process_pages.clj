@@ -16,6 +16,10 @@
                            "gtag('config', 'UA-124749948-1');"))
 
 ;; --- basic html formatting ---
+(defn get-copyright-date []
+  (.format (java.text.SimpleDateFormat. "yyyy")
+           (new java.util.Date)))
+(get-copyright-date)
 
 ;;header
 (defn layout-base-header
@@ -51,7 +55,7 @@
            [:div.body {:style "font-size:18px"} page]]
           [:footer {:class "footer"}
            [:div {:class "text-center"}
-            [:span {:class "text-muted"} "&copy; Nick George 2017-2019"]]]]))
+            [:span {:class "text-muted"} (str "&copy; Nick George 2017-" (get-copyright-date))]]]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
