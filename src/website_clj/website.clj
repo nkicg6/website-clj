@@ -2,18 +2,17 @@
   "main namespace for building and exporting the website"
   (:require [optimus.assets :as assets]
             [optimus.export]
-            [optimus.link :as link] 
             [optimus.optimizations :as optimizations]      
             [optimus.prime :as optimus]                    
             [optimus.strategies :refer [serve-live-assets]]
-            [clojure.java.io :as io]
             [clojure.string :as str]
             [stasis.core :as stasis]
             [website-clj.export-helpers :as helpers]
             [website-clj.process-pages :as process]))
 
 (defn make-page-map
-  "makes page map for a topic"
+  "Reads all the html using `stasis/slurp-directory` and apply the html formatting
+  and path formatting."
   [relative-path]
   (let [base (second (str/split relative-path #"/"))
         page-map (stasis/slurp-directory relative-path  #".*\.(html|css|js)")
@@ -21,12 +20,10 @@
         page-keys (map #(str "/" base %) (map #(str/replace % #"(?<!index)\.html$" "") (keys page-map)))]
     (->> page-html
          (map process/format-html)
-        ;; other work on page-html would go here, likely one function which would be the
-        ;; composed list from process-pages one.
-        (zipmap page-keys))))
+         (zipmap page-keys))))
 
 (defn home-page-header
-  "layout and formatting for the home page"
+  "Formatting for the landing/home page"
   []
   (let [hp-map (stasis/slurp-directory  "resources/home" #".*\.(html|css|js)$")
         hp-map-keys (keys hp-map)
@@ -35,17 +32,8 @@
          (map process/format-html)
          (zipmap hp-map-keys))))
 
-(defn get-links-and-metadata
-  [base-name page-map-output]
-  (let [metad (process/make-edn-page-map base-name page-map-output) links (process/format-html-links metad)]
-    {:metadata metad :links links}))
-
-(defn get-first-five-links
-  [sci-metadata prog-metadata]
-  (process/format-html-links
-   (process/merge-maps-sort-take-five sci-metadata prog-metadata)))
-
 (defn make-site-map
+  "compile a list of all the pages for search engines."
   [sci-metadata prog-metadata]
   (apply str (for [x (keys (merge prog-metadata sci-metadata))]
                (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
@@ -55,12 +43,8 @@
   []
   (assets/load-assets "public" [#".*"]))
 
-(defn add-links-to-map
-  [links div page-map]
-  (zipmap (keys page-map)
-          (map #(process/add-links links div %) (vals page-map))))
-
 (defn get-pages
+  "gets all pages and assets for testing and deployment"
   []
   (let [programming-map (make-page-map "resources/programming")
         prog-meta (process/make-edn-page-map programming-map)
@@ -70,9 +54,9 @@
         all-links (process/merge-maps-sort-take-five prog-meta sci-meta)]
     (stasis/merge-page-sources
      {:public (stasis/slurp-directory  "resources/public" #".*\.(html|css|js)$")
-      :landing (add-links-to-map all-links :#recentPosts homepage) 
-      :programming (add-links-to-map (process/format-html-links prog-meta) :#pageListDiv programming-map)
-      :science (add-links-to-map (process/format-html-links sci-meta) :#pageListDiv science-map)
+      :landing (process/add-links-to-map all-links :#recentPosts homepage) 
+      :programming (process/add-links-to-map (process/format-html-links prog-meta) :#pageListDiv programming-map)
+      :science (process/add-links-to-map (process/format-html-links sci-meta) :#pageListDiv science-map)
       :robots (hash-map "/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt")
       :sitemap (hash-map "/sitemap.txt" (make-site-map prog-meta sci-meta))})))
 
