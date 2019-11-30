@@ -19,9 +19,9 @@
   (let [base (second (str/split relative-path #"/"))
         page-map (stasis/slurp-directory relative-path  #".*\.(html|css|js)")
         page-html (vals page-map)
-        page-keys (map #(str "/" base %) (keys page-map))]
+        page-keys (map #(str "/" base %) (map #(str/replace % #"(?<!index)\.html$" "") (keys page-map)))]
     (->> page-html
-         (map process/layout-base-header)
+         (map process/format-html)
         ;; other work on page-html would go here, likely one function which would be the
         ;; composed list from process-pages one.
         (zipmap page-keys))))
@@ -33,7 +33,7 @@
         hp-map-keys (keys hp-map)
         hp-html (vals hp-map)]
     (->> hp-html
-         (map process/layout-base-header)
+         (map process/format-html)
          (zipmap hp-map-keys))))
 
 (defn get-links-and-metadata
@@ -56,15 +56,26 @@
   []
   (assets/load-assets "public" [#".*"]))
 
+(defn add-links-to-map
+  [links div page-map]
+  (zipmap (keys page-map)
+          (map #(process/add-links links div %) (vals page-map))))
+
 (defn get-pages
   []
   (let [programming-map (make-page-map "resources/programming")
-        science-map (make-page-map "resources/science")]
+        prog-meta (process/make-edn-page-map programming-map)
+        science-map (make-page-map "resources/science")
+        sci-meta (process/make-edn-page-map science-map)
+        homepage (home-page-header)
+        all-links (process/merge-maps-sort-take-five prog-meta sci-meta)]
     (stasis/merge-page-sources
      {:public (stasis/slurp-directory  "resources/public" #".*\.(html|css|js)$")
-      :landing (home-page-header)
-      :programming programming-map
-      :science science-map})))
+      :landing (add-links-to-map all-links :#recentPosts homepage) 
+      :programming (add-links-to-map (process/format-html-links prog-meta) :#pageListDiv programming-map)
+      :science (add-links-to-map (process/format-html-links sci-meta) :#pageListDiv science-map)
+      :robots (hash-map "/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt")
+      :sitemap (hash-map "/sitemap.txt" (make-site-map prog-meta sci-meta))})))
 
 (def app
   "renders the website for experimentation"
