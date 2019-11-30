@@ -3,7 +3,7 @@
 The source code for my website, rewritten in Clojure. 
 
 ## Usage
-Check out the site at: http://nickgeorge.net/
+Check out the site at: https://nickgeorge.net/
 
 ## License
 
