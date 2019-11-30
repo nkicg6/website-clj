@@ -11,4 +11,4 @@
                  [enlive "1.1.6"]]
   :ring {:handler website-clj.website/app}
   :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}
-  :aliases {"build-site" ["run" "-m" "website-clj.web/export"]})
+  :aliases {"build-site" ["run" "-m" "website-clj.website/export"]})
