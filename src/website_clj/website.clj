@@ -75,6 +75,6 @@
   "main export function for static site. See docs for functions included."
   []
   (let [assets (optimizations/all (get-assets) {})]
-    (helpers/clear-directory export-dir)
+    (helpers/clear-directory! export-dir)
     (optimus.export/save-assets assets export-dir)
     (stasis/export-pages (get-pages) export-dir {:optimus-assets assets})))

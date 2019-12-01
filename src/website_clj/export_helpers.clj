@@ -12,6 +12,6 @@
 
 (defn clear-directory!
   [base]
-  (map clojure.java.io/delete-file (make-filtered-list  base pat1 pat2)))
+  (map clojure.java.io/delete-file (make-filtered-list  base)))
 
 ;;(clear-directory! "/Users/nick/test_dir")
