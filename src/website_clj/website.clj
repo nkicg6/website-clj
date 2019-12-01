@@ -10,6 +10,8 @@
             [website-clj.export-helpers :as helpers]
             [website-clj.process-pages :as process]))
 
+(def export-dir "target/nickgeorge.net")
+
 (defn make-page-map
   "Reads all the html using `stasis/slurp-directory` and apply the html formatting
   and path formatting."
@@ -68,24 +70,11 @@
    optimizations/none
    serve-live-assets))
 
-;; TODO! Write your own empty-dir! fn so you dont have to use this ugly copy hack. 
-;; constants for exporting
-(def export-dir "target/nickgeorge.net")
-(def safe-dir "target")
-
 ;; main export function, called by lein build-site
 (defn export
-  "main export function for static site. See docs for functions included.
-  `website-clj.helpers/save-git`
-  `website-clj.helpers/cp-cname`
-  `website-clj.helpers/cp-gitignore`
-  `website-clj.helpers/replace-git`"
+  "main export function for static site. See docs for functions included."
   []
-  (helpers/save-git safe-dir export-dir)
   (let [assets (optimizations/all (get-assets) {})]
-    (stasis/empty-directory! export-dir)
+    (helpers/clear-directory export-dir)
     (optimus.export/save-assets assets export-dir)
-    (stasis/export-pages (get-pages) export-dir {:optimus-assets assets}))
-  (helpers/cp-cname export-dir)
-  (helpers/cp-gitignore export-dir)
-  (helpers/replace-git safe-dir export-dir))
+    (stasis/export-pages (get-pages) export-dir {:optimus-assets assets})))
