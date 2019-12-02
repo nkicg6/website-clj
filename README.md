@@ -7,7 +7,7 @@ Check out the site at: https://nickgeorge.net/
 
 ## License
 
-Copyright © 2018 Nick George
+Copyright © 2019 Nick George
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.

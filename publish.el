@@ -1,13 +1,22 @@
 ;; publish org-mode project.from makefile 
 ;; based on: https://stackoverflow.com/questions/46295511/how-to-run-org-mode-commands-from-shell
-(add-to-list 'load-path "~/.emacs.d/elpy")
-(require 'org)
+;; command:
+;; 
+(add-to-list 'load-path "~/.emacs.d/elpa/org-20191125")
+(add-to-list 'load-path "~/.emacs.d/elpa/")
+(add-to-list 'load-path "~/.emacs.d/manual-packages")
 
-(load-theme leuveun)
+(require 'org)
+(require 'ox-publish)
+(require 'ox-html)
+;;(require 'htmlize)
+
+(setq org-src-fontify-natively t)
+
+(load-theme 'leuven t)
 
 (setq org-publish-project-alist
-      '(
-        ("programming"
+      '(("programming"
          :base-directory "~/personal_projects/website-clj/resources/org-programming"
          :base-extension "org"
          :publishing-directory "~/personal_projects/website-clj/resources/programming"
