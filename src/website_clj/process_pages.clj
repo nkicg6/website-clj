@@ -60,8 +60,9 @@
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
   `html` is a raw html string."
-  (str/replace html #"src=\"img" "src=\"/img")
-  (str/replace html #"../public" ""))
+  (-> html
+   (str/replace #"src=\"img" "src=\"../img")
+   (str/replace #"../public" "")))
 
 (defn parse-html
   "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
