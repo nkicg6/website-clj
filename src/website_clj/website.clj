@@ -12,12 +12,15 @@
 
 (def export-dir "target/nickgeorge.net")
 
+(defn remove-temps [m]
+  (apply dissoc m (filter #(re-matches #".*\.html~" %) (keys m))))
+
 (defn make-page-map
   "Reads all the html using `stasis/slurp-directory` and apply the html formatting
   and path formatting."
   [relative-path]
   (let [base (second (str/split relative-path #"/"))
-        page-map (stasis/slurp-directory relative-path  #".*\.(html|css|js)")
+        page-map (remove-temps (stasis/slurp-directory relative-path  #".*\.(html|css|js)"))
         page-html (vals page-map)
         page-keys (map #(str "/" base %) (map #(str/replace % #"(?<!index)\.html$" "") (keys page-map)))]
     (->> page-html
