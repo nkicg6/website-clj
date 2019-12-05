@@ -61,7 +61,7 @@
   "formats html image link to appropriately link to static website image directory.
   `html` is a raw html string."
   (-> html
-   (str/replace #"src=\"img" "src=\"../img")
+   (str/replace #"src=\"img" "src=\"/img")
    (str/replace #"../public" "")))
 
 (defn parse-html
