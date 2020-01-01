@@ -1,0 +1,56 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Next_image_clj: a simple utility plugin for semi-automated analysis" :date "2019-12-04" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "imagej" "Fiji" "programming" "science"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2019-12-04 Wed
+#+TITLE: Next_image_clj: a simple utility plugin for semi-automated analysis 
+#+HTML:<h1 id="mainTitle">Next_image_clj: a simple utility plugin for semi-automated analysis </h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+
+Often I have large directories of images that I want to analyze in with some ImageJ plugin or script in a semi-automated manner. For example, recently I wanted to measure the fluorescence intensities of a few different regions of interest (ROIs) I had traced on a microscopy image. I wrote a python script which would measure the area of each ROI and save the values in a specially designed CSV to facilitate later analysis. My workflow was simple:
+- open the image
+- trace the ROIs
+- renaming the ROIs
+- run the measurement script
+- close the image
+- moving the image from a =main= directory to a =done= directory
+- opening the next image
+- repeat until all images are in the =done= directory
+
+Manually tracing and renaming ROIs is enough work, clicking and dragging images around the desktop makes an already tedious task even more so. Eventually, I wrote a function at the end of my script that would close my current image, move it to the =done= directory, open the next one, and print out how many images were left to analyze to the imageJ log. This made things a lot easier and nicer, and I decided to generalize this functionality to a plugin.
+
+*disclaimer* 
+
+ImageJ/Fiji [[https://imagej.net/Writing_plugins][plugins are primarily written in Java]]. I've never written a bonafide plugin (only [[https://github.com/Macklin-Lab/imagej-microscopy-scripts][Jython scripts that act like plugins]]), and I have very little experience writing Java. I have been learning about and playing with Clojure for over a year now, and I thought it would be a good opportunity to try implementing this basic plugin with Clojure. 
+Eventually I want to learn a bit of Java by rewriting this plugin and I will document that experience as well. 
+
+** /Next_image/: a tool for manually analyzing large image datasets
+
+So what will the =Next_image= plugin do?
+=Next_image= will ask for a directory upon startup, and will then list all the images in that directory. It will expect the images to exist together in some main directory, and already-analyzed images (and their associated data) will reside in a directory called =done=.
+
+#+BEGIN_SRC example
+.
+├── done
+│   ├── imgXdone.tif
+│   └── imgXdone_data.csv
+├── img1.tif
+├── img2.tif
+└── img3.tif
+
+#+End_SRC
+
+If this directory tree doesn't exist yet, =Next_image= will create it in the selected directory. I think we will also make a =.next_image_state= file to hold the state between analysis sessions. 
+
+=Next_image= is meant to assist with semiautomated analysis. You will have the option to register custom pre-processing and post-processing macros or scripts which will be run immediately after opening an image (pre-processing) and before closing the current image and opening the next (post-processing). =Next_image= will display a list of the images in the main directory, and will have a button (called *next*) to load a selected image or move to the next. If no image is open, =Next_image= will open the selected image and run the pre-processing macro. Upon clicking the button (or triggering with a keyboard shortcut), =Next_image= will open the image and run your pre-registered pre-processing script. You will then be left alone to analyze the image however you see fit. When you are done, click *next* and =Next_image= will run your registered post-processing script, close the image, move it to the =done= repository, open the next image, and run the pre-processing script. 
+And that's it, that will be the main functionality of =Next_image=. The user interface will display a list of the images left to analyze, tell you how many are left and what % of the total they comprise, and how many you have analyzed so far in this session. 
+
+I am still working out the GUI layout, but I will update this page as I work on the application. You can also find the code on [[https://github.com/nkicg6/next_image][github]]. Again just a warning that this is my first plugin (and serious clojure project) and I am learning as I go. 
+
+It is new years eve (2019), so I'll work on this more tomorrow. Check back soon for updates and explanations of the code (and happy new year)!
+
