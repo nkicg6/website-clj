@@ -100,9 +100,8 @@ bibliography:~/Dropbox/bibliography/library.bib
 Produces this
 
 #+CAPTION: Whats with the brackets?
-#+NAME: ugly citations
-#+ATTR_HTML: :width 50% :height 50%
-[[file:img/bad_ref_export.png]]
+#+ATTR_HTML: :width 50% :height 50% :alt example of citation formatting I don't like :title example of citation formatting I don't like
+[[file:~/personal_projects/website-clj/resources/public/img/bad_ref_export.png]]
 
 Why brackets? I was really disappointed with the style on export. I looked all over for ways to specify the correct options in org-ref, getting more frustrated all the time.Then I realized... This is a bibtex setting, not an org-ref setting! I searched for ways to make the brackets round, no way does every bibtex user use square brackets, and I found the answer:
 =\usepackage[round]{natbib}= 
@@ -162,6 +161,5 @@ Now the export should look much better. So use org-ref, but use BibTeX to specif
 
 
 #+CAPTION: Better!
-#+NAME: Better formatting
-#+ATTR_HTML: :width 50% :height 50%
-[[file:img/better_export.png]]
+#+ATTR_HTML: :width 50% :height 50% :alt example of citation style I like :title example of citation style I like
+[[file:~/personal_projects/website-clj/resources/public/img/better_export.png]]
