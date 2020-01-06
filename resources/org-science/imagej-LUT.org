@@ -15,7 +15,7 @@ ImageJ lookup tables (LUTs) map integer or floating point pixel values to colors
 
 #+ATTR_HTML: :width 50% :height 50% :alt example image of myelin and mitral cells :title Myelin and mitral cells :align center
 #+ATTR_LATEX: :placement [H] :width 0.5\textwidth
-[[file:~/personal_projects/website-clj/resources/public/img/ais-mcs.png]]
+[[file:~/personal_projects/website-clj/resources/public/img/ais-mcs.jpg]]
 
 
 ** Here are the steps to creating your own LUT from a reference image:
@@ -24,12 +24,12 @@ ImageJ lookup tables (LUTs) map integer or floating point pixel values to colors
 You can view the raw values of the LUT by clicking =Image>Color>Show LUT= and clicking "List" on the resulting window. 
 #+ATTR_HTML: :width 50% :height 50% :alt how to display a LUT in imagej :title displaying a LUT in ImageJ :align center
 #+ATTR_LATEX: :placement [H] :width 0.5\textwidth 
-[[file:~/personal_projects/website-clj/resources/public/img/show-lut.png]]
+[[file:~/personal_projects/website-clj/resources/public/img/show-lut.jpg]]
 
 2. Split the channels so only your channel of interest is showing (=Image>Color>Split Channels= close all unrelated channels), and save this as a LUT by clicking =File>Save As...> LUT...=. I saved mine as =mylein-test-lut= 
 #+ATTR_HTML: :width 50% :height 50% :alt saving an image as a LUT in ImageJ :title  saving an image as a LUT in ImageJ :align center
 #+ATTR_LATEX: :placement [H] :width 0.5\textwidth
-[[file:~/personal_projects/website-clj/resources/public/img/save-as-lut.png]]
+[[file:~/personal_projects/website-clj/resources/public/img/save-as-lut.jpg]]
 
 3. Move this file to =Fiji.app/luts/= directory.  
 
@@ -38,7 +38,7 @@ You can view the raw values of the LUT by clicking =Image>Color>Show LUT= and cl
 #+NAME: new lut
 #+ATTR_HTML: :width 50% :height 50% :alt see your new LUT in the LUTs menu :title see your new LUT in the LUTs menu :align center
 #+ATTR_LATEX: :placement [H] :width 0.5\textwidth
-[[file:~/personal_projects/website-clj/resources/public/img/new-lut-option.png]]
+[[file:~/personal_projects/website-clj/resources/public/img/new-lut-option.jpg]]
 
 ** References: 
    - https://imagej.nih.gov/ij/docs/guide/146-28.html#toc-Subsection-28.5
