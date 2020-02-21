@@ -1,0 +1,164 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Building and deploying my website with make" :date "2020-02-20" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "make"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-02-20 Thu
+#+TITLE: Building and deploying my website with make
+#+HTML:<h1 id="mainTitle">Building and deploying my website with make</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+Making things easier to do makes me more likely to do them. Even a simple static website like this one requires a few bespoke commands to build and deploy, so to lower the barrier to publish, I decided to start learning and using [[https://www.gnu.org/software/make/][GNU Make]] to reduce the steps to one command. 
+
+Make is a program designed for generating executables (or any end product) from a set of source files. You define a set of rules which must be executed to generate your target 'thing'. Make will re-build your target if one of the pre-requisite files changes to keep it up to date. Make is quite old and a very nice piece of software. I won't be using any of the target-file prerequisite rules here, instead I will be using /Phony Targets/ ([[https://learnxinyminutes.com/docs/make/][learn X in Y minutes]] has a nice make introduction). 
+
+Phony targets are /rules/ which do not have /targets/, so they are never satisfied and always run (see Phony Targets [[https://learnxinyminutes.com/docs/make/][explanation here]]).
+
+** Which rules do we need?
+
+My workflow involves writing =org-mode= source files, compiling those to =HTML= before viewing, building the site, and pushing to GitHub pages. 
+I need rules to do the following:
+1. *update*
+   - compile any new =org= source files to =HTML=
+2. *view*
+   - run *update*
+   - start a server to view the website
+3. *deploy*
+   - run *update*
+   - build website (using [[https://github.com/magnars/stasis][stasis]])
+   - run git commands to push it to GitHub pages.
+
+Make runs shell commands, so the first things we need to do is figure out how to use emacs and =org-mode= to compile my website project from the command line. 
+
+** =org-publish= from the shell
+
+At it's core, emacs is a [[https://www.gnu.org/software/emacs/manual/html_node/gnus/Emacs-Lisp.html#Emacs-Lisp][lisp interpreter]] (and [[https://www.emacswiki.org/emacs/EmacsLisp][here]]). You can use it purely as an interpreter from command line like so:
+
+#+BEGIN_SRC bash :results verbatim 
+emacs -batch -eval '(message "hello from emacs lisp")'
+# "hello from emacs lisp"
+#+END_SRC
+
+the =-batch= flag causes emacs to run in non-interactive mode and without loading an =init= file (https://www.emacswiki.org/emacs/BatchMode). It is typically used to run commands or emacs-lisp files as scripts. The =-eval= flag tells emacs to evaluate whatever lisp expression follows.
+
+To publish this site with org-mode, I run =M-x org-publish= and select =clj-site=. The commands for =clj-site= are defined in my [[https://github.com/nkicg6/emacs-config/blob/7029198485d5c080afced4ceb4309fce83161e02/revised-init.el#L532-L550][init file]]. To run this from the command line, we first need to set the variable =org-publish-project-alist=. While we could pass that as a string to =-eval=, it would be easier to define all the settings and variables I need in a small elisp file. This can be done in batch mode using the =-load= flag, followed by a file. I will copy my variable declaration from my  [[https://github.com/nkicg6/emacs-config/blob/7029198485d5c080afced4ceb4309fce83161e02/revised-init.el#L532-L550][init file]] and add a few other settings like so:
+
+#+BEGIN_SRC emacs-lisp 
+;; publish org-mode project from makefile 
+;; based on: https://stackoverflow.com/questions/46295511/how-to-run-org-mode-commands-from-shell
+;; 
+(add-to-list 'load-path "~/.emacs.d/elpa/org-20191125")
+(add-to-list 'load-path "~/.emacs.d/elpa/")
+(add-to-list 'load-path "~/.emacs.d/manual-packages")
+
+(require 'org)
+(require 'ox-publish)
+(require 'ox-html)
+;;(require 'htmlize)
+
+(setq org-src-fontify-natively t)
+
+(load-theme 'leuven t)
+
+(setq org-publish-project-alist
+      '(("programming"
+         :base-directory "~/personal_projects/website-clj/resources/org-programming"
+         :base-extension "org"
+         :publishing-directory "~/personal_projects/website-clj/resources/programming"
+         :publishing-function org-html-publish-to-html
+         :headline-levels 4
+         :html-extension "html"
+         :body-only t)
+        ("science"
+         :base-directory "~/personal_projects/website-clj/resources/org-science"
+         :base-extension "org"
+         :publishing-directory "~/personal_projects/website-clj/resources/science"
+         :publishing-function org-html-publish-to-html
+         :headline-levels 4
+         :html-extension "html"
+         :body-only t)
+        ("clj-site" :components ("programming" "science"))))
+
+#+END_SRC
+
+I named this file =publish.el=, and it lives in the base directory of the website (the place where I will run =make= from). Compiling documents in batch mode looks like this (from the base directory of my website):
+
+#+BEGIN_SRC bash :results verbatim 
+emacs -batch -load publish.el -eval '(org-publish "clj-site")'
+#+END_SRC
+
+** makefile 
+
+That was the hard part, now we just need to write some rules for make to run. 
+We will name the first run update:
+
+#+BEGIN_SRC make
+# Makefile
+update:
+	@echo "updating site..."
+	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
+#+END_SRC
+
+The rule is called =update=. The =@= prefix on the =echo= command stops the text of the command from being echoed to stdout before it is executed.
+We can now update the site by running:
+
+#+BEGIN_SRC bash :results verbatim 
+make update
+#+END_SRC
+
+I start the ring web server for previewing my app by running =lein ring server=. To view my site before deploying, we can add the following command:
+
+#+BEGIN_SRC make
+# Makefile
+update:
+	@echo "updating site..."
+	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
+
+view:
+	@echo "updating site..."
+	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
+	@echo "Starting server to view website"
+	lein ring server
+
+#+END_SRC
+
+=make view= will now update then display the site. 
+
+** deploying using make
+
+   Deploying is slightly more complicated. To deploy, I need to run =lein build-site=, commit and push the changes, =cd= to the =target/= directory and again commit and push the website changes. 
+Make spawns a new shell for every line, but to run git commands we need to be in the appropriate directory. We can work with this by running all the commands in one line:
+
+
+
+#+BEGIN_SRC make
+# Makefile
+update:
+	@echo "updating site..."
+	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
+
+view:
+	@echo "updating site..."
+	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
+	@echo "Starting server to view website"
+	lein ring server
+
+deploy:
+	@echo "deploying site."
+	@echo "Updating now from emacs..."
+	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
+# this will build and deploy the entire site
+	@echo "building and pushing via git..."
+	lein build-site;git add .;git commit -m "content update";git push;cd target/nickgeorge.net/; git add .;git commit -m "automated commit."; git push
+	@echo "Done!"
+
+#+END_SRC
+
+With that we have our final rule, =deploy=. 
+
+Now I can run =make deploy= from the command line to publish my website, rather than running each command individually. 
+

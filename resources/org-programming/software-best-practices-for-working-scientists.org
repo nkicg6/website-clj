@@ -1,0 +1,73 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Software best practices for working scientists: a series" :date "2020-01-18" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["design" "python" "science" "analysis" "software"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0  ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-01-18 Sat
+#+TITLE: Software best practices for working scientists: a series
+#+HTML:<h1 id="mainTitle">Software best practices for working scientists: a series</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+*disclaimer:* I am not a computer scientist and I have never worked as a professional software developer. I am working on a PhD studying neuroscience in the Department of Cell and Developmental Biology at the University of Colorado. This series of posts contains a number of observations and best practices I have picked up over a few years of writing scientific analysis code for my own project, reading extensively on software design, and trying to apply the things I have learned to my own work. I want to share what I have learned to hopefully help others. Keep that in mind as you are reading. 
+
+*disclaimer 2:* I will be editing this post heavily and changing things without notice for some time. It may also split into several smaller posts. After I publish the initial post, any changes will be tracked via git and accessible by link to the commit hash via my Github page. 
+
+* Why I am writing this
+
+I am currently (January 2020) in the 4th year of my PhD work, and I have been using a mixture of Python, R, and Clojure to analyze data and build tools to conduct research. 
+
+Most scientists (myself included) do not enter PhD programs in neuroscience or cell biology expecting to write software, or having any serious background in software development. However, we routinely handle gigabyte+ sized images, real-time electrophysiology recordings from [[https://www.hhmi.org/news/new-silicon-probes-record-activity-hundreds-neurons-simultaneously][hundreds of neurons]], and massive transcriptomics datasets from single cell RNA sequencing experiments. To stay on the cutting edge and to remain productive, most scientists dealing with these types of data have to learn to use some kind of programming language, with Python, R, and Matlab being the most popular. 
+Teaching incoming students to deal with this data is typically handled by on the job training by lab mates or mandatory introductory courses which focus on getting students familiar with the syntax of some popular language, with some final project being a student demo analysis of some contrived problem in an area of interest. From there, students are left to build, analyze, and learn on their own, with only the labs and their own interests to guide their progress. 
+
+But how do you know that your software works as you intend it to? If you came back to that script you wrote last October to generate the data for that abstract to the Society of Whatever Conference, would it still work? Do you still understand what it is doing? 
+What if you want to add some functionality to an existing analysis, could you do that without copy pasting the old file into a new file and commenting out the old input and output files names? Can you download the script written by another scientist or lab member and have it working on your computer within a few minutes (without several =file not found= or =function not defined= errors)?
+
+For me, and I suspect for most others, the answer to most of these questions is "I don't know", "I've never thought about that", or "No". And this is extremely unfortunate. A tremendous amount of creative energy, grant money, and person-hours is spent in labs writing analysis routines whose results eventually end up in papers, but whose code (if available at all), is impossible for anyone else to re-use or improve upon. 
+
+The scholarly effort is essentially wasted because everyone thought it was more important to teach students how to write /{insert popular language here}/ rather than teaching them /how to write software/. This problem becomes especially apparent when widely used scientific software contains errors that could invalidate the [[https://www.vice.com/en_us/article/zmjwda/a-code-glitch-may-have-caused-errors-in-more-than-100-published-studies][results of 100s of papers]]. 
+
+With this in mind, it is also important to realize that most of the code that scientists write is fundamentally different from the web development code, single page apps, or desktop applications that most software developers work on everyday. We are often writing simple scripts that gather data from a series of inputs, apply some algorithm or transform to the accumulated result, then output some plots or results for further use. Often the process is only semi-automated, and we need to manually tune settings for different data files, or join results from microscopy experiments and electrophysiology or genetics experiments into one figure for further use. Most of the time the scripts are very specific for one type of data or experiment, and are not meant to be re-used. 
+ 
+Despite this, here I will argue that adopting some good, consistent, software development practices will improve the quality of the code you write, increase the opportunity for code re-use by yourself and others, and lead to better science to benefit the community at large. 
+
+This post will be heavily updated and edited in the coming weeks and months, but I hope that it will serve as a useful reference and starting point for learning more about good programming practices for scientists.
+
+Here are some of the topics I will be writing about, with simple examples
+
+* Development is different from analysis: structuring a re-usable architecture
+* Refactor your code as soon as it works
+* I/O functions should be separate from algorithm functions.
+Implementing "Functional core, imperative shell" for data analysis (see  [[https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell][Functional core imperative shell by Gary Bernhardt]])
+** Separate the /how/ from the /what/
+The logic (code that actually does the thing) for opening files, finding peaks, making heat maps, etc. should not be in the same file that contains the locations for the data. 
+* Use modules and namespaces to organize related functions
+* Prefer functions
+and refactor your code to functions as soon as possible!
+* Use simple, open, data structures 
+Dictionaries/maps are your friend, and use plain text or open formats whenever possible.
+* Be a scientist... test your code!
+You hypothesize your code works, but have you tested that hypothesis?
+* use version control
+* organize your projects with change in mind
+Things change, but structure is important. How can we structure projects when we don't know what the future holds?
+* References and further reading
+** Useful articles and books
+The articles and books below have been very valuable to me as I learn software engineering best practices and how to design programs and systems. 
+
+- [[https://www.nature.com/articles/nbt.2740][So you want to be a computational biologist? Loman and Watson 2013]]
+- [[https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005412][Ten simple rules for making research software more robust. Taschuk and Wilson 2017]]
+- [[https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell][Functional core imperative shell - Gary Bernhardt]]
+- [[https://www.htdp.org/2003-09-26/Book/curriculum.html][How to Design Programs]]
+- [[https://www.nature.com/articles/s41592-019-0350-x][Giving software its due - Nature Methods editorial February 2019]]
+- [[https://www.youtube.com/watch?v=DJtef410XaM][The clear architecture in python - Brandon Rhodes 2014]]
+- [[https://elementsofclojure.com/][Elements of Clojure - Zachary Tellman]]
+- [[https://pragprog.com/book/tpp20/the-pragmatic-programmer-20th-anniversary-edition][The Pragmatic Programmer - David Thomas and Andrew Hunt]]
+- [[http://erlang.org/download/armstrong_thesis_2003.pdf][Making reliable distributed systems in the presence of software errors]]
+- https://www.vice.com/en_us/article/zmjwda/a-code-glitch-may-have-caused-errors-in-more-than-100-published-studies
+** Work cited
+
+
+

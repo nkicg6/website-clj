@@ -13,5 +13,7 @@ deploy:
 	lein build-site;git add .;git commit -m "content update";git push;cd target/nickgeorge.net/; git add .;git commit -m "automated commit."; git push
 	@echo "Done!"
 view:
+	@echo "updating site..."
+	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
 	@echo "Starting server to view website"
 	lein ring server
