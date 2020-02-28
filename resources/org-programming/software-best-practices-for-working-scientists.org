@@ -43,7 +43,7 @@ Here are some of the topics I will be writing about, with simple examples
 Implementing "Functional core, imperative shell" for data analysis (see  [[https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell][Functional core imperative shell by Gary Bernhardt]])
 ** Separate the /how/ from the /what/
 The logic (code that actually does the thing) for opening files, finding peaks, making heat maps, etc. should not be in the same file that contains the locations for the data. 
-* Use modules and namespaces to organize related functions
+* Use modules/namespaces to organize related functions
 * Prefer functions
 and refactor your code to functions as soon as possible!
 * Use simple, open, data structures 

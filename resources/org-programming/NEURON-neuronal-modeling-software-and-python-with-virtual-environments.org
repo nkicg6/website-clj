@@ -1,0 +1,121 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Setting up and using NEURON modeling software and python with virtualenvwrapper" :date "2020-02-27" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "NEURON" "virtualenvwrapper"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-02-27 Thu
+#+TITLE: Setting up and using the NEURON simulation environment and python with virtual environments 
+#+HTML:<h1 id="mainTitle">Setting up and using the NEURON simulation environment and python with virtual environments</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+The NEURON installation adds python support using the =PYTHONPATH= global environmental variable. I use virtual environments to separate my projects but the =PYTHONPATH= NEURON was unfortunately adding itself to every environment I created. I want to develop projects and organize dependencies in an orderly way, so here we will remove this global environmental NEURON installation and create an isolated environment for it. 
+
+I am using the NEURON simulation environment with Python 3.7.6 and virtualenvwrapper + venv. I'll assume you know your way around a terminal and environmental variables, use [[https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html#scripts][virtualenvwrapper]] for python development, and have a working [[https://neuron.yale.edu/neuron/][NEURON simulation environment]] installed on macOS (I'll do Windows in the future). If you need help setting those up, please refer to their respective pages. 
+
+** macOS setup
+   Our goal is to isolate the NEURON python bindings so they are local to a virtual environment, rather than a global install. So in the end we will be able to access it from the environment but not from outside like this:
+
+#+HTML: <script id="asciicast-XhlMFvH45rO2fdIJiHkNtef10" src="https://asciinema.org/a/XhlMFvH45rO2fdIJiHkNtef10.js" async></script>
+
+*** install NEURON using the appropriate installer from the [[https://www.neuron.yale.edu/phpBB/viewforum.php?f=33][website]]. 
+  Allow the installer to add NEURON to your path and to the =PYTHONPATH=. Once installation is complete, you should be able to start a python shell and import the major neuron module, =h=
+  #+BEGIN_SRC bash :results verbatim 
+nick ~ $ python3 -c 'from neuron import h'
+  #+END_SRC
+  This should return you to your shell prompt without any issues. So if it exits and you don't see an =ImportError=, then you are all set to continue.
+
+*** Setup the virtual environment 
+ Note- I do not use the =PYTHONPATH= environmental variable so I will be setting it and unsetting it without any concerns here. If you /do/ use it, you will have to make some changes below...
+ 
+  On macOS, the NEURON installer defines the =PYTHONPATH= environmental variable in your =.bash_profile= (if you don't have a =.bash_profile= it will be created). Open your =.bash_profile= in your favorite text editor. For the moment, comment the line starting with =export PYTHONPATH...= out. Close your terminal and open a new one. =echo $PYTHONPATH= should return nothing.
+
+  Now, make a new python3 environment for your NEURON project. 
+  #+BEGIN_SRC bash :results verbatim 
+nick ~ $ mkvirtualenv nrn
+... # stuff printed when making environment here. 
+(nrn) nick ~ $ 
+  #+END_SRC
+  To ensure that you properly removed the PYTHONPATH before setting up this environment, you should now get an =ImportError= if you try to import neuron
+
+  #+BEGIN_SRC bash :results verbatim 
+(nrn) nick ~ $ python3 -c "from neuron import h"
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'neuron'
+  #+END_SRC
+  Since we globally unset the =PYTHONPATH= variable, this will also happen if you try it from outside your environment as we did in the previous step. 
+
+*** Edit the virtualenvironment PYTHONPATH to use nrn locally
+  Virtualenvwrapper provides some utility/customization bash scripts that are run before/after activating or deactivating an environment. See the virtualenvwrapper [[https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html#scripts][docs]] for more information. We will use the =postactivate= and =postdeactivate= scripts (run just after activating and just after deactivating your environment, respectively) to set the =PYTHONPATH= environmental variables in your isolated environment. These files are located in the =nrn/bin/= (replace =nrn= with whatever you named your virtualenvironment) folder wherever your =WORKON_HOME= is set to (see https://virtualenvwrapper.readthedocs.io/en/latest/install.html#variable-workon-home). 
+
+I don't use the =PYTHONPATH= in any other context, so I will simply set it in the =postactivate= script (lives in =$WORKON_HOME/<env_name>/bin/postactivate=):
+
+  #+NAME: postactivate 
+  #+BEGIN_EXAMPLE
+#!/bin/bash
+# This hook is sourced after this virtualenv is activated.
+
+export PYTHONPATH="/Applications/NEURON-7.7/nrn/lib/python"
+  #+END_EXAMPLE
+
+then unset it in the =postdeactivate= script (lives in =$WORKON_HOME/<env_name>/bin/postdeactivate=):
+
+  #+NAME: postdeactivate 
+  #+BEGIN_EXAMPLE
+#!/bin/bash
+# This hook is sourced after this virtualenv is deactivated.
+export PYTHONPATH=""
+  #+END_EXAMPLE
+
+You will have to replace the exact value of =PYTHONPATH= with whatever NEURON added to your =.bash_profile=. Now open a fresh shell and ensure the following works:
+
+  #+BEGIN_SRC bash :results verbatim 
+nick ~ $ echo $PYTHONPATH
+
+nick ~ $ workon nrn
+(nrn) nick ~ $ echo $PYTHONPATH
+/Applications/NEURON-7.7/nrn/lib/python
+(nrn) nick ~ $ deactivate
+nick ~ $ echo $PYTHONPATH
+
+  #+END_SRC
+
+And that's it! You should now be able to activate your environment and start playing with NEURON in an isolated and controlled environment! 
+
+#+BEGIN_SRC bash :results verbatim 
+(nrn) nick ~ $ python
+Python 3.7.6 (default, Dec 30 2019, 19:38:28)
+[Clang 11.0.0 (clang-1100.0.33.16)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from neuron import h
+>>> soma = h.Section(name='soma')
+#+END_SRC
+
+Whereas exiting your environment you won't be able to:
+
+#+BEGIN_SRC bash :results verbatim 
+(nrn) nick ~ $ deactivate
+nick ~ $ python3
+Python 3.7.6 (default, Dec 30 2019, 19:38:28)
+[Clang 11.0.0 (clang-1100.0.33.16)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from neuron import h
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'neuron'
+>>>
+#+END_SRC
+
+
+*Note:*
+You won't be able to run =nrniv= or =nrngui= from your shell in the environment, Not sure why but something to be aware of. 
+
+
+** Windows setup
+
+I found a windows laptop so I will get this working there and post back soon (maybe). 
