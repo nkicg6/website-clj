@@ -1,0 +1,108 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Update in place is evil. How to write in a functional style with mutable defaults in Python" :date "2020-03-04" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "functional-programming"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-03-04 Wed
+#+TITLE: Update in place is evil. How to write in a functional style with mutable defaults in Python
+#+HTML:<h1 id="mainTitle">Update in place is evil. How to write in a functional style with mutable defaults in Python</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+** Python's mutable default data types
+
+When I first started learning programming (using python), I loved how explicit things were. =a=5= assigns the value =5= to the variable =a=, =b = [1,2,3]= creates a list with 1,2,3 and assigns it to the variable =b=. Pretty quickly, you want to create a new list based on an old list. So you might naturally search for "adding an item to a list in python" and come accross the =.append= [[https://docs.python.org/3/tutorial/datastructures.html][method]]. So you might try this:
+
+#+BEGIN_SRC python :session new :results output
+original_list = ["I was here first"]
+new_list = original_list.append("I was there next")
+print(new_list)
+# None
+#+END_SRC
+What?
+
+#+BEGIN_SRC python :session new :results output
+print(original_list)
+# ['I was here first', 'I was there next']
+#+END_SRC
+
+What???? At that point I didn't have any exposure to immutable data structures and had not yet been inducted into the cult of functional programming, I was just a new programmer who found this behavior confusing and unintuitive. I hadn't done anything to my original variable, why was it changed? Why did my assignment fail?
+
+Of course the way to 'fix' this was to use the overloaded =+= operator to 'concatenate' two lists:
+
+#+BEGIN_SRC python :session new :results output
+original_list = ["I was here first"]
+new_list = original_list + ["I was there next"]
+print(new_list)
+# ['I was here first', 'I was there next']
+print(original_list)
+# ['I was here first']
+#+END_SRC
+
+Of course, the documentation will explain /why/ this occurs with the append method (and the group of other [[https://docs.python.org/3/tutorial/datastructures.html#more-on-lists][methods that act on lists in place]]). And this may not seem like a big deal to someone with object oriented programming experience (=.append()= is a method for the mutable =list= /class/), but it was /not/ intuitive to me as a new programmer, and I filed that away as something to watch out for. Is this really confusing? How could it hurt? Well let's look at the following example posted on twitter by Jake VanderPlas (@jakevdp):
+#+HTML: <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Without checking, what do you think is the output of this Python snippet?<br><br>def f(x=[]):<br> x.append(1)<br> return x<br>print(f(), f())</p>&mdash; Jake VanderPlas (@jakevdp) <a href="https://twitter.com/jakevdp/status/1235271748867612673?ref_src=twsrc%5Etfw">March 4, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+
+What do you think the answer is? And what do you think it should be? 
+
+When I looked at this, >50% of respondents said it should print =[1] [1]=, yet if you try it you get: =[1,1] [1,1]=. People following Jake are likely not that new to Python, so I think it is safe to say this behavior (especially in a function) is not intuitive. That type of behavior is almost acceptable outside of functions, but this seems totally crazy. Here is another example:
+
+#+BEGIN_SRC python :session new :results output
+def append_unsafe(l):
+    return l.append("from the function")
+
+original_list = ["I was here first"]
+function_return = append_unsafe(original_list)
+
+print(function_return)
+# ['I was here first', 'from the function']
+
+
+print(original_list)
+# ['I was here first', 'from the function']
+
+#+END_SRC
+
+Functions are supposed to be islands of sanity in a mutable, stateful world. They should take arguments, operate on them in isolation, then return the result:
+
+#+BEGIN_SRC python :session new :results output
+def add_is_safe(n):
+    return n+2
+
+n_add = 2
+n_result = add_is_safe(n_add)
+
+print(n_result)
+# 4
+print(n_add)
+# 2
+#+END_SRC
+
+That is what you expect, but you can see in the case with the list we have this horrible mutation of an argument (the original list) /outside of the function scope/. I'm sure you can imagine the bugs and confusion that can result from this even in simple scripts. 
+
+** Immutable data hack
+To get around this, and work as if I was in a functional language with immutable data structures, I started doing the following:
+
+
+#+BEGIN_SRC python :session new :results output
+def append_immutable(l):
+    l = l.copy()
+    return l.append("from the function")
+
+original_list = ["I was here first"]
+function_return = append_immutable(original_list)
+
+print(function_return)
+# ['I was here first', 'from the function']
+
+
+print(original_list)
+# ['I was here first']
+
+#+END_SRC
+This creates a copy of the argument in the function scope assigned to the same name (in the function scope) so that any operations are done (as they should be) on the local variable /in the function/. This local variable is then returned. 
+
+I imagine this is rough on memory (I'll test it at some point), but to me the safety is worth the memory abuse. I do this whenever I operate on the mutable types in python. It has saved me from a number of mutable data-induced headaches since being spoiled by Clojure. Did I mention how awesome Clojure and functional programming are? If you haven't tried it, you should really try Clojure.
+
