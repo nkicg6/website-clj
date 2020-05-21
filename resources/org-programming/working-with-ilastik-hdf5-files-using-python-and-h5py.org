@@ -1,0 +1,137 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Working with Ilastik HDF5 files using python and h5py" :date "2020-05-21" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "ilastik" "image-analysis"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-05-21 Thu
+#+TITLE: Working with Ilastik HDF5 files using python and h5py
+#+HTML:<h1 id="mainTitle">Working with Ilastik HDF5 files using python and h5py</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+[[https://www.ilastik.org/][Ilastik]] is an excellent image analysis suite which makes pixel and object classification easy. Ilastik recommends using HDF5 as an input/output file format for image segmentation/probability and measurement results, but the documentation on how the results are stored in this [[https://forum.image.sc/t/structure-of-ilastik-hdf5-feature-export-results-tables/36800][format are somewhat lacking.]] 
+
+*Note! still in progress* I will provide an example HDF5 files from an Ilastik pipeline so you can try this too... soon! 
+
+I will focus on the reading/interacting with the output here, as [[https://www.ilastik.org/documentation/index.html][Ilastik provides extensive tutorials on pixel and object classification.]] 
+
+* Stuff you need
+- [[https://www.python.org/downloads/][Python3]]
+- numpy (=pip install numpy=)
+- h5py https://www.h5py.org/ (=pip install h5py=)
+- Ilastik segmentation results and table results as HDF5 files
+
+* Opening and inspecting HDF5 files
+
+HDF5 files are set up to be like a platform-agnostic filesystem. They can contain many different types of data, metadata, etc. but have a common organization structure. The top level is typically called a [[http://docs.h5py.org/en/stable/high/group.html][group]], and you can query the HDF5 file to find what it contains like so:
+
+#+BEGIN_SRC python :session new :results output
+  import h5py as h
+
+  h5obj = h.File("/absolute/path/to/h5file/caspr.h5", "r")
+  h5obj.keys()
+  # <KeysViewHDF5 ['caspr']>
+#+END_SRC
+
+You can treat these =h5py= file objects like python dictionaries:
+
+#+BEGIN_SRC python :session new :results output
+  h5obj.keys()
+  h5obj.values()
+  h5obj.get('key')
+  for k,v in h5obj.items():
+      print(f"\nkey: {k}\n value is {v}")
+#+END_SRC
+
+All those commands will all work as they would with Python dictionaries. 
+
+Ilastik will output the results of your segmentation (segmented binary image or probability maps) as an [[http://docs.h5py.org/en/stable/high/dataset.html][HDF5 dataset]]. You can access the dataset using the dataset name (in my case, =caspr=, based on =h5obj.keys()=):
+
+#+BEGIN_SRC python :session new :results output
+  h5obj["caspr"]
+  # <HDF5 dataset "caspr": shape (61, 1024, 1024, 1), type "|u1">
+  # same as:
+  h5obj.get("caspr")
+  # <HDF5 dataset "caspr": shape (61, 1024, 1024, 1), type "|u1">
+#+END_SRC
+
+* HDF5 file references and getting your data
+
+It is important to note that using =h5py.File()= creates a reference to the file, it does not read the whole file into memory.
+
+doing this:
+
+#+BEGIN_SRC python :session new :results output
+  h5obj = h.File("path/to/h5file/caspr.h5", "r")
+  data = h5obj['caspr']
+  print(type(data))
+  # <class 'h5py._hl.dataset.Dataset'>
+  h5obj.close()
+  print(data)
+  # <Closed HDF5 dataset>
+#+END_SRC
+
+will close the HDF5 file and any attempts to access the contents of =data= will fail.
+
+To work with the data, or iterate through a lot of =h5= files, you could keep the reference open the whole time you are working with it, or you can copy the data you are interested in and close the reference (ideally using a context manager).
+
+The dataset that I am interested in is a numpy =ndarray= with the following shape:
+
+#+BEGIN_SRC python :session new :results output
+  h5obj = h.File("path/to/h5file/caspr.h5", "r")
+  data = h5obj['caspr']
+  print(data.shape)
+  # (61, 1024, 1024, 1)
+#+END_SRC
+
+I can copy it like so:
+
+#+BEGIN_SRC python :session new :results output
+  dataset_data = data[:]
+  print(type(dataset_data))
+  # <class 'numpy.ndarray'>
+  print(dataset_data.shape)
+  # (61, 1024, 1024, 1)
+#+END_SRC
+
+and closing the file reference you can still access the data:
+
+#+BEGIN_SRC python :session new :results output
+  h5obj.close()
+  print(data)
+  # <Closed HDF5 dataset>
+  print(data.shape)
+  # ValueError: Not a dataset (not a dataset)
+  print(dataset_data)
+  # prints array...
+  print(dataset_data.shape)
+  # (61, 1024, 1024, 1)
+#+END_SRC
+
+
+* A simple HDF5 dataset-getter function
+
+Now we can write a simple function which will use a [[https://docs.python.org/3/reference/datamodel.html#context-managers][context manager]] to open and close the =h5= file and return the dataset we are interested in:
+
+#+BEGIN_SRC python :session new :results output
+
+  def get_h5_dataset(fp, dset_name):
+      with h.File(fp, 'r') as f:
+          assert dset_name in f.keys(), f"dataset {dset_name} does not exist. Datasets are: {[k for k in f.keys()]}"
+          data = f.get(dset_name)[:]
+      return data
+
+#+END_SRC
+
+Which we can use like so:
+
+#+BEGIN_SRC python :session new :results output
+  dataset = get_h5_dataset("/absolute/path/to/h5file/caspr.h5", "caspr")
+#+END_SRC
+The =assert= statement will print a useful message if you mistype a dataset name or if it doesn't exist.
+
+More on this later!
+

@@ -56,13 +56,14 @@ Things change, but structure is important. How can we structure projects when we
 * References and further reading
 ** Useful articles and books
 The articles and books below have been very valuable to me as I learn software engineering best practices and how to design programs and systems. 
-
+- [[https://www.joelonsoftware.com/2005/05/11/making-wrong-code-look-wrong/][Making wrong code look wrong by Joel Spolsky]]
+- [[https://www.youtube.com/watch?v=PzEox3szeRc]["Good Enough" Architecture by Stefan Tilkov]]
 - [[https://www.nature.com/articles/nbt.2740][So you want to be a computational biologist? Loman and Watson 2013]]
 - [[https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005412][Ten simple rules for making research software more robust. Taschuk and Wilson 2017]]
 - [[https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell][Functional core imperative shell - Gary Bernhardt]]
 - [[https://www.htdp.org/2003-09-26/Book/curriculum.html][How to Design Programs]]
 - [[https://www.nature.com/articles/s41592-019-0350-x][Giving software its due - Nature Methods editorial February 2019]]
-- [[https://www.youtube.com/watch?v=DJtef410XaM][The clear architecture in python - Brandon Rhodes 2014]]
+- [[https://www.youtube.com/watch?v=DJTef410xam][The clear architecture in python - Brandon Rhodes 2014]]
 - [[https://elementsofclojure.com/][Elements of Clojure - Zachary Tellman]]
 - [[https://pragprog.com/book/tpp20/the-pragmatic-programmer-20th-anniversary-edition][The Pragmatic Programmer - David Thomas and Andrew Hunt]]
 - [[http://erlang.org/download/armstrong_thesis_2003.pdf][Making reliable distributed systems in the presence of software errors]]
