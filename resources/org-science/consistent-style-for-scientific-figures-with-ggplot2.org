@@ -1,0 +1,174 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Consistent style for scientific figures with ggplot2" :date "2020-08-30" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["ggplot2", "science", "figures", "R", "statistics"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-08-30 Sun
+#+TITLE: Consistent style for scientific figures with ggplot2
+#+HTML:<h1 id="mainTitle">Consistent style for scientific figures in ggplot2</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+
+** Consistent style, for science's sake
+:PROPERTIES:
+:CUSTOM_ID: consistency_for_science
+:END:
+
+I am writing my first, first-author publication of my scientific career! This has been a lot more work than I expected, but I have learned a lot and I wanted to share some tricks I've developed to make things easier.
+ 
+When putting together data and figures for a scientific publication or presentation, consistency is important. Different styles and colors in plots within or between figures is poor design-- it distracts from your point and makes it harder for people to understand what is going on. It is not just about /aesthetic/ style, but about communicating in a way that it is easy for people to understand what you are trying to say.
+
+When using a tool like [[https://ggplot2.tidyverse.org/][ggplot2]] to make your plots, your opportunities for customization are almost unlimited. This is really cool, but with great power comes great responsibility. Your plots will contain tons of small tweaks (colors, point size, text size, axis line size...), and will likely be spread across a number of =R= files possibly (likely) written months (or years) apart from one another. How do you ensure your plots have a consistent style?
+
+You could keep a document that you refer to when making plots, but this will quickly become out of sync as you iterate on your design and you may forget to consult it for some new task and end up hunting through source files for what you did in the past... 
+
+And what if your advisor says your text is too small, or the colors don't work? (Trust me, they will.)
+
+=Ctrl-f= and replacing text would be super tedious and error prone, and make you /less likely to make the small changes that matter/. 
+
+To combat this problem, I've started using a simple, custom =R= file to store all my special variables and functions for my ggplot plots and statistical analysis. 
+
+** plotting_defaults.R
+:PROPERTIES:
+:CUSTOM_ID: plotting_defaults
+:END:
+
+What would you want to store in =plotting_defaults.R=?
+Here are some of my variables:
+
+#+BEGIN_SRC R :results output :exports both
+  # plotting_defaults.R
+  library(ggplot2)
+
+  theme_set(theme_classic())
+
+  black <- "#000000" # Use color hex codes for consistency
+  grey <- "#808080"
+
+  # you can store ggplot functions in varibles for later use!
+  theme_and_axis_nolegend <- theme(legend.position = "None",
+                                   text = element_text(size=25, face = "bold"),
+                                   axis.text = element_text(size = 18, face = "bold", color = black),
+                                   axis.line = element_line(color = black, size = 0.6))
+
+  theme_and_axis_legend <- theme(text = element_text(size=25, face = "bold"),
+                                 legend.title = element_blank(),
+                                 legend.background = element_blank(),
+                                 axis.text = element_text(size = 18, face = "bold", color = black),
+                                 axis.line = element_line(color = black, size = 0.6))
+
+  custom_annotation_size <- 8
+  pt_alpha <- 0.6
+  pt_stroke <- 1
+  line_size <- 1.5
+  ecdf_pt_size <- 5
+  pt_size <- 2
+  narrow_jitter_width <- 0.25
+  barplot_width <- 0.5
+  ctrl_color <- scale_color_manual(values = c(black, grey)) 
+  # and so on... 
+#+END_SRC
+
+Anything that you /can/ keep constant in this file, you should. This excludes things like X/Y ranges and axis ticks, but you would be surprised at all the stuff you can safely store as a global variable and use for plot formatting. I think the constant =theme_and_axis_*= variables are probably my most important.
+
+Now, at the top of any =R= file where I am making plots, I simple =source= this file:
+
+#+BEGIN_SRC R :results output :exports both
+  # figure_1.R
+
+  source("path/to/plotting_defaults.R")
+  # code for figures...
+
+  ggplot(data, aes(x=group, y=length, color=group))+
+    geom_boxplot() +
+    theme_and_axis_nolegend + # from global plotting_defaults.R
+    ctrl_color # from global plotting_defaults.R
+  # ...
+#+END_SRC
+
+Now, if my axis text is too small (somehow it always is) no problem, just change that variable (=axis.text= and =text=) in =theme_and_axis_legend= and =theme_and_axis_nolegend= in =plotting_defaults.R= and re-run the figure script!
+
+I've found this method makes consistent plots much more pleasant and easy to make, and it has greatly improved my life!
+
+** Keeping statistics consistent and organized
+:PROPERTIES:
+:CUSTOM_ID: organized_statistics
+:END:
+
+I'm using regular =R= files for my statistical analysis as I write my paper. Opening an old =R= file to print  out the results for every summary statistic or comparison that I write is super annoying.
+
+I'd like to have a single file which is easy to keep updated and refer to as I write, and I'd like it in the same format as it is when it prints to the R console so I don't have to write parsing functions every different test or analysis I do. 
+
+I found the [[https://stat.ethz.ch/R-manual/R-devel/library/base/html/sink.html][sink]] method from base =R=, which redirects console output to a file (or writable file-like thing). Using sink, you can do something like this:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  # data is in df, with lengths and two groups
+  t_test_res <- t.test(length~group, data = df)
+
+  sink("path/to/results.txt")
+  t_test_res
+  sink()
+#+END_SRC
+
+and the output will be in the file =path/to/results.txt= just as it appears in the console!
+
+Next, I wrote the a function to organize the output and associate it with a descriptive name so it is easier to refer to:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  # requires stringr library
+  pretty_print_results <- function(name, stuff) {
+    print(stringr::str_glue("---- {name} ----\n"))
+    print(stuff)
+    print(stringr::str_glue("---- END ----\n\n"))}
+#+END_SRC
+
+(This uses the [[https://stringr.tidyverse.org/][stringr]] library, because I don't know how base =R= strings work)
+
+Where should you put that function? Well in [[plotting_defaults.R]] of course!
+At this points, at the bottom of my scripts I will write all my statistical summaries like so:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+
+  sink("~/path/to/results.txt")
+
+  pretty_print_results("Summary Grouped data", rawd_grouped %>%
+                         group_by(ctrlcmp) %>%
+                         summarize(mean_length = mean(animalLenMean),
+                                   median_length = median(animalLenMean),
+                                   sd_length = sd(animalLenMean)))
+
+  pretty_print_results("Open vs occl KS test", occl_open_ks)
+  sink()
+#+END_SRC
+
+and the results will be in =results.txt= like so:
+
+#+BEGIN_EXAMPLE
+---- Summary Grouped data ----
+# A tibble: 3 x 4
+  ctrlcmp  mean_length median_length sd_length
+  <fct>          <dbl>         <dbl>     <dbl>
+1 Control         25.4          25.5      1.04
+2 Open            26.9          26.7      1.02
+3 Occluded        25.2          24.9      1.24
+---- END ----
+
+---- Open vs occl KS test ----
+
+	Two-sample Kolmogorov-Smirnov test
+
+data:  occl_side and open_side
+D = 0.12792, p-value = 3.965e-07
+alternative hypothesis: two-sided
+
+---- END ----
+
+#+END_EXAMPLE
+
+Change something? Re-run the script and this table will update and you can refer to it when you make edits. 
+
+Automation prevents errors and lowers the barrier to doing the right thing. while it might take a bit more effort, your work and science as a whole benefit when you do it. 
