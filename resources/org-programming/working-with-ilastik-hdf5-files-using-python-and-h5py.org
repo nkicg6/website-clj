@@ -12,11 +12,11 @@
 #+HTML:</div>
 #+TOC: headlines 2
 
-[[https://www.ilastik.org/][Ilastik]] is an excellent image analysis suite which makes pixel and object classification easy. Ilastik recommends using HDF5 as an input/output file format for image segmentation/probability and measurement results, but the documentation on how the results are stored in this +[[https://forum.image.sc/t/structure-of-ilastik-hdf5-feature-export-results-tables/36800][format are somewhat lacking.]]+ (I made a small change to the documentation to clear some of this up https://github.com/ilastik/ilastik.github.io/pull/137)
+[[https://www.ilastik.org/][Ilastik]] is an excellent image analysis suite which makes pixel and object classification easy. Ilastik recommends using HDF5 as an input/output file format for image segmentation/probability and measurement results, but the documentation on how the results are stored in this +[[https://forum.image.sc/t/structure-of-ilastik-hdf5-feature-export-results-tables/36800][format are somewhat lacking]]+ (I made a [[https://github.com/ilastik/ilastik.github.io/pull/137][small change to the documentation]] to clear some of this up).
 
 I will focus on the reading/interacting with the output here, as [[https://www.ilastik.org/documentation/index.html][Ilastik provides extensive tutorials on pixel and object classification.]] 
 
-*Note* I added a quick section on this subject to the documentation. See [[https://www.ilastik.org/documentation/objects/objects#hdf5-export-format][the object classification workflow for more on this]].
+*UPDATE* I added a quick section on this subject to the documentation. See [[https://www.ilastik.org/documentation/objects/objects#hdf5-export-format][the object classification workflow for more on this]].
 
 * Stuff you need
 - [[https://www.python.org/downloads/][Python3]]
