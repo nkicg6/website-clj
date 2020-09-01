@@ -16,6 +16,9 @@ I use R for most of my data analysis and especially for making figures. There ar
 
 *Disclaimer!* I am mostly self taught when it comes to R and statistics. So if I misuse any statistics or mangle any R code, please let me know (email listed on my home page) and I will fix it!
 
+Check out my post on [[http://nickgeorge.net/science/consistent-style-for-scientific-figures-with-ggplot2/][keeping plot styles consistent]] as well!
+
+
 ** Making the data
 :PROPERTIES:
 :CUSTOM_ID: making-the-data
@@ -450,7 +453,6 @@ Want to compare the distributions with a [[https://en.wikipedia.org/wiki/Kolmogo
 : data:  control_vals and test_vals
 : D = 0.6, p-value < 2.2e-16
 : alternative hypothesis: two-sided
-
 
 
 ** =tidyr::gather= is confusing but useful
