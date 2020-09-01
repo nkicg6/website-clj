@@ -75,7 +75,7 @@ Here are some of my variables:
 
 Anything that you /can/ keep constant in this file, you should. This excludes things like X/Y ranges and axis ticks, but you would be surprised at all the stuff you can safely store as a global variable and use for plot formatting. I think the constant =theme_and_axis_*= variables are probably my most important.
 
-Now, at the top of any =R= file where I am making plots, I simple =source= this file:
+Now, at the top of any =R= file where I am making plots, I simply =source= this file:
 
 #+BEGIN_SRC R :results output :exports both
   # figure_1.R
@@ -132,16 +132,21 @@ Where should you put that function? Well in [[plotting_defaults.R]] of course!
 At this points, at the bottom of my scripts I will write all my statistical summaries like so:
 
 #+BEGIN_SRC R :session rsesh :results output :exports both
+  # store stats and summaries in variables
+  grouped_summary <- rawd_grouped %>%
+    group_by(ctrlcmp) %>%
+    summarize(mean_length = mean(animalLenMean),
+              median_length = median(animalLenMean),
+              sd_length = sd(animalLenMean))
 
+  occl_open_ks <- ks.test(open_side, occl_side)
+  # write to a file
   sink("~/path/to/results.txt")
 
-  pretty_print_results("Summary Grouped data", rawd_grouped %>%
-                         group_by(ctrlcmp) %>%
-                         summarize(mean_length = mean(animalLenMean),
-                                   median_length = median(animalLenMean),
-                                   sd_length = sd(animalLenMean)))
+  pretty_print_results("Summary Grouped data", grouped_summary)
 
   pretty_print_results("Open vs occl KS test", occl_open_ks)
+
   sink()
 #+END_SRC
 
