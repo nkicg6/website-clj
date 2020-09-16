@@ -1,0 +1,48 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "scientists don't test their code" :date "2020-09-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["programming" "python" "testing" "science" "blog"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-09-16 Wed
+#+TITLE: Scientists don't test their code
+#+HTML:<h1 id="mainTitle">Scientists don't test their code</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+
+Seriously, we don't. Go ahead and look at your favorite scientist written code base, used by hundreds or submitted with a paper and never intended to be shared. Python, Matlab, or R, it doesn't matter. I can almost guarantee you that 95%+ of them will have no =tests= directory or automated/unit testing setup at all.
+
+Increasingly, a lot of big, important, used-by-tons-of-people software systems are built by informally trained scientists in their spare time. *I think this is a genuinely good thing*. We are taking control of our research in ways that were not possible before, and creating tools that we actually need and will use rather than settling for expensive garbage. 
+
+However, there are serious downsides if we don't start emphasizing better programming practices. Recently, a Python script used by [[https://scholar.google.com/scholar?hl=en&as_sdt=0%252C6&q=A+guide+to+small-molecule+structure+assignment+through+computation+of+%25281H+and+13C%2529+NMR+chemical+shifts&btnG=][100s]] of published scientific papers was found to produce [[https://www.vice.com/en_us/article/zmjwda/a-code-glitch-may-have-caused-errors-in-more-than-100-published-studies][different results on different operating systems]] (see also: [[https://arstechnica.com/information-technology/2019/10/chemists-discover-cross-platform-python-scripts-not-so-cross-platform/][Ars]], [[https://www.nature.com/articles/s41596-020-0293-9][Nature Communications]], [[https://pubs.acs.org/doi/10.1021/acs.orglett.9b03216][ACS]] (original source) -- but [[https://www.theverge.com/2018/2/8/16985666/alexandra-elbakyan-sci-hub-open-access-science-papers-lawsuit][ACS sucks]] almost as much as Elsiver, so you won't be able to read it), calling all those results into question.
+
+What was the error? Well it involved an /untested assumption/ about file sorting/IO. In short, the authors expected files to be sorted when they were read by Python's =glob= method before processing, as they always were on their own machines. However, in reality, the /documentation for the function itself/ said that you couldn't depend on or expect that behavior due to OS differences:
+
+    "...although results are returned in arbitrary order." - Python2 [[https://docs.python.org/2/library/glob.html#glob.glob][glob docs]]
+    "Whether or not the results are sorted depends on the file system." - Python3 [[https://docs.python.org/3/library/glob.html#glob.glob][glob docs]]
+
+While this story gained some (justified) attention, it is a /totally understandable/ mistake for a non-professional (or a professional) to make. I have no doubt that countless more of these errors exist, with many incorporated into projects used by hundreds or more. I have no doubt I have made mistakes just like this in the past as well. Despite this, I /still/ think it is good and important for scientists to write their own code. But how do we combat this issue?
+
+** testing and designing for sharing
+
+Every software engineer knows that testing code is vital to creating good software. Software tests help you confirm (and discover) assumptions, they make things easier to change by providing a ground truth to prevent regressions or unintended consequences, and they (hopefully) help tease out errors to make your system more resilient and correct. To write a good test, engineers think like scientists:
+
+- What does this /expects-a-non-empty-list/ function do if I provide it an empty list?
+- What happens to this /do-some-math/ function if I pass it nothing at all? 
+- What if I didn't verify input and I pass poorly formed HTML to a script that processes HTML?
+
+Asking questions like this should sound familiar to researchers. We are in the business of developing a hypothesis and designing an experiment to test that hypothesis. We are also increasingly writing more and more code to do complex analysis and run our instruments, and we are sharing this code with others. You'd think we would flock to software testing, as that hypothesis-design-test cycle is extremely similar to what we do every day.
+
+But for the most part, we don't. Why?
+
+For most of us, programming is like that language you 'learned' over two years in high school and suddenly, you desperately to speak it every day. We are mostly self taught ([[https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745][Wilson et al. 2014]]), and we kind-of-know it, but not really. Many of us started programming out of necessity. Our new lab used homemade spike-counting/microscope running code so we took a few online classes, then tried our best in the lab. How were we supposed to know about 'best practices' for software development? 
+
+I have never seen testing mentioned in /any/ tutorial aimed at scientists or beginners, so you can't really blame us. There are excellent articles documenting the rise of the scientist programmer ([[https://pubmed.ncbi.nlm.nih.gov/25982977/][Freeman 2015]], [[https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745][Wilson et al. 2014]]), with many even providing lists of "best practices" for the working scientist (see especially [[https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001745][Wilson et al. 2014]], [[https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005412][Taschuk and Wilson 2017]], and [[https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.0020087#pcbi-0020087-b001][Baxter et al. 2006]]). But when it comes to actually /implementing/ those best practices... nothing. I don't think scientists don't /want/ to write tests, I just think we don't know how and no one has taken the time to show us. When I am writing a script to analyze patch clamp data, a "testing your python web app" article isn't going to help me. 
+
+How can we start to fix this situation?
+
+I think adopting two practices will have the greatest impact: Automated testing (from the beginning) and automated deployment (i.e. can you install and try this on another machine).
+
+I'll give examples for what I have learned about doing this for my own work in a few other posts I will link to here.
