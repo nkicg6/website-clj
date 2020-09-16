@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "scientists don't test their code" :date "2020-09-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["programming" "python" "testing" "science" "blog"]}
+#+HTML: {:title "Scientists don't test their code" :date "2020-09-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["programming" "python" "testing" "science" "blog"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
@@ -12,20 +12,20 @@
 #+HTML:</div>
 
 
-Seriously, we don't. Go ahead and look at your favorite scientist written code base, used by hundreds or submitted with a paper and never intended to be shared. Python, Matlab, or R, it doesn't matter. I can almost guarantee you that 95%+ of them will have no =tests= directory or automated/unit testing setup at all.
+Seriously, we don't. Go ahead and look at your favorite scientist written code base, used by hundreds or submitted with a paper and never intended to be shared. Python, Matlab, or R, it doesn't matter. I can almost guarantee you that 95%+ of them will have no =tests= directory or automated/unit testing setup at all (let alone an option to automatically install it with a package manager like =pip= or =conda= for python).
 
 Increasingly, a lot of big, important, used-by-tons-of-people software systems are built by informally trained scientists in their spare time. *I think this is a genuinely good thing*. We are taking control of our research in ways that were not possible before, and creating tools that we actually need and will use rather than settling for expensive garbage. 
 
-However, there are serious downsides if we don't start emphasizing better programming practices. Recently, a Python script used by [[https://scholar.google.com/scholar?hl=en&as_sdt=0%252C6&q=A+guide+to+small-molecule+structure+assignment+through+computation+of+%25281H+and+13C%2529+NMR+chemical+shifts&btnG=][100s]] of published scientific papers was found to produce [[https://www.vice.com/en_us/article/zmjwda/a-code-glitch-may-have-caused-errors-in-more-than-100-published-studies][different results on different operating systems]] (see also: [[https://arstechnica.com/information-technology/2019/10/chemists-discover-cross-platform-python-scripts-not-so-cross-platform/][Ars]], [[https://www.nature.com/articles/s41596-020-0293-9][Nature Communications]], [[https://pubs.acs.org/doi/10.1021/acs.orglett.9b03216][ACS]] (original source) -- but [[https://www.theverge.com/2018/2/8/16985666/alexandra-elbakyan-sci-hub-open-access-science-papers-lawsuit][ACS sucks]] almost as much as Elsiver, so you won't be able to read it), calling all those results into question.
+However, there are serious downsides if we don't start emphasizing better programming practices from the beginning. In October 2019, a Python script used by [[https://scholar.google.com/scholar?hl=en&as_sdt=0%252C6&q=A+guide+to+small-molecule+structure+assignment+through+computation+of+%25281H+and+13C%2529+NMR+chemical+shifts&btnG=][100s]] of published scientific papers was found to produce [[https://www.vice.com/en_us/article/zmjwda/a-code-glitch-may-have-caused-errors-in-more-than-100-published-studies][different results on different operating systems]] (see also: [[https://arstechnica.com/information-technology/2019/10/chemists-discover-cross-platform-python-scripts-not-so-cross-platform/][Ars]], [[https://www.nature.com/articles/s41596-020-0293-9][Nature Communications]], [[https://pubs.acs.org/doi/10.1021/acs.orglett.9b03216][ACS]] (original source) -- but [[https://www.theverge.com/2018/2/8/16985666/alexandra-elbakyan-sci-hub-open-access-science-papers-lawsuit][ACS sucks]] almost as much as Elsiver, so you won't be able to read it), calling all those results into question.
 
-What was the error? Well it involved an /untested assumption/ about file sorting/IO. In short, the authors expected files to be sorted when they were read by Python's =glob= method before processing, as they always were on their own machines. However, in reality, the /documentation for the function itself/ said that you couldn't depend on or expect that behavior due to OS differences:
+What was the error? Well it involved an /untested assumption/ about file sorting/IO. In short, the authors expected files to be sorted when they were read by Python's =glob= method before processing, as they always were on their own machines. Unrelated OS updates since the publication of the script invalidated this assumption, leading to problems. Who could have seen that coming? Well, unfortunately, the /documentation for the function itself/ said that you couldn't depend on or expect that behavior due to OS differences:
 
     "...although results are returned in arbitrary order." - Python2 [[https://docs.python.org/2/library/glob.html#glob.glob][glob docs]]
     "Whether or not the results are sorted depends on the file system." - Python3 [[https://docs.python.org/3/library/glob.html#glob.glob][glob docs]]
 
-While this story gained some (justified) attention, it is a /totally understandable/ mistake for a non-professional (or a professional) to make. I have no doubt that countless more of these errors exist, with many incorporated into projects used by hundreds or more. I have no doubt I have made mistakes just like this in the past as well. Despite this, I /still/ think it is good and important for scientists to write their own code. But how do we combat this issue?
+While this story gained some (justified) attention, it is a /totally understandable/ mistake for a non-professional (or a professional) to make. It would also be hard to write proper tests for (which is what I am advocating for here) if you didn't read that part of the docs. I have no doubt that countless more of these errors exist, with many incorporated into projects used by hundreds or more. I have no doubt I have made mistakes just like this in the past as well. Despite this, I /still/ think it is good and important for scientists to write their own code. But how do we combat this issue and write better code?
 
-** testing and designing for sharing
+** testing and designing for sharing from the start
 
 Every software engineer knows that testing code is vital to creating good software. Software tests help you confirm (and discover) assumptions, they make things easier to change by providing a ground truth to prevent regressions or unintended consequences, and they (hopefully) help tease out errors to make your system more resilient and correct. To write a good test, engineers think like scientists:
 
@@ -43,6 +43,9 @@ I have never seen testing mentioned in /any/ tutorial aimed at scientists or beg
 
 How can we start to fix this situation?
 
-I think adopting two practices will have the greatest impact: Automated testing (from the beginning) and automated deployment (i.e. can you install and try this on another machine).
+I think adopting two practices will have the greatest impact: 
 
-I'll give examples for what I have learned about doing this for my own work in a few other posts I will link to here.
+- Automated testing (from the beginning)
+- Automated deployment (can you install and try this on another machine)
+
+I'll give examples for what I have learned about doing this for my own work in a few other posts I will link to here. But I would really like to see more software engineers and programming teachers prioritize this sort of lesson early and often. It isn't difficult, it just isn't covered. 
