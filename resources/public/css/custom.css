@@ -113,3 +113,7 @@ img{
 th, td {
     padding: 10px;
 }
+
+table {
+    margin:10px;
+}
