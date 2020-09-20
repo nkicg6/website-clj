@@ -39,7 +39,7 @@ data/passive_membrane_properties_2020-01-16
 #+END_EXAMPLE
 
 The =CSV= I created is relatively well structured, with a set of core columns holding required information about the experiments performed that day (subset of the actual columns):
-#+ATTR_HTML: :border 2 :rules all :align center
+#+ATTR_HTML: :border 2 :rules all :align center :cellspacing 10 :cellpadding 10
 | file     | treatment | exp_date   | ... |
 |----------+-----------+------------+-----|
 | <15>     | <15>      | <15>       | <4> |

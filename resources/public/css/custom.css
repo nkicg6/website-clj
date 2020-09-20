@@ -109,3 +109,7 @@ img{
     font-size: 0.7em;
     margin-bottom: 2em;
 }
+
+th, td {
+    padding: 10px;
+}
