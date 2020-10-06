@@ -1,0 +1,163 @@
+/* Custom, reactive style for website
+   updated: 2020-10-06
+   author: nick
+
+*/
+
+/* vars */
+:root {
+  --code-background: #F1F1F1;
+  --main-font-size: 18px;
+  --main-font-family: Seravek,Sitka,sans-serif;
+  --header-font-size: 20px;
+}
+
+#edn {
+  display: none;
+}
+
+html {
+  font-size:var(--main-font-size);
+  font-family:var(--main-font-family);
+  line-height:1.2;
+  /* border: 3px solid green; */
+}
+body{
+  background-color:#FEFEFA;
+  margin-top:0;
+  margin-left:0;
+  margin-right:0;
+}
+
+/* Header */
+
+.header {
+  /* border: 3px solid green; */
+  overflow: hidden;
+  background-color: #f1f1f1;
+  padding-left: 2vw;
+  padding-right:2vw;
+  margin-top:0vw;
+  margin-bottom:0.5vw;
+  font-size: var(--header-font-size);
+}
+
+.header a {
+  float: left;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 4px;
+  padding:1vw;
+}
+
+.header a.name {
+    font-weight:bold;
+}
+
+.header a.active {
+  color: white;
+}
+
+
+.header-right {
+  float:right;
+  padding-right:2vw;
+  padding-left:2vw;
+}
+
+
+.header a:hover {
+  background-color: #ddd;
+  color: black;
+  padding:1vw;
+  border-radius:8px;
+
+}
+
+/* end header */
+
+/* footer */
+
+footer {
+  /* border: 3px solid red; */
+  text-align:center;
+  position:center;
+  margin-top:0.5rem;
+  margin-bottom:0.5rem;
+}
+/* end footer */
+
+/* main layout */
+/* #content{
+   position:relative;
+   height:100%;
+   } */
+#table-of-contents {
+  width:25vw;
+  position:fixed;
+  margin-left:0.5vw;
+  margin-right:0.5vw;
+  padding-right:0.5vw;
+  height:100vw;
+  /* border: 3px solid green; */
+  max-width:300px;
+  min-width:200px;
+}
+
+#article {
+  margin-left:30vw;
+  max-width:650px;
+  min-width:450px;
+  /* border:3px solid blue; */
+}
+
+code {
+    color:#CA3636;
+    font-family:Monaco,monospace;
+    background-color:var(--code-background);
+    border-width:1px;
+    border-color:var(--code-background);
+    border-style:solid;
+    border-radius:4px;
+}
+
+.example, .org-src-container {
+  border-width:1px ;
+  border-color:var(--code-background);
+  border-style:solid;
+  border-radius:8px;
+  background-color:var(--code-background);
+  font-family:monospace;
+  color:#3c3c3c;
+  width:100%;
+  max-height:800px;
+  overflow: auto;
+  padding:5px;
+  resize: both;
+}
+
+p {
+    text-indent:2vw;
+}
+
+#timedate p {
+  font-size:18;
+  text-indent:0vw;
+}
+
+@media screen and (max-width:700px) {
+  body {
+    /* background-color: lightblue; */
+    position: relative;
+    margin-left:2vw;
+    margin-right:2vw;
+  }
+  #table-of-contents, #article {
+    overflow:hidden;
+    display : inline;
+    position:relative;
+    max-width:700px;
+    min-width:450px;
+  }
+}
