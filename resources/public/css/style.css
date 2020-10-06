@@ -17,10 +17,10 @@
 }
 
 html {
+  /* border: 3px solid green; */
   font-size:var(--main-font-size);
   font-family:var(--main-font-family);
   line-height:1.2;
-  /* border: 3px solid green; */
 }
 body{
   background-color:#FEFEFA;
@@ -89,27 +89,24 @@ footer {
 /* end footer */
 
 /* main layout */
-/* #content{
-   position:relative;
-   height:100%;
-   } */
+
 #table-of-contents {
+  /* border: 3px solid green; */
   width:25vw;
   position:fixed;
   margin-left:0.5vw;
   margin-right:0.5vw;
   padding-right:0.5vw;
   height:100vw;
-  /* border: 3px solid green; */
   max-width:300px;
   min-width:200px;
 }
 
 #article {
+  /* border:3px solid blue; */
   margin-left:30vw;
   max-width:650px;
   min-width:450px;
-  /* border:3px solid blue; */
 }
 
 code {
