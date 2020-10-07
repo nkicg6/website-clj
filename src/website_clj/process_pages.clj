@@ -33,14 +33,16 @@
           [:meta {:charset "utf-8"}]
           [:meta {:name "viewport"
                   :content "width=device-width, initial-scale=1.0"}]
-          [:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
-          [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}] 
-          (include-css "/css/custom.css") 
-          [:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+          #_[:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
+          #_[:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}] 
+          #_(include-css "/css/custom.css")
+          (include-css "/css/style.css")
+          #_[:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
                     :integrity "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
                     :crossorigin "anonymous"}]]
-         [:body
-          [:nav {:class "navbar navbar-inverse"}
+         [:body [:div {:class "header"}]
+          page
+          #_[:nav {:class "navbar navbar-inverse"}
            [:div {:class "container-fluid"}
             [:div {:class "navbar-header"}
              (link-to  {:class "navbar-brand"} "/" "Nick George")]
@@ -50,12 +52,10 @@
              [:li [:a {:href "https://github.com/nkicg6"}
                    [:span {:class "fa fa-github" :style "font-size:24px"}]]]
              [:li [:a {:href "https://twitter.com/NicholasMG"}
-                   [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]
-          [:div {:class "container"}
-           [:div.body {:style "font-size:18px"} page]]
+                   [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]          
           [:footer {:class "footer"}
            [:div {:class "text-center"}
-            [:span {:class "text-muted"} (str "&copy; Nick George 2017-" (get-copyright-date))]]]]))
+            [:span #_{:class "text-muted"} (str "&copy; Nick George 2017-" (get-copyright-date))]]]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.

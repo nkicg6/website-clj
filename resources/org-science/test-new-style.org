@@ -1,0 +1,319 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "this is a test blog" :date "2020-10-06" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-10-06 Tue
+#+TITLE: this is a test blog
+
+
+#+TOC: headlines 2
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">this is a test blog</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+Organizing scientific data can be difficult, especially when the experiments and data gathering are heterogeneous (many different types of experiments and conditions) and goes on for a long time (years in my case). Right now, I organize my electrophysiology data in a structured directory tree:
+
+#+BEGIN_EXAMPLE
+data
+├── passive_membrane_properties_2019-08-26
+├── passive_membrane_properties_2019-08-27
+├── passive_membrane_properties_2019-08-28
+├── passive_membrane_properties_2019-09-04
+├── passive_membrane_properties_2019-09-06
+├── passive_membrane_properties_2019-09-10
+...
+#+END_EXAMPLE
+
+Each day of experiments gets one of these directories, and each directory contains the files of interest and a structured =csv= (=<date>_experiment_log.csv=) with information about each file:
+
+#+BEGIN_EXAMPLE
+data/passive_membrane_properties_2020-01-16
+├── 20116000.abf
+├── 20116001.abf
+├── 20116002.abf
+├── 20116003.abf
+├── 2020-01-16-nick-Clampex_LabBook.rtf
+├── 2020_01-16_experiment_log.csv
+...
+#+END_EXAMPLE
+
+The =CSV= I created is relatively well structured, with a set of core columns holding required information about the experiments performed that day (subset of the actual columns):
+#+ATTR_HTML: :border 2 :rules all :align center :cellspacing 10 :cellpadding 10
+| file     | treatment | exp_date   | ... |
+|----------+-----------+------------+-----|
+| <15>     | <15>      | <15>       | <4> |
+| 20116000 | control   | 2020-01-16 | ... |
+| 20116001 | treated   | 2020-01-16 | ... |
+| ...      | ...       | ...        | ... |
+
+Some of the important columns include metadata about whether I want to use that specific file, what experimental group that file has data from, and notes about that file or experiment. 
+
+This has the benefit of being simple and text-based, and has generally been a really nice method for organizing my data. However, recently I started doing larger aggregate analysis and I am running into some difficulties. For example, I run a different type of analysis for different types of data (am I looking for data from current step experiments or current ramp experiments?). Right now, I am working on a simple action potential counting experiment aggregating data from a few months worth of experiments. 
+This means I am using files from multiple experimental dates (different directories), run with the experimental protocol called =cc_01-steps= (labeled on a per-file basis in =<date>_experiment_log.csv=). 
+So the information needed to even filter for the files I need to analyze is in the =<date>_experiment_log.csv= files (all the metadata about the treatment group, etc.) and the within-file metadata (I have to parse the =abf= file to ensure that it was indeed recorded with my target protocol) for EACH directory. 
+
+With the rough post-experiment organization format, I have to write a script to parse /all/ the =<date>_experiment_log.csv= files from all the directories that I am interested in, select only the paths that match my query, and aggregate a list of file paths to analyze. From there, I have to do the analysis, then join the results back to the appropriate metadata from the =<date>_experiment_log.csv= files. 
+
+So the code would look something like this:
+1. make a list of all the paths to all the /directories/ containing the files you might want to analyze
+2. for each directory in the list, parse the =<date>_experiment_log.csv= , and store it in a temp structure (python dictionary) associated with the file list
+3. repeat for each directory in the list, possibly building one large in-memory dictionary with everything merged together
+4. filter that dictionary for the items you need.
+5. proceed with analysis
+
+I wrote code to do that a few months ago... it wasn't pretty. Every time I wanted to experiment or try something new I would have to have that boilerplate on top of my script/notebook. It involves a lot of IO, copy pasting, manual path typing, and more Python code than I'd like to write or test. 
+
+Luckily, I recently took Gary Bernhardt's SQL course on [[https://www.executeprogram.com/courses/sql][executeprogram.com]] and this looks exactly like an area where an SQL database (Python's built-in SQLite3 in my case) would excel.
+
+** moving to a metadata database
+
+Ideally, I'd like to write =SELECT filepath WHERE protocol = whatever_protocol_i_need= and get a list of all the files from all the experiments from any date that satisfy that constraint (or an arbitrary number of other constraints). 
+
+Python comes with [[https://docs.python.org/3/library/sqlite3.html][sqlite3]] built into the standard library, which makes it portable, and I don't think I need anything fancier, so that is what I will use.
+
+The first step is to design the database schema. I made a subset of the columns required (=NOT NULL=), so the SQLite3 command to create the =metadata= table looks something like this:
+
+#+BEGIN_SRC sql 
+  CREATE TABLE metadata
+
+  (id INTEGER PRIMARY KEY,
+  fname TEXT NOT NULL UNIQUE,
+  fpath TEXT NOT NULL UNIQUE,
+  protocol TEXT NOT NULL,
+  treatment_group TEXT NOT NULL,
+  experiment_date TEXT NOT NULL,
+  slice_n INTEGER NOT NULL,
+  cell_n INTEGER NOT NULL,
+  cell_side TEXT NOT NULL,
+  drug_treatments TEXT NOT NULL,
+  genotype TEXT DEFAULT c57,
+  filled_cells TEXT,
+  suspected_cell_type TEXT,
+  analysis_to_run TEXT,
+  membrane_potential_uncorrected REAL,
+  include TEXT,
+  notes TEXT);
+
+#+END_SRC
+
+The column names I defined above (especially the =NOT NULL=) include all the useful metadata I will use for later analysis (treatment groups, cell types, drug conditions, etc.) and the associated file paths. Now we need to create the metadata database and table.  
+
+** creating the metadata database and table
+
+(the complete script can be found in this [[https://gist.github.com/nkicg6/be87ccc55cdcf9854b68baf5135ed1c4][gist]], but it is quite specific for my purposes and untested so don't lean on it).
+
+We can create the database and table once using this: 
+
+#+BEGIN_SRC python :session new :results output
+  import sqlite3
+
+
+  def get_schema(path):
+      """read schema and strip \n, returning a single line string"""
+      with open(path, "r") as schema:
+          schema_text = schema.read()
+      return schema_text.replace("\n", " ")
+
+
+  def make_db(path, table_schema):
+      """creates a SQLite datbase with schema described by string `table_schema`, which
+      should be a valid `CREATE TABLE ...` SQL command. If the table already exists, return the
+      connection and cursor objects."""
+      connection = sqlite3.connect(path)
+      cursor = connection.cursor()
+      try:
+          cursor.execute(table_schema)
+      except sqlite3.OperationalError as e:
+          print(f"Table already exists. Exception is:\n {e}")
+          return connection, cursor
+      return connection, cursor
+
+  # read schema from file and make database + table
+  schema = get_schema("path/to/schema.sqlite")
+  con, cur = make_db("path/to/new_database.db", schema)
+#+END_SRC
+
+I'll only need to run this code once, but I like having the schema in a separate file under version control. The =make_db= function returns =connection= and =cursor= objects, which will be necessary to execute SQL commands in later functions (it is a better idea to use a [[https://docs.python.org/3/library/sqlite3.html#using-the-connection-as-a-context-manager][context manager]] to automatically handle closing connections and commits to the database, but I won't use them here). Running that function will create a database (if one doesn't exist) called =new_database.db= with the table specified in the schema file.
+
+In the future, we can also use a simpler function to connect to the database and return the =connection= and =cursor=:
+
+#+BEGIN_SRC python :session new :results output
+  def connect_to_db(path):
+      """returns the connection and cursor for a database which already exists given
+      the path."""
+      assert os.path.exists(path)
+      assert os.path.isfile(path)
+      connection = sqlite3.connect(path)
+      cursor = connection.cursor()
+      return connection, cursor
+
+
+  con, cur = connect_to_db("path/to/new_database.db")
+#+END_SRC
+ 
+
+Now that our new database exists, we can start dealing with organizing our disparate metadata so that it is ready to add. 
+
+** Organizing metadata for the database
+   The code for organizing the metadata will be similar to the annoying code I mentioned above. The benefit is that I only have to run it once for every new experiment (or as a batch this time), then various kinds of complex access conditions are simple SQL queries in future scripts. It also allows me to regularize/standardize the data. 
+At this point I have run a few months worth of experiments and I generally know what information I want to save and what defaults I can add when it is missing. I've already added a few required =NOT NULL= columns to our table schema, so I can't leave out important stuff. 
+
+   The code involves a bunch of file and data munching, but the most important part is reading in =<date>_experiment_log.csv= and organizing the fields. I really like reading =csv='s in python using the standard library [[https://docs.python.org/3/library/csv.html][csv]] module. Using the [[https://docs.python.org/3/library/csv.html#csv.DictReader][DictReader]] class, we have our data organized in a simple structure (list of dicts) that is easy to work with using the standard library. No need to import some heavy-weight library like =pandas= or =numpy=. 
+
+#+BEGIN_SRC python :session new :results output
+
+  def parse_csv(csv_path):
+      """reads csv from csv_path to a list of dicts, with each dict representing a row."""
+      with open(csv_path, "r") as f:
+          reader = csv.DictReader(f)
+          stuff = [i for i in reader]
+      return stuff
+
+#+END_SRC
+
+So reading a simplified =<date>_experiment_log.csv= file like this:
+
+#+ATTR_HTML: :border 2 :rules all :align center
+|     file | treatment |   exp_date |
+|----------+-----------+------------|
+| 20116000 | control   | 2020-01-16 |
+| 20116001 | treated   | 2020-01-16 |
+
+would return a data structure like this:
+
+#+BEGIN_SRC python :session new :results output
+  [{"file": "2011600", "treatment": "control", "exp_date": "2020-01-16"},
+   {"file": "2011601", "treatment": "treated", "exp_date": "2020-01-16"}]
+#+END_SRC
+
+Great! Easy to iterate through and add to the database. I have some other code that merges this list with the file paths within directories, then parses the files and has adds a protocol key, but I won't go into detail for those here, as it is implementation specific (though if you are interested, I added a version of this code as a [[https://gist.github.com/nkicg6/be87ccc55cdcf9854b68baf5135ed1c4][gist]]).
+
+The next important part is to prepare our data for insertion into the database. 
+
+** preparing the data
+
+We have designed a specific set of keys (column id's) for our database, but now we have to ensure that our list of dictionaries have the same keys so that we can easily add them. 
+I was consistent when naming the =<date>_experiment_log.csv= file columns, but as I did more experiments, I sometimes added more columns when I realized I was missing info. I also slightly changed the naming style for the SQLite columns (removed =-= and =?= characters, for example). To standardize the input from the parsed =<date>_experiment_log.csv=, I wrote a simple dictionary to map my SQL column names to the column names that likely exist in the dictionary, then I wrote a function to iterate through the list of metadata returned by =parse_csv= and re-name columns to the SQL style while adding a default for missing values. 
+
+#+BEGIN_SRC python :session new :results output
+
+  CSV_TO_SCHEMA_MAP = {
+      # schema names are keys, csv names are values
+      # meant to standardize names between formats
+      "fname": "file",
+      "fpath": "fpath",  # from matching fname to file list
+      "protocol": "protocol",  # from reading file
+      "treatment_group": "treatment_group",
+      "experiment_date": "exp_date",
+      "sex": "sex",
+      "slice_n": "slice_n",
+      "cell_n": "cell_n",
+      "cell_side": "cell_treatment",
+      "ACSF_inhibitors": "ACSF-inhibitors?",
+      "surgery_date": "occl_date",
+      "bubbles": "bubbles?",
+      "genotype": "genotype",
+      "fluors": "fluors",
+      "filled_cells": "filled_cells?",
+      "suspected_cell_type": "susp_cell_type",
+      "analysis_to_run": "analysis_to_run",
+      "membrane_potential_uncorrected": "membrane_potential_uncorrected",
+      "include": "include?",
+      "notes": "notes",
+  }
+
+  def gather_keys(parsed_csv_list):
+      """rename columns based on CSV_TO_SCHEMA_MAP and insert defaults for missing columns."""
+      out_list = []
+      for d in parsed_csv_list:
+          temp = {}
+          for k in CSV_TO_SCHEMA_MAP.keys():
+              temp[k] = d.get(CSV_TO_SCHEMA_MAP[k], "Not found")
+          out_list.append(temp)
+      return out_list
+
+#+END_SRC
+
+
+Using =d.get= allows me to insert a default value while ensuring that the resulting dictionary will have all the columns needed for smooth database entry. Now the resulting list of =dicts= returned by =gather_keys= is guaranteed to have the same keys as the database we made earlier, even if they have a "Not found" default value. This method accommodates the changing data schema over the course of my few-years worth of experiments, while preserving the essential information (protocol, treatment group, date, etc.). 
+
+** committing the data to the database
+
+Now we are finally ready to add this data to the database. One method for adding data to a database with python's =sqlite3= is:
+
+#+BEGIN_SRC python :session new :results output
+cur.execute("INSERT INTO metadata (name, treatment) VALUES (?, ?)", (value_dict['name'], value_dict['treatment']))
+con.commit()
+#+END_SRC
+
+This is a parameterized SQL statement provided by the [[https://docs.python.org/2/library/sqlite3.html#sqlite3.Cursor][Cursor]] class. It protects against SQL injection attacks, something we aren't worried about in this context but will use anyways.
+Here, we are assuming our standardized data is in the =value_dict=, =cur= is a cursor object from a =sqlite3= database =connection= object, and =con= is that =connection= object. Parameterized queries can use the =?= placeholder within the query string as the first argument and a tuple or list of things to replace them with as the second argument. Alternatively, the [[https://docs.python.org/2/library/sqlite3.html#sqlite3.Cursor][Cursor]] class provides a way to insert things by dictionary =key= via =:key= syntax in the query string and providing a dictionary as the second argument:
+
+#+BEGIN_SRC python :session new :results output
+cur.execute("INSERT INTO metadata (name, treatment) VALUES (:name, :treatment)", value_dict)
+con.commit()
+#+END_SRC
+
+In my case, I went with the straightforward =?= method. 
+Typing out all the keys and =?='s is kind of a pain, as I have ~20 different things to add to the database from my dictionary. To get around all that typing, I built the SQLite parameterized insert statement using an f-string and list comprehensions within the function (see =insert_str=):
+
+#+BEGIN_SRC python :session new :results output
+
+  def insert_db_values(con, cur, metadata):
+      items = [
+          "fname",
+          "fpath",
+          "protocol",
+          "mouse_id",
+          "treatment_group",
+          "experiment_date",
+          "sex",
+          "slice_n",
+          "cell_n",
+          "cell_side",
+          "ACSF_inhibitors",
+          "surgery_date",
+          "bubbles",
+          "genotype",
+          "fluors",
+          "filled_cells",
+          "suspected_cell_type",
+          "analysis_to_run",
+          "membrane_potential_uncorrected",
+          "include",
+          "notes",
+      ]
+      insert_str = f"INSERT INTO metadata ({','.join(items)}) VALUES ({','.join(['?' for i in items])}) ON CONFLICT DO NOTHING"
+      try:
+          cur.execute(insert_str, tuple(metadata[i] for i in items))
+          con.commit()
+          return 0
+      except Exception as e:
+          print(f"Problem, exception is:\n {e}")
+          return 1
+
+#+END_SRC
+
+** wrapping up
+
+And that's it. I wrote a simple argument parser and =main= function and now I have an easy way to add metadata to a central database for easy, standardized access. 
+For example, I can simply write this:
+
+#+BEGIN_SRC python :session new :results output
+import sqlite3
+
+con = sqlite3.connect("path/to/database.db")
+cur = con.cursor()
+paths = cur.execute("SELECT fpath FROM metadata WHERE protocol = 'cc_01-steps'").fetchall()
+
+#+END_SRC
+
+I am new to using databases but I love how organized and powerful it is. I will likely be using them more and more to store metadata and analysis results in the future. If you want to learn about SQL, definitely check out [[https://www.executeprogram.com/courses/sql][executeprogram.com]], I learned a ton and it is already changing how I work with data. 
+
+
+#+HTML: </div>
