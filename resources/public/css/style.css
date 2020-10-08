@@ -65,20 +65,21 @@ body{
   border-radius:8px;
   padding-left: 1em;
   padding-right:1em;
-  margin-top:0vw;
-  margin-bottom:0.5em;
-  margin-left:auto;
-  margin-right:auto;
+  margin-top:0.5em;
+  margin-bottom:1em;
+  margin-left: auto;
+  margin-right: auto;
   font-size: var(--header-font-size);
 }
 
 .header a {
   float: left;
   color: black;
-  text-align: center;
+  text-align: left;
   text-decoration: none;
   border-radius: 4px;
-  padding:0.5em;
+  padding: 0.5em;
+
 }
 
 .header a.name {
@@ -92,8 +93,6 @@ body{
 
 .header-right {
   float:right;
-  /* padding-right:1em;
-     padding-left:1em; */
 }
 
 
@@ -102,6 +101,7 @@ body{
   color: black;
   padding:0.5em;
   border-radius:8px;
+  border-width:8px;
 }
 
 /* end header */
@@ -114,13 +114,18 @@ footer {
   position:center;
   margin-top:0.5em;
   margin-bottom:0.5em;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: var(--h2-font-size);
+  width: var(--max-reading-width);
 }
 /* end footer */
 
 /* main layout */
 
 #table-of-contents {
-  border: 3px solid green;
+  /* border: 3px solid green; */
+  display: block;
   width:300px;
   position:fixed;
   margin-left:1em;
@@ -132,7 +137,8 @@ footer {
 }
 
 #article {
-  border:3px solid blue;
+  /* border:3px solid blue; */
+  display: block;
   /* margin-left:30em; */
   width:80%;
   margin-right: auto;
@@ -169,7 +175,7 @@ code {
 }
 
 p {
-   text-indent:2vw;
+   text-indent:1em;
    }
 
 a:hover{
@@ -181,13 +187,13 @@ a:hover{
 }
 
 ol, li {
-  margin-left:0.5vw;
-  padding-left:0vw;
+  margin-left: 0em;
+  padding-left: 0vw;
   line-height: 1.6;
 }
 
 #timedate p {
-  font-size:18;
+  font-size:14px;
   text-indent:0vw;
 }
 
@@ -203,17 +209,19 @@ img {
   border-color:  #F1F1F1;  
 }
 
-@media screen and (max-width:800px) {
+@media screen and (max-width:900px) {
   body {
-    background-color: lightblue;
+    /* background-color: lightblue; */
     position: relative;
     padding-left: 1em;
     padding-right: 1em;
+    width:100%;
   }
   #table-of-contents, #article {
     overflow:hidden;
-    display : inline;
-    position:relative;
+    display: inline;
+    position: relative;
+    width: 100%;
     max-width:700px;
     min-width:450px;
   }
