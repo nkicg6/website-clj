@@ -4,16 +4,19 @@
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-09-19 Sat
-#+TITLE: Organizing scientific metadata with SQLite3 and Python
-#+HTML:<h1 id="mainTitle">Organizing scientific metadata with SQLite3 and Python</h1>
+#+TITLE: Organizing Scientific Metadata with SQLite3 and Python
+
+#+TOC: headlines 1
+
+#+HTML: <div id="article">
+#+HTML:<h1 id="mainTitle">Organizing Scientific Metadata with SQLite3 and Python</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
+
 
 Organizing scientific data can be difficult, especially when the experiments and data gathering are heterogeneous (many different types of experiments and conditions) and goes on for a long time (years in my case). Right now, I organize my electrophysiology data in a structured directory tree:
-
 #+BEGIN_EXAMPLE
 data
 ├── passive_membrane_properties_2019-08-26
@@ -66,7 +69,7 @@ I wrote code to do that a few months ago... it wasn't pretty. Every time I wante
 
 Luckily, I recently took Gary Bernhardt's SQL course on [[https://www.executeprogram.com/courses/sql][executeprogram.com]] and this looks exactly like an area where an SQL database (Python's built-in SQLite3 in my case) would excel.
 
-** moving to a metadata database
+** Moving to a metadata database
 
 Ideally, I'd like to write =SELECT filepath WHERE protocol = whatever_protocol_i_need= and get a list of all the files from all the experiments from any date that satisfy that constraint (or an arbitrary number of other constraints). 
 
@@ -99,7 +102,7 @@ The first step is to design the database schema. I made a subset of the columns 
 
 The column names I defined above (especially the =NOT NULL=) include all the useful metadata I will use for later analysis (treatment groups, cell types, drug conditions, etc.) and the associated file paths. Now we need to create the metadata database and table.  
 
-** creating the metadata database and table
+** Creating the metadata database and table
 
 (the complete script can be found in this [[https://gist.github.com/nkicg6/be87ccc55cdcf9854b68baf5135ed1c4][gist]], but it is quite specific for my purposes and untested so don't lean on it).
 
@@ -191,7 +194,7 @@ Great! Easy to iterate through and add to the database. I have some other code t
 
 The next important part is to prepare our data for insertion into the database. 
 
-** preparing the data
+** Preparing the data
 
 We have designed a specific set of keys (column id's) for our database, but now we have to ensure that our list of dictionaries have the same keys so that we can easily add them. 
 I was consistent when naming the =<date>_experiment_log.csv= file columns, but as I did more experiments, I sometimes added more columns when I realized I was missing info. I also slightly changed the naming style for the SQLite columns (removed =-= and =?= characters, for example). To standardize the input from the parsed =<date>_experiment_log.csv=, I wrote a simple dictionary to map my SQL column names to the column names that likely exist in the dictionary, then I wrote a function to iterate through the list of metadata returned by =parse_csv= and re-name columns to the SQL style while adding a default for missing values. 
@@ -238,7 +241,7 @@ I was consistent when naming the =<date>_experiment_log.csv= file columns, but a
 
 Using =d.get= allows me to insert a default value while ensuring that the resulting dictionary will have all the columns needed for smooth database entry. Now the resulting list of =dicts= returned by =gather_keys= is guaranteed to have the same keys as the database we made earlier, even if they have a "Not found" default value. This method accommodates the changing data schema over the course of my few-years worth of experiments, while preserving the essential information (protocol, treatment group, date, etc.). 
 
-** committing the data to the database
+** Committing the data to the database
 
 Now we are finally ready to add this data to the database. One method for adding data to a database with python's =sqlite3= is:
 
@@ -295,7 +298,7 @@ Typing out all the keys and =?='s is kind of a pain, as I have ~20 different thi
 
 #+END_SRC
 
-** wrapping up
+** Wrapping up
 
 And that's it. I wrote a simple argument parser and =main= function and now I have an easy way to add metadata to a central database for easy, standardized access. 
 For example, I can simply write this:
@@ -311,3 +314,4 @@ paths = cur.execute("SELECT fpath FROM metadata WHERE protocol = 'cc_01-steps'")
 
 I am new to using databases but I love how organized and powerful it is. I will likely be using them more and more to store metadata and analysis results in the future. If you want to learn about SQL, definitely check out [[https://www.executeprogram.com/courses/sql][executeprogram.com]], I learned a ton and it is already changing how I work with data. 
 
+#+HTML: </div>

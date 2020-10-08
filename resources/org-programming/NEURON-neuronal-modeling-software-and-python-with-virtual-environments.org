@@ -5,12 +5,15 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-02-27 Thu
 #+TITLE: Setting up and using the NEURON simulation environment and python with virtual environments 
-#+HTML:<h1 id="mainTitle">Setting up and using the NEURON simulation environment and python with virtual environments</h1>
+
+
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Setting up and using the NEURON Simulation Environment and Python with Virtual Environments</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
 
 The NEURON installation adds python support using the =PYTHONPATH= global environmental variable. I use virtual environments to separate my projects but the =PYTHONPATH= NEURON was unfortunately adding itself to every environment I created. I want to develop projects and organize dependencies in an orderly way, so here we will remove this global environmental NEURON installation and create an isolated environment for it. 
 
@@ -118,4 +121,5 @@ You won't be able to run =nrniv= or =nrngui= from your shell in the environment,
 
 ** Windows setup
 
-I found a windows laptop so I will get this working there and post back soon (maybe). 
+I found a windows laptop so I will get this working there and post back soon (maybe).
+#+HTML: </div>

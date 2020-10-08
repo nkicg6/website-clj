@@ -5,7 +5,12 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-18 Sat
 #+TITLE: Org-mode changed my life-- resources and notes
-#+HTML:<h1 id="mainTitle">Org-mode changed my life-- resources and notes</h1>
+
+
+
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Org-mode Changed My Life-- Resources and Notes</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
@@ -17,3 +22,4 @@
 - [[https://orgmode.org/worg/]] the org-mode worg. Community contributed examples and excellent instructions. /2018-08-18/ 
 - http://ehneilsen.net/notebook/orgExamples/org-examples.html One of the best org-mode cookbooks I've seen! /2018-08-18/
 
+#+HTML: </div>

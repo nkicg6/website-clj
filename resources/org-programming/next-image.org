@@ -5,12 +5,16 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2019-12-31 Wed
 #+TITLE: Next_image_clj: a simple utility plugin for semi-automated analysis 
-#+HTML:<h1 id="mainTitle">Next_image_clj: a simple utility plugin for semi-automated analysis </h1>
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Next_image_clj: a simple utility plugin for semi-automated analysis (<em>unfinished project...</em>)</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
 
+
+*Note* This project never happened. I think it is a nice idea, but I am workign on finishing my PhD and unfortunately couldn't find the time to finish Maybe someday... (2020-10-07)
 
 Often I have large directories of images that I want to analyze in with some ImageJ plugin or script in a semi-automated manner. For example, recently I wanted to measure the fluorescence intensities of a few different regions of interest (ROIs) I had traced on a microscopy image. I wrote a python script which would measure the area of each ROI and save the values in a specially designed CSV to facilitate later analysis. My workflow was simple:
 - open the image
@@ -54,3 +58,4 @@ I am still working out the GUI layout, but I will update this page as I work on 
 
 It is new years eve (2019), so I'll work on this more tomorrow. Check back soon for updates and explanations of the code (and happy new year)!
 
+#+HTML: </div>

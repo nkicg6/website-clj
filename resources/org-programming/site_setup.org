@@ -5,7 +5,12 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-06-26 Mon
 #+TITLE: Building a static website with Flask
-#+HTML:<h1 id="mainTitle">Building a static website with Flask</h1>
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Building a Static Website with Flask</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
@@ -59,3 +64,4 @@ publish all https://stackoverflow.com/questions/21258769/using-emacs-org-mode-ho
 I use namecheap to manage my custom domain ([[https://nickgeorge.net][nickgeorge.net]]), but unfortunately when I created a CNAME file to connect my github pages to it, I got a horrible network certificate warning from Chrome. To address this, I set this up https://www.timble.net/blog/2016/04/setting-up-ssl-on-github-pages/
 namecheap instructions
 https://www.namecheap.com/support/knowledgebase/article.aspx/9645/2208/how-do-i-link-my-domain-to-github-pages
+#+HTML:</div>

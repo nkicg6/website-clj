@@ -5,7 +5,11 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-07-14 Fri
 #+TITLE: Setting up and configuring org-ref
-#+HTML:<h1 id="mainTitle">Setting up and configuring org-ref</h1>
+
+
+#+TOC: headlines 1
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Setting up and Configuring org-ref</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
@@ -86,7 +90,7 @@ For instance this setup
 #+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
 
 
-#* Test
+ * Test
 citep:Benusa2017 and other like 
  of multiple sclerosis. These domains are involved with the initiation and propagation of action potentials and are structurally and functionally quite similar cite:Clark2016. Although they are similar in terms of their protein composition and function, previous work from 
 here is a link to my [[https://nickgeorge.net][website]]
@@ -99,8 +103,7 @@ bibliography:~/Dropbox/bibliography/library.bib
 
 Produces this
 
-#+CAPTION: Whats with the brackets?
-#+ATTR_HTML: :width 50% :height 50% :alt example of citation formatting I don't like :title example of citation formatting I don't like
+#+ATTR_HTML: :alt example of citation formatting I don't like :title example of citation formatting I don't like
 [[file:~/personal_projects/website-clj/resources/public/img/bad_ref_export.png]]
 
 Why brackets? I was really disappointed with the style on export. I looked all over for ways to specify the correct options in org-ref, getting more frustrated all the time.Then I realized... This is a bibtex setting, not an org-ref setting! I searched for ways to make the brackets round, no way does every bibtex user use square brackets, and I found the answer:
@@ -145,7 +148,7 @@ I often change =#+OPTIONS= but I like having the list to remind me what I can do
 #+LATEX_HEADER: \renewcommand{\bibsection}
 
 
-#* Test
+ * Test
 cite:Benusa2017 and other like 
  of multiple sclerosis. These domains are involved with the initiation and propagation of action potentials and are structurally and functionally quite similar cite:Clark2016. Although they are similar in terms of their protein composition and function, previous work from 
 here is a link to my [[https://nickgeorge.net][website]]
@@ -159,7 +162,7 @@ bibliography:~/Dropbox/bibliography/library.bib
 
 Now the export should look much better. So use org-ref, but use BibTeX to specify styling!
 
-
 #+CAPTION: Better!
-#+ATTR_HTML: :width 50% :height 50% :alt example of citation style I like :title example of citation style I like
+#+ATTR_HTML: :alt example of citation style I like :title example of citation style I like
 [[file:~/personal_projects/website-clj/resources/public/img/better_export.png]]
+#+HTML:</div>

@@ -4,14 +4,18 @@
 #+PROPERTY: header-args :eval never-export
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:t
 #+DATE: 2018-08-18 Sat
-#+TITLE: /Building my static website with Clojure/
-#+HTML:<h1 id="mainTitle">Building my static website with Clojure
+#+TITLE: Building my static website with Clojure
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Building my Static Website with Clojure
 #+HTML:</h1>
 #+HTML:<div id="timedate">
 /Published: {{{date}}}/
 /last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
 
 /quick note/ 
 I made some changes, mostly to align this with what I know now and get rid of some sloppy code. I don't have /everything/ about my website explained here (robots.txt, five links on the home page, and my site map are not included), but I think the hard parts are covered. The most up-to-date and complete version will be the source code https://github.com/nkicg6/website-clj. If I do anything else that I think is interesting or hard, I will add it here in the future. Hopefully it is becoming better-formed and simpler as I go! 
@@ -126,7 +130,7 @@ Org-mode [[https://orgmode.org/worg/][worg]] has a nice intro post on org-publis
 
 From Emacs, =M-x org-publish= and I select the project =clj-site= this will compile (trans-pile?) all the =.org= files in =org-programming/= and =org-science/= to =html='s in the respective =programming/= and =science/= folders. Note that I set the =:body-only= argument to =t=, as all these files will inherit a [[https://github.com/weavejester/hiccup][hiccup]] based header and footer in my site generation code. 
 
-* hiccup styles
+* Hiccup styles
 :PROPERTIES:
 :CUSTOM_ID: hiccup-header-footer
 :END:
@@ -1210,3 +1214,4 @@ Right now, to publish, I run:
 
 Will be posted here. On the near horizon:
 1. Tests!
+#+HTML:</div>

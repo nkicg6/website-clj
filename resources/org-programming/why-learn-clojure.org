@@ -5,6 +5,12 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-09-08 Sat
 #+TITLE: Why Clojure?
+
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Why Clojure?</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
@@ -21,27 +27,30 @@ I am currently learning Clojure, mostly because I wanted to learn functional pro
 
   Compared to JavaScript (or really any other language I have seen) Clojure appears to be an /extremely well thought out language/ that allows me to explore the world of Lisp and functional programming with immutable data structures. The icing on the cake is that Clojure can compile to and leverage all of JavaScript with *ClojureScript*. 
 /Note:/ I think this [[https://www.youtube.com/watch?v=j-kj2qwJa_E][figwheel]] for ClojureScript development demo by Bruce Hauman is reason alone to learn Clojure(Script)!  
-By learning Clojure, I get /a lot/ more leverage (all of the JVM, Lisp, functional programming, /and/ web programming/JavaScript) than I would get from any other language!
+By learning Clojure, I get /a lot/ more leverage (all of the JVM, Lisp, functional programming, /and/ web programming/JavaScript) than I would get from any other language I know of.
 
 * Learning a craft rather than getting a thing 
 
-  A lot of people learn a programming language to use or get a thing. Python has [[https://pandas.pydata.org/][pandas]] for data, [[https://www.djangoproject.com/][django]] for websites, and many more tools that people come to the language specifically to learn. Similarly, R has the [[https://www.tidyverse.org/][tidyverse]], and Ruby has [[https://rubyonrails.org/][rails]] (I know they both have a lot more to offer too, but I don't use them as much). JavaScript has the web and single page apps. Huge communities build up in the language around those tools and the languages are richer and more popular because of it. There is really nothing wrong with this. I learned python and R reasonably well, for the data analysis and automation bits but-- *I am not a professional programmer.* 
+  A lot of people learn a programming language to use or get a thing. Python has [[https://pandas.pydata.org/][pandas]] for data, [[https://www.djangoproject.com/][django]] for websites, and many more tools that people come to the language specifically to learn. Similarly, R has the [[https://www.tidyverse.org/][tidyverse]], and Ruby has [[https://rubyonrails.org/][rails]] (I know they both have a lot more to offer too, but I don't use them as much). JavaScript has the web and single page apps (a huge deal and very important). Huge communities build up in the language around those tools and the languages are richer and more popular because of it. There is really nothing wrong with this. I learned python and R reasonably well, for the data analysis and automation bits but-- *I am not a professional programmer.* 
 
-  Programming and building software is my favorite hobby, and I use it a lot in my scientific work, but I am not currently being paid anything to write or learn code. I think I am lucky for this reason. It frees me up to pick what I want to learn based on how much value it brings to the table and how much enjoyment it brings me to use it, rather than based on what my company uses or whatever is popular now. 
+  Programming and building software is my favorite hobby, and I use it a lot in my scientific work, but I am not currently being paid anything to write or learn code. This makes me a little lucky in that it frees me up to pick what I want to learn based on how much value it brings to the table and how much enjoyment it brings me to use it, rather than based on what my company uses or whatever is popular now. 
 
-  A lot of thought went into the design of Clojure and it has a lot of power behind it (immutable persistent data structures and all of the JVM among other things). It is not exactly simple or intuitive when you first pick it up (like Python is), but as Rich Hickey said in one of my favorite talks he gave,"[[https://www.infoq.com/presentations/Design-Composition-Performance][musical instruments are not made for beginners]]". He explains they are made for professionals because you are only a beginner for really short period of time. There is not a shortcut for becoming an excellent piano player, but there is also no limit to the depth and complexity of the music you can create with that instrument. I am not a musician, but I love writing code in my spare time so any language that gives me the kind of leverage that lisps do is definitely worth my time. 
+  A lot of thought went into the design of Clojure and it has a lot of power behind it (immutable persistent data structures and all of the JVM ecosystem among other things). It is not exactly simple or intuitive when you first pick it up (like Python is), but as Rich Hickey said in one of my favorite talks he gave,"[[https://www.infoq.com/presentations/Design-Composition-Performance][musical instruments are not made for beginners]]". He explains they are made for professionals because you are only a beginner for really short period of time. There is not a shortcut for becoming an excellent piano player, but there is also /no limit to the depth and complexity of the music you can create with that instrument/. I am not a musician, but I love writing code in my spare time so any language that gives me the kind of leverage that Clojure does is definitely worth my time. 
 
-  Skills you have to put work into are skills that are worth acquiring. One of my favorite essays is "The Lisp Curse" by Rudolf Winestock (http://www.winestockwebdesign.com/Essays/Lisp_Curse.html). If that doesn't inspire you to learn Lisp then I don't know what will. Maybe a few of Paul Graham's [[http://www.paulgraham.com/articles.html][essays]] (especially this one http://www.paulgraham.com/avg.html) will drive this point home.
+  Skills you have to put work into are skills that are worth acquiring. One of my favorite essays is "The Lisp Curse" by Rudolf Winestock (http://www.winestockwebdesign.com/Essays/Lisp_Curse.html). If that doesn't inspire you to learn Lisp then I don't know what will. A bit cliche, but Paul Graham's also drove this point home http://www.paulgraham.com/avg.html.
     
-  Everything I have read about the amount of time put into designing the Clojure language and the amount of power you get from lisps in general makes this an extremely attractive language to learn. By learning Clojure I am not getting a big, flashy car or an expensive power tool. I am getting a set of extremely versatile, battle hardened hand tools (another of my favorite talks is Tim Ewald's /Programming with Hand Tools/ https://www.youtube.com/watch?v=ShEez0JkOFw). As Tim Ewald explains in that video, with those hand tools I can do /anything/ you can do with your power tools, but I will have a much deeper understanding and appreciation for what I am doing and I will be making things simpler and likely a lot more reliable. 
+  Everything I have read about the amount of time and thought put into designing the Clojure language and the amount of power you get from lisps in general makes this an extremely attractive language to learn. By learning Clojure I'm not getting a big, flashy car or an expensive power tool. I am getting a set of extremely versatile, battle hardened hand tools (another of my favorite talks is Tim Ewald's /Programming with Hand Tools/ https://www.youtube.com/watch?v=ShEez0JkOFw). As Tim Ewald explains in that video, with those hand tools I can do /anything/ you can do with your power tools, but I will have a much deeper understanding and appreciation for what I am doing and I will be making things simpler and likely a lot more reliable. 
 
-  I want to build tools that help people (but mostly myself) and enjoy doing it. Python is great for this-- it was my first real programming language and will always hold a special place in my heart and toolbox. But Clojure (and lisp in general) is my current interest and the more I learn and practice the more I can do, the more I understand, and the more I love this tool.
+  I want to build tools that help me do my work and will hopefully be useful to others, and I want to enjoy doing it. Python is great for this-- it was my first real programming language and will always hold a special place in my heart and toolbox. But Clojure is my current interest and the more I learn and practice the more I can do, the more I understand, and the more I love this tool.
 
 * Favorite Clojure talks
 The talks below have had a big influence on me. I learned a lot from them and return to them often. 
+
 - Tim Ewald's /Programming with Hand Tools/ https://www.youtube.com/watch?v=ShEez0JkOFw
 - Rich Hickey's /Design, Composition, and Performance/ https://www.infoq.com/presentations/Design-Composition-Performance
 - Rich Hickey's /Hammock Driven Development/ https://www.youtube.com/watch?v=f84n5oFoZBc
 - Rich Hickey's /The Value of Values/ https://www.youtube.com/watch?v=-6BsiVyC1kM
 - Rich Hickey's /Simplicity Matters/ https://www.youtube.com/watch?v=rI8tNMsozo0
 - Stuart Sierra's /Homoiconicity It is what It Is/ https://www.youtube.com/watch?v=o7zyGMcav3c
+
+#+HTML:</div>

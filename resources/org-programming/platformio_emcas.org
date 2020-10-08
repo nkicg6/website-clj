@@ -5,6 +5,11 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-07-16 Sun
 #+TITLE: Platformio and Emacs
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Platformio and Emacs</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
@@ -196,3 +201,4 @@ and it will then begin to monitor the port just like Arduino IDE does!
 For options, see the [[http://docs.platformio.org/en/latest/userguide/cmd_device.html][documentation]]. 
 
 That's it for now, I will update this as I use more features.
+#+HTML: </div>

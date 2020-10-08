@@ -5,12 +5,16 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-02-20 Thu
 #+TITLE: Building and deploying my website with make
-#+HTML:<h1 id="mainTitle">Building and deploying my website with make</h1>
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Building and Deploying my Website with make</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
 
 Making things easier to do makes me more likely to do them. Even a simple static website like this one requires a few bespoke commands to build and deploy, so to lower the barrier to publish, I decided to start learning and using [[https://www.gnu.org/software/make/][GNU Make]] to reduce the steps to one command. 
 
@@ -91,7 +95,7 @@ I named this file =publish.el=, and it lives in the base directory of the websit
 emacs -batch -load publish.el -eval '(org-publish "clj-site")'
 #+END_SRC
 
-** makefile 
+** Makefile 
 
 That was the hard part, now we just need to write some rules for make to run. 
 We will name the first run update:
@@ -128,7 +132,7 @@ view:
 
 =make view= will now update then display the site. 
 
-** deploying using make
+** Deploying using make
 
    Deploying is slightly more complicated. To deploy, I need to run =lein build-site=, commit and push the changes, =cd= to the =target/= directory and again commit and push the website changes. 
 Make spawns a new shell for every line, but to run git commands we need to be in the appropriate directory. We can work with this by running all the commands in one line:
@@ -162,3 +166,4 @@ With that we have our final rule, =deploy=.
 
 Now I can run =make deploy= from the command line to publish my website, rather than running each command individually. 
 
+#+HTML:</div>

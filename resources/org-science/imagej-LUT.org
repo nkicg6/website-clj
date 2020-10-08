@@ -9,7 +9,7 @@
 #+HTML: <style>p {text-indent:0vw;}</style>
 
 #+HTML: <div id="article">
-#+HTML:<h1 id="mainTitle">Making a lookup table (LUT) for ImageJ from an existing image</h1>
+#+HTML:<h1 id="mainTitle">Making a Lookup Table (LUT) for ImageJ from an Existing Image</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

@@ -5,12 +5,17 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2019-01-26 Sat
 #+TITLE: Building ImageJ/Fiji Plugins with Clojure
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Building ImageJ/Fiji Plugins with Clojure</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
+
 
 
 * The vibrant plugin architecture of ImageJ and Fiji
@@ -244,3 +249,4 @@ Here, we just developed a simple ImageJ test plugin in Emacs with Clojure, compi
 
 Next time, we will add a graphical user interface and some actual functionality to our plugin.
 
+#+HTML:</div>

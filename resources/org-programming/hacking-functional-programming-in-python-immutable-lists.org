@@ -5,12 +5,16 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-03-04 Wed
 #+TITLE: Update in place is evil. How to write in a functional style with mutable defaults in Python
-#+HTML:<h1 id="mainTitle">Update in place is evil. How to write in a functional style with mutable defaults in Python</h1>
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Update in Place is Evil. Write in a functional style with Python's mutable defaults</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
 
 ** Python's mutable default data types
 
@@ -31,7 +35,7 @@ print(original_list)
 
 What???? At that point I didn't have any exposure to immutable data structures and had not yet been inducted into the cult of functional programming, I was just a new programmer who found this behavior confusing and unintuitive. I hadn't done anything to my original variable, why was it changed? Why did my assignment fail?
 
-Of course the way to 'fix' this was to use the overloaded =+= operator to 'concatenate' two lists:
+The way to 'fix' this was to use the overloaded =+= operator to 'concatenate' two lists:
 
 #+BEGIN_SRC python :session new :results output
 original_list = ["I was here first"]
@@ -47,7 +51,7 @@ Of course, the documentation will explain /why/ this occurs with the append meth
 
 What do you think the answer is? And what do you think it should be? 
 
-When I looked at this, >50% of respondents said it should print =[1] [1]=, yet if you try it you get: =[1,1] [1,1]=. People following Jake are likely not that new to Python, so I think it is safe to say this behavior (especially in a function) is not intuitive. That type of behavior is almost acceptable outside of functions, but this seems totally crazy. Here is another example:
+When I looked at this, >50% of respondents said it should print =[1] [1]=, yet if you try it you get: =[1,1] [1,1]=. People following Jake are likely not that new to Python, so I think it is safe to say this behavior (especially in a function) is not intuitive. That type of behavior is /almost/ acceptable outside of functions, but this seems totally crazy. Here is another example:
 
 #+BEGIN_SRC python :session new :results output
 def append_unsafe(l):
@@ -106,3 +110,4 @@ This creates a copy of the argument in the function scope assigned to the same n
 
 I imagine this is rough on memory (I'll test it at some point), but to me the safety is worth the memory abuse. I do this whenever I operate on the mutable types in python. It has saved me from a number of mutable data-induced headaches since being spoiled by Clojure. Did I mention how awesome Clojure and functional programming are? If you haven't tried it, you should really try Clojure.
 
+#+HTML:</div>

@@ -5,12 +5,16 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-08-30 Sun
 #+TITLE: Consistent style for scientific figures with ggplot2
-#+HTML:<h1 id="mainTitle">Consistent style for scientific figures in ggplot2</h1>
+
+#+TOC: headlines 2
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Consistent Style for Scientific Figures in ggplot2</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
+
 
 
 ** Consistent style, for science's sake
@@ -177,3 +181,5 @@ alternative hypothesis: two-sided
 Change something? Re-run the script and this table will update and you can refer to it when you make edits. 
 
 Automation prevents errors and lowers the barrier to doing the right thing. while it might take a bit more effort, your work and science as a whole benefit when you do it. 
+#+HTML:</div>
+

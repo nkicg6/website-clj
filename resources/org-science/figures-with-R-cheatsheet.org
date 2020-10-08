@@ -4,13 +4,15 @@
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil tex:t
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2019-01-13 Sun
-#+TITLE: Making figures with R: common things I need to look up and tricks
-#+HTML:<h1 id="mainTitle">Making figures with R: common things I need to look up and tricks</h1>
+#+TITLE: Making figures with R: common things I need to look up and trick
+#+TOC: headlines 1
+
+#+HTML: <div id="article">
+#+HTML:<h1 id="mainTitle">Making Figures with R: common things I need to look up and tricks</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
 
 I use R for most of my data analysis and especially for making figures. There are a few things I constantly need to look up when it comes to fine-grained figure editing and graphics, as well as some best practices I picked up which have made my life easier. I'll present them below in the form of an example problem. 
 
@@ -105,7 +107,7 @@ Since I am only plotting two classes for most of this example, I used black and 
 
 I might make a lot of drafts of plots before I decide on a common style. I like this method of setting my defaults at the top of my script and then customizing them as I go. A consistent clean style makes a really big difference and shows you care about your data and your presentation. 
 
-** renaming variables, re-ordering columns, and renaming columns
+** Renaming variables, re-ordering columns, and renaming columns
 :PROPERTIES:
 :CUSTOM_ID: renaming-variables-reordering-columns
 :END:
@@ -518,7 +520,7 @@ Alternatively, You can tell gather which columns to /not/ combine like so:
 
 giving the same result. 
 
-** what's wrong with =tidyr::gather= 
+** What's wrong with =tidyr::gather= 
 =gather= is not intuitive, and I think some of it comes from its permissive, flexible, parameter acceptance and strange defaults. For example, if I just pass the terms =left_slope=, =right_slope=, (quoted or unquoted, as gather supports [[https://rlang.r-lib.org/reference/quasiquotation.html][quasiquotation]]), without specifying anything else, look what happens:
 
 #+BEGIN_SRC R :session rsesh :results output :exports both
@@ -550,3 +552,4 @@ I love the tidyverse, but it took me a long time to figure this one out.
 I mainly wrote this for future me, and I am sure I will be back here next time I mess with =gather=.
 
 /This is a work in progress. As I come across other problems, I will add them here!/
+#+HTML: </div>

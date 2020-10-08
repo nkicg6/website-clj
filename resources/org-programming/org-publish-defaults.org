@@ -5,7 +5,11 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-26 Sun
 #+TITLE: A YASnippet for org-mode publishing
-#+HTML:<h1 id="mainTitle">A YASnippet for org-mode publishing</h1>
+
+
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">A YASnippet for org-mode Publishing</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
@@ -68,3 +72,4 @@ I really like this format. It allows me to standardize the metadata of my files 
    I have a bunch more snippets, which you can see in my [[https://github.com/nkicg6/emacs-config/tree/master/snippets][emacs-config]]. I stole a lot from different places on the internet, but most of these are customized to address specific problems I had or to optimize for a specific workflow. For example, I made another snippet for my regular science writing workflow called [[https://github.com/nkicg6/emacs-config/blob/master/snippets/org-mode/preamble][pre]] sets up all of my normal export options and =org-ref= settings.
 
 YASnippet's are just another reason why org-mode and emacs rock!
+#+HTML:</div>

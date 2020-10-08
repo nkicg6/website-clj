@@ -5,12 +5,15 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-09-16 Wed
 #+TITLE: Scientists don't test their code
-#+HTML:<h1 id="mainTitle">Scientists don't test their code</h1>
+
+
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Scientists Don't Test Their Code</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-
 
 Seriously, we don't. Go ahead and look at your favorite scientist written code base, used by hundreds or submitted with a paper and never intended to be shared. Python, Matlab, or R, it doesn't matter. I can almost guarantee you that 95%+ of them will have no =tests= directory or automated/unit testing setup at all (let alone an option to automatically install it with a package manager like =pip= or =conda= for python).
 
@@ -25,7 +28,7 @@ What was the error? Well it involved an /untested assumption/ about file sorting
 
 While this story gained some (justified) attention, it is a /totally understandable/ mistake for a non-professional (or a professional) to make. It would also be hard to write proper tests for (which is what I am advocating for here) if you didn't read that part of the docs. I have no doubt that countless more of these errors exist, with many incorporated into projects used by hundreds or more. I have no doubt I have made mistakes just like this in the past as well. Despite this, I /still/ think it is good and important for scientists to write their own code. But how do we combat this issue and write better code?
 
-** testing and designing for sharing from the start
+** Testing and designing for sharing from the start
 
 Every software engineer knows that testing code is vital to creating good software. Software tests help you confirm (and discover) assumptions, they make things easier to change by providing a ground truth to prevent regressions or unintended consequences, and they (hopefully) help tease out errors to make your system more resilient and correct. To write a good test, engineers think like scientists:
 
@@ -49,3 +52,4 @@ I think adopting two practices will have the greatest impact:
 - Automated deployment (can you install and try this on another machine)
 
 I'll give examples for what I have learned about doing this for my own work in a few other posts I will link to here. But I would really like to see more software engineers and programming teachers prioritize this sort of lesson early and often. It isn't difficult, it just isn't covered. 
+#+HTML:</div>

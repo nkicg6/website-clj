@@ -5,7 +5,12 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2017-08-27
 #+TITLE: Using python in org-mode
-#+HTML:<h1 id="mainTitle">Using python in org-mode</h1>
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Using Python in org-mode</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
@@ -19,7 +24,7 @@ I love the idea of [[https://github.com/gregsexton/ob-ipython][ob-ipython]], but
 
 * Snippets
 
-[[https://github.com/joaotavora/yasnippet][YASnippet]]for plotting session setup
+** [[https://github.com/joaotavora/yasnippet][YASnippet]] for plotting session setup
 
 #+BEGIN_EXAMPLE
 # -*- mode: snippet -*-
@@ -48,7 +53,7 @@ I love the idea of [[https://github.com/gregsexton/ob-ipython][ob-ipython]], but
       os.mkdir('img')
 #+END_SRC 
 
-Plotting snippet
+** Plotting snippet
 
 #+BEGIN_EXAMPLE
 # -*- mode: snippet -*-
@@ -70,3 +75,4 @@ print(plt.savefig('img/$2.png'))
 
 
 I intend to explore John Kitchin's =pysce= module more (demo [[http://kitchingroup.cheme.cmu.edu/blog/2016/05/29/Expanding-orgmode-py-to-get-better-org-python-integration/][here]]), but for now these snippets will do!
+#+HTML:</div>

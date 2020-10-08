@@ -5,12 +5,16 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-05-21 Thu
 #+TITLE: Working with Ilastik HDF5 files using python and h5py
-#+HTML:<h1 id="mainTitle">Working with Ilastik HDF5 files using python and h5py</h1>
+
+
+#+TOC: headlines 1
+
+#+HTML:<div id="article">
+#+HTML:<h1 id="mainTitle">Working with Ilastik HDF5 Files using Python and h5py</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
-#+TOC: headlines 2
 
 [[https://www.ilastik.org/][Ilastik]] is an excellent image analysis suite which makes pixel and object classification easy. Ilastik recommends using HDF5 as an input/output file format for image segmentation/probability and measurement results, but the documentation on how the results are stored in this +[[https://forum.image.sc/t/structure-of-ilastik-hdf5-feature-export-results-tables/36800][format are somewhat lacking]]+ (I made a [[https://github.com/ilastik/ilastik.github.io/pull/137][small change to the documentation]] to clear some of this up).
 
@@ -132,3 +136,4 @@ Which we can use like so:
 #+END_SRC
 The =assert= statement will print a useful message if you mistype a dataset name or if it doesn't exist.
 
+#+HTML:</div>

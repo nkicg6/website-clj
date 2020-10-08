@@ -5,7 +5,9 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-13 Mon
 #+TITLE: Helpful git links and hints
-#+HTML:<h1 id="mainTitle">Helpful git links and hints</h1>
+
+#+HTML: <div id="article">
+#+HTML:<h1 id="mainTitle">Helpful git Links and Hints</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
@@ -31,3 +33,4 @@ Here is a minimal (from scratch example)
 - [[http://nickgeorge.net/github-lab-setup/getting_started_git][A quick presentation I made]] promoting using git. I gave this at a lab meeting. 
 
 More coming soon. 
+#+HTML: </div>
