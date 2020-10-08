@@ -5,11 +5,16 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-01-05 Sun
 #+TITLE: Making a lookup table (LUT) for ImageJ from an existing image
+
+#+TOC: headlines 2
+
+#+HTML: <div id="article">
 #+HTML:<h1 id="mainTitle">Making a lookup table (LUT) for ImageJ from an existing image</h1>
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
+
 
 ImageJ lookup tables (LUTs) map integer or floating point pixel values to colors. ImageJ comes with a lot of nice LUTs and there are many available on the internet as well (Christophe Leterrier has excellent ones available here https://github.com/cleterrier/ChrisLUTs). I recently wanted to make my own based on a colormap on an image exported from our microscope (myelin is the blue-ish color below that I wanted to use). 
 
@@ -43,3 +48,4 @@ You can view the raw values of the LUT by clicking =Image>Color>Show LUT= and cl
    - https://imagej.nih.gov/ij/docs/guide/146-28.html#toc-Subsection-28.5
    - http://imagej.1557.x6.nabble.com/create-a-color-intensity-map-td5005697.html
    - http://imagej.1557.x6.nabble.com/Install-new-LUT-s-td3704456.html
+#+HTML:</div>

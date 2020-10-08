@@ -25,44 +25,29 @@
   [page]
   (html5 {:lang "en"}
          [:head
-          [:script {:src "https://www.googletagmanager.com/gtag/js?id=UA-124749948-1" :async "async"}]
-          [:script google-analytics]
-          [:script {:src  "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"
-                    :async "async"}]
           [:title "Nick's site"]
           [:meta {:charset "utf-8"}]
           [:meta {:name "viewport"
                   :content "width=device-width, initial-scale=1.0"}]
-          #_[:link {:rel "stylesheet" :href "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"}]
-          #_[:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"}] 
-          #_(include-css "/css/custom.css")
-          (include-css "/css/style.css")
-          #_[:script {:src "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-                    :integrity "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-                    :crossorigin "anonymous"}]]
-         [:body [:div {:class "header"}]
-          page
-          #_[:nav {:class "navbar navbar-inverse"}
-           [:div {:class "container-fluid"}
-            [:div {:class "navbar-header"}
-             (link-to  {:class "navbar-brand"} "/" "Nick George")]
-            [:ul {:class "nav navbar-nav navbar-right"}
-             [:li {:class "inactive"} (link-to "/science" "Science")]
-             [:li {:class "inactive"} (link-to "/programming" "Programming")]
-             [:li [:a {:href "https://github.com/nkicg6"}
-                   [:span {:class "fa fa-github" :style "font-size:24px"}]]]
-             [:li [:a {:href "https://twitter.com/NicholasMG"}
-                   [:span {:class "fa fa-twitter-square" :style "font-size:24px"}]]]]]]          
-          [:footer {:class "footer"}
-           [:div {:class "text-center"}
-            [:span #_{:class "text-muted"} (str "&copy; Nick George 2017-" (get-copyright-date))]]]]))
+          (include-css "/css/style.css")]
+         [:body
+          [:div {:class "header"}
+           [:div {:class "name"}
+            [:a {:class "name" :href "/"} "Nick George"]
+            [:div {:class "header-right"}
+             [:a {:href "/science"} "Science"]
+             [:a {:href "/programming"} "Programming"]]]]
+          page]
+         [:footer
+          [:p (str "&copy Nick George 2017-") (get-copyright-date)]]))
 
 (defn format-images [html]
   "formats html image link to appropriately link to static website image directory.
   `html` is a raw html string."
   (-> html
    (str/replace #"<img src=.*/img" "<img src=\"/img")
-   (str/replace #"../public" "")))
+   (str/replace #"../public" "")
+   (str/replace #"Table of Contents" "&gt Contents")))
 
 (defn parse-html
   "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
