@@ -34,7 +34,7 @@ body{
 .header {
   /* border: 3px solid green; */
   overflow: hidden;
-  background-color: #f1f1f1;
+  background-color: #F1F1F1;
   padding-left: 2vw;
   padding-right:2vw;
   margin-top:0vw;
@@ -135,12 +135,33 @@ code {
 }
 
 p {
-    text-indent:2vw;
+   text-indent:2vw;
+   }
+
+a:hover{
+  color: #CA3636;
+}
+
+ol, li {
+  margin-left:0.5vw;
+  padding-left:0vw;
 }
 
 #timedate p {
   font-size:18;
   text-indent:0vw;
+}
+
+
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius:4px;
+  max-width: 100%;
+  border-style: solid;
+  border-width:4px;
+  border-color:  #F1F1F1;  
 }
 
 @media screen and (max-width:700px) {
