@@ -22,6 +22,22 @@ html {
   font-family:var(--main-font-family);
   line-height:1.2;
 }
+
+.info-list, #recentPosts {
+  font-size: var(--main-font-size);
+}
+
+#home-div {
+  font-size: var(--main-font-size);
+  margin-top:2vw;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom:10vw;
+  max-width: 800px;
+  min-width: 450px;
+  
+}
+
 body{
   background-color:#FEFEFA;
   margin-top:0;
