@@ -129,25 +129,3 @@
   [links div page-map]
   (zipmap (keys page-map)
           (map #(add-links links div %) (vals page-map))))
-
-;; -- TESTING BELOW --
-;; first step is slurping a directory, applying the path prefix and formatting html.
-
-;; (def slurped-raw
-;;   "holds a map of formatted html pages for my website"
-;;   (html-pages "/test" (stasis/slurp-directory "resources/test" #".*\.(html|css|js)")))
-;; ;; (keys slurped-raw)
-;; (def test-html (layout-base-header (second (vals slurped-raw))))
-
-;; (parse-html test-html)
-
-
-;; ;;(rename-page test-html)
-
-;; ;; ;; next step is parsing edn. I will use the already slurped directory for this.
-;; (def metadata (make-edn-page-map "/test" slurped-raw))
-;; (format-html-links metadata)
-;; ;; now I need to make the links. Sorted in reverse chrono order. 
-;; (def links-to-put (format-html-links metadata))
-;; ;; now insert the links. 
-;;                                         ;(zipmap (keys slurped-raw) (map #(add-links % links-to-put) (vals slurped-raw)))
