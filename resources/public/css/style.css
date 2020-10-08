@@ -216,13 +216,18 @@ img {
     padding-left: 1em;
     padding-right: 1em;
     width:100%;
+    max-width: var(--max-reading-width);
+    margin-left:auto;
+    margin-right:auto;
   }
   #table-of-contents, #article {
     overflow:hidden;
     display: inline;
     position: relative;
     width: 100%;
-    max-width:700px;
     min-width:450px;
+    max-width: var(--max-reading-width);
+    margin-left:auto;
+    margin-right:auto;
   }
 }
