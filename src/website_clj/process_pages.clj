@@ -25,6 +25,8 @@
   [page]
   (html5 {:lang "en"}
          [:head
+          [:script {:src "https://www.googletagmanager.com/gtag/js?id=UA-124749948-1" :async "async"}]
+          [:script google-analytics]
           [:title "Nick's site"]
           [:meta {:charset "utf-8"}]
           [:meta {:name "viewport"
