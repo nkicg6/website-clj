@@ -133,7 +133,6 @@ footer {
   padding-right:1em;
   height:100vw;
   max-width:300px;
-  min-width:250px;
 }
 
 #article {
@@ -207,7 +206,7 @@ img {
   border-color:  #F1F1F1;  
 }
 
-@media screen and (max-width:850px) {
+@media screen and (max-width:900px) {
   body {
     /* background-color: lightblue; */
     position: relative;
