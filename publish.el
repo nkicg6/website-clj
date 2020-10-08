@@ -9,6 +9,7 @@
 (require 'org)
 (require 'ox-publish)
 (require 'ox-html)
+(require 'htmlize)
 ;;(require 'htmlize)
 
 (setq org-src-fontify-natively t)

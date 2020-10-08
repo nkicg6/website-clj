@@ -47,7 +47,7 @@
   (-> html
    (str/replace #"<img src=.*/img" "<img src=\"/img")
    (str/replace #"../public" "")
-   (str/replace #"Table of Contents" "&gt Contents")))
+   (str/replace #"<h2>Table of Contents</h2>" "<h1>&gt contents</h1>")))
 
 (defn parse-html
   "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
