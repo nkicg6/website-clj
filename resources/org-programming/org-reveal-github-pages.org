@@ -6,9 +6,9 @@
 #+DATE: 2017-09-28 Thr
 #+TITLE: Org-reveal and GitHub Pages
 
-
-#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Org-reveal and GitHub Pages</h1>
+#+HTML:<div id="article">
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

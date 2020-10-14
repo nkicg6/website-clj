@@ -6,11 +6,11 @@
 #+DATE: 2020-02-20 Thu
 #+TITLE: Building and deploying my website with make
 
-
+#+HTML:<h1 id="mainTitle">Building and Deploying my Website with make</h1>
 #+TOC: headlines 1
 
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Building and Deploying my Website with make</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

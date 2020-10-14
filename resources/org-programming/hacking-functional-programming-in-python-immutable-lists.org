@@ -6,11 +6,11 @@
 #+DATE: 2020-03-04 Wed
 #+TITLE: Update in place is evil. How to write in a functional style with mutable defaults in Python
 
-
+#+HTML:<h1 id="mainTitle">Update in Place is Evil. Write in a functional style with Python's mutable defaults</h1>
 #+TOC: headlines 1
 
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Update in Place is Evil. Write in a functional style with Python's mutable defaults</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

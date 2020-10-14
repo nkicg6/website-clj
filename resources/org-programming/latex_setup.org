@@ -5,10 +5,10 @@
 #+PROPERTY: header-args :eval never-export :exports both 
 #+DATE: 2018-07-04 Tue
 #+TITLE: Setting up LaTeX on a Mac
-
+#+HTML:<h1 id="mainTitle">Setting up LaTeX on a Mac</h1>
 #+TOC: headlines 1
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Setting up LaTeX on a Mac</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

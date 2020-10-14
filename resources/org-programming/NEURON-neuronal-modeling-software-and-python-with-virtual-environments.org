@@ -7,9 +7,9 @@
 #+TITLE: Setting up and using the NEURON simulation environment and python with virtual environments 
 
 
-
-#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Setting up and using the NEURON Simulation Environment and Python with Virtual Environments</h1>
+#+HTML:<div id="article">
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

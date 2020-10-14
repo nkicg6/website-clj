@@ -7,9 +7,9 @@
 #+TITLE: A YASnippet for org-mode publishing
 
 
-
-#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">A YASnippet for org-mode Publishing</h1>
+#+HTML:<div id="article">
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

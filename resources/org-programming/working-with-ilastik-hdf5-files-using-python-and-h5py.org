@@ -6,11 +6,11 @@
 #+DATE: 2020-05-21 Thu
 #+TITLE: Working with Ilastik HDF5 files using python and h5py
 
-
+#+HTML:<h1 id="mainTitle">Working with Ilastik HDF5 Files using Python and h5py</h1>
 #+TOC: headlines 1
 
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Working with Ilastik HDF5 Files using Python and h5py</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

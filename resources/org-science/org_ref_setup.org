@@ -6,10 +6,10 @@
 #+DATE: 2017-07-14 Fri
 #+TITLE: Setting up and configuring org-ref
 
-
+#+HTML:<h1 id="mainTitle">Setting up and Configuring org-ref</h1>
 #+TOC: headlines 1
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Setting up and Configuring org-ref</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

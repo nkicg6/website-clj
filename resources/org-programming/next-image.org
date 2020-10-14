@@ -5,9 +5,9 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2019-12-31 Wed
 #+TITLE: Next_image_clj: a simple utility plugin for semi-automated analysis 
-
-#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Next_image_clj: a simple utility plugin for semi-automated analysis (<em>unfinished project...</em>)</h1>
+#+HTML:<div id="article">
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

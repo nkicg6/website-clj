@@ -6,12 +6,12 @@
 #+DATE: 2018-08-18 Sat
 #+TITLE: Building my static website with Clojure
 
-
+#+HTML:<h1 id="mainTitle">Building my Static Website with Clojure</h1>
 #+TOC: headlines 1
 
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Building my Static Website with Clojure
-#+HTML:</h1>
+
+
 #+HTML:<div id="timedate">
 /Published: {{{date}}}/
 /last updated: {{{time(%Y-%m-%d %a)}}}/

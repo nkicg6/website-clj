@@ -8,9 +8,9 @@
 
 
 
-
-#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Org-mode Changed My Life-- Resources and Notes</h1>
+#+HTML:<div id="article">
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

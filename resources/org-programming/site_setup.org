@@ -6,11 +6,12 @@
 #+DATE: 2017-06-26 Mon
 #+TITLE: Building a static website with Flask
 
+#+HTML:<h1 id="mainTitle">Building a Static Website with Flask</h1>
 
 #+TOC: headlines 1
 
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Building a Static Website with Flask</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

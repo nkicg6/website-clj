@@ -6,11 +6,11 @@
 #+DATE: 2017-08-27
 #+TITLE: Using python in org-mode
 
-
+#+HTML:<h1 id="mainTitle">Using Python in org-mode</h1>
 #+TOC: headlines 1
 
 #+HTML:<div id="article">
-#+HTML:<h1 id="mainTitle">Using Python in org-mode</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

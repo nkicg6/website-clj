@@ -5,9 +5,9 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2018-08-13 Mon
 #+TITLE: Helpful git links and hints
-
-#+HTML: <div id="article">
 #+HTML:<h1 id="mainTitle">Helpful git Links and Hints</h1>
+#+HTML: <div id="article">
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/

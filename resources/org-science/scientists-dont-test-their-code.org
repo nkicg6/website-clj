@@ -7,9 +7,9 @@
 #+TITLE: Scientists don't test their code
 
 
-
-#+HTML:<div id="article">
 #+HTML:<h1 id="mainTitle">Scientists Don't Test Their Code</h1>
+#+HTML:<div id="article">
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
