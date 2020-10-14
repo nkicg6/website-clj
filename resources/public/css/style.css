@@ -135,7 +135,7 @@ footer {
   max-width:300px;
 }
 
-#article {
+#article, #mainTitle {
   /* border:3px solid blue; */
   display: block;
   margin-right: 25%;
@@ -217,7 +217,7 @@ img {
     margin-left:auto;
     margin-right:auto;
   }
-  #table-of-contents, #article {
+  #table-of-contents, #article, #mainTitle{
     overflow:hidden;
     display: inline;
     position: relative;

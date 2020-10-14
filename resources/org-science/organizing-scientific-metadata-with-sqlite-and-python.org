@@ -5,11 +5,11 @@
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-09-19 Sat
 #+TITLE: Organizing Scientific Metadata with SQLite3 and Python
-
+#+HTML:<h1 id="mainTitle">Organizing Scientific Metadata with SQLite3 and Python</h1>
 #+TOC: headlines 1
 
 #+HTML: <div id="article">
-#+HTML:<h1 id="mainTitle">Organizing Scientific Metadata with SQLite3 and Python</h1>
+
 #+HTML:<div id="timedate">
 /First published: {{{date}}}/
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
