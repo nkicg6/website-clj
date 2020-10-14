@@ -1,0 +1,83 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "SQLite3 for data analysis and inter-language exchange" :date "2020-10-14" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "R" "database" "data analysis" "data"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-10-14 Wed
+#+HTML:<h1 id="mainTitle">SQLite3 for data analysis and inter-language exchange</h1>
+#+TOC: headlines 1
+#+HTML:<div id="article">
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+** Language agnostic data storage
+
+   After taking Gary Bernhardt's excellent [[https://www.executeprogram.com/courses/sql][course on SQL]] I've started using SQLite3 to store and organize data from my patch clamp experiments (described [[https://nickgeorge.net/science/organizing-scientific-metadata-with-sqlite-and-python/][here]]). One of the best parts of using SQL is the fact that the data is stored in an organized, structured, and *language agnostic* way. I use =Python= and =R= extensively for my analysis and data processing, and typically I have stored temporary analysis files as simple =CSVs= or =JSON= files. While this works (and also uses language agnostic text files), I typically end up with a directory full of temporary files that I have to read in batch and re-structure into a usable format when I read it back in for further work. I typically do this in =R=, but it leads to an unpleasant amount of boilerplate code and bespoke commands I look up and paste from older scripts -- not a pleasant process. 
+
+** Pre-processing and cleaning data
+
+I recently began analyzing data from [[https://en.wikipedia.org/wiki/Patch_clamp#Whole-cell_recording_or_whole-cell_patch][whole cell patch clamp]] experiments. I do initial data analysis (counting action potentials and recording action potential spike times) using =Python=, and in this case I wrote this data out to a bunch of =JSON= files for further analysis using =R= (/note:/ I should have added it to the database directly, but I was pressed for time). After the =Python= step, one of my data directories looks like this:
+
+#+BEGIN_EXAMPLE
+.
+├── spike_times_sweep_0.json
+├── spike_times_sweep_1.json
+├── spike_times_sweep_10.json
+...
+#+END_EXAMPLE
+
+From there, I typically use =R= to read all these files into memory and perform some re-naming, grouping, and formatting work before proceeding with my whatever analysis I am doing. The processing code in =R= can be extensive, and while it doesn't take very long it does take up a lot of space at the top of my scripts just to end up with a well structured Dataframe. I'd like to avoid reading all the files from disc every time I do an analysis. 
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  library(dplyr)
+  library(jsonlite)
+  library(tidyr)
+
+  data_paths <- list.files("/path/to/data/", pattern = "*.json", full.names = T)
+
+  spikes_table <- bind_rows(purrr::map(data_paths, fromJSON)) %>%
+    mutate(
+      uid = paste(fname, mouse_id, cell_side, cell_n, treatment, sep = "_"),
+      group_id = paste(mouse_id, cell_side, cell_n, treatment, sep = "_"),
+      treatment = case_when(
+        treatment == "sham" ~ "Control",
+        treatment == "occl" ~ "Naris Occlusion",
+        TRUE ~ "Unknown"
+      ),
+      cell_side = case_when(
+        cell_side == "left" ~ "Left",
+        cell_side == "right" ~ "Right",
+        cell_side == "open" ~ "Open",
+        cell_side == "occl" ~ "Occluded",
+        TRUE ~ "Unknown"
+      ),
+  # ... and on and on
+#+END_SRC
+
+Typically, I would write this out to a =CSV= for further analysis or paste this code at the top of every script. This just adds yet another (large) text file I have to keep track of, and someone is bound to open this with Excel, with possibly horrible consequences. I already have a database with my patch clamp metadata (described [[https://nickgeorge.net/science/organizing-scientific-metadata-with-sqlite-and-python/][here]]), so why not add this preprocessed data to that database as a table?
+
+** Adding pre-processed data to a database with R
+
+=R= has excellent database support, here I will use the [[https://dbi.r-dbi.org/][DBI]] package and [[https://www.rdocumentation.org/packages/RSQLite/versions/2.2.1][RSQLite]], which provide a nice interface for managing databases. One of the coolest parts is that they allow me to connect to my database and add a table with the correct types without even defining it first. For example, I'll use the =DBI::dbWriteTable()= command, with default values and =row.names = FALSE= to add my processed table to the database ([[http://web.mit.edu/~r/current/arch/i386_linux26/lib/R/library/DBI/html/dbWriteTable.html][docs]]). 
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:") # create a connection, this time to an in-memory SQLite DB, but normally I'd add the path to my database.
+  DBI::dbWriteTable(con, "steps_table", spikes_table, row.names = F) # write the `spikes_table` to the database
+#+END_SRC
+
+And that's it. You can now read the data in like so:
+
+#+BEGIN_SRC R :session rsesh :results output :exports both
+  spikes_table <- DBI::dbReadTable(con, "steps_table")
+#+END_SRC
+
+There are many [[http://web.mit.edu/~r/current/arch/i386_linux26/lib/R/library/DBI/html/dbWriteTable.html][options]] for read/write table available as well.
+
+Now I can access this table from whatever language I happen to be using by connecting to the database and selecting what I need. 
+
+
+#+HTML:</div>
+
+
