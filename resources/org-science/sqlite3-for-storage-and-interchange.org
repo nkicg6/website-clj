@@ -65,12 +65,15 @@ Typically, I would write this out to a =CSV= for further analysis or paste this 
 #+BEGIN_SRC R :session rsesh :results output :exports both
   con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:") # create a connection, this time to an in-memory SQLite DB, but normally I'd add the path to my database.
   DBI::dbWriteTable(con, "steps_table", spikes_table, row.names = F) # write the `spikes_table` to the database
+  DBI::dbDisconnect(con) # disconnect 
 #+END_SRC
 
 And that's it. You can now read the data in like so:
 
 #+BEGIN_SRC R :session rsesh :results output :exports both
+  con <- DBI::dbConnect(RSQLite::SQLite(), "/path/to/data.db")
   spikes_table <- DBI::dbReadTable(con, "steps_table")
+  DBI::dbDisconnect(con) # disconnect 
 #+END_SRC
 
 There are many [[http://web.mit.edu/~r/current/arch/i386_linux26/lib/R/library/DBI/html/dbWriteTable.html][options]] for read/write table available as well.
