@@ -1,5 +1,6 @@
 ;; also, add recent posts to home page! previous five?
 ;; another metadata thing could be the first 50 words of the post. very easy to work with this now. 
+;; TODO code to rename css every time to fix shit caching behavior
 (ns website-clj.process-pages
   (:require [clojure.string :as str]
             [hiccup.core :refer [html]]
