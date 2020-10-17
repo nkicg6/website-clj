@@ -260,5 +260,20 @@ img {
     max-width: var(--max-reading-width);
     min-width: 400px;
   }
-
+  
+  footer {
+    /* border: 3px solid red; */
+    text-align: center;
+    position: center;
+    padding-left: 1em;
+    padding-right: 1em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: var(--h2-font-size);
+    width: var(--max-reading-width);
+    min-width: 400px;
+    
+  }
 }
