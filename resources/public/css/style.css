@@ -8,10 +8,9 @@
 :root {
   --code-background: #F1F1F1;
   --main-font-size: 16px;
-  --main-font-family: Seravek,Sitka,sans-serif;
-  --header-font-size: 24px;
-  --h1-font-size: 24px;
-  --h2-font-size: 20px;
+  --main-font-family: sans-serif;
+  --h1-font-size: 1.15;
+  --h2-font-size: 1.05;
   --max-reading-width: 650px;
   --main-lr-margins: 25%;
 }
@@ -35,6 +34,15 @@ html {
   line-height: 1.2;
 }
 
+body{
+  background-color: #FEFEFA;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  font-size: var(--main-font-size);
+  font-family: var(--main-font-family);
+}
+
 .info-list, #recentPosts {
   font-size: var(--main-font-size);
 }
@@ -51,20 +59,13 @@ html {
   min-width: 500px;
 }
 
-body{
-  background-color: #FEFEFA;
-  margin-top: 0;
-  margin-left: 0;
-  margin-right: 0;
-}
-
 /* Header */
 
 .header {
   /* border: 3px solid green; */
   overflow: hidden;
   background-color: #F1F1F1;
-  width: var(--max-reading-width);
+  max-width: var(--max-reading-width);
   border-radius: 8px;
   padding-left: 1em;
   padding-right: 1em;
@@ -72,7 +73,7 @@ body{
   margin-bottom: 1em;
   margin-left: var(--main-lr-margins);
   margin-right: var(--main-lr-margins);
-  font-size: var(--header-font-size);
+  font-size: 1.15rem; /* var(--header-font-size); */
 }
 
 .header a {
@@ -119,8 +120,8 @@ footer {
   margin-bottom: 0.5em;
   margin-left: var(--main-lr-margins);
   margin-right: var(--main-lr-margins);
-  font-size: var(--h2-font-size);
-  width: var(--max-reading-width);
+  font-size: 1.1rem; /* var(--h2-font-size); */
+  max-width: var(--max-reading-width);
 }
 /* end footer */
 
@@ -239,6 +240,7 @@ img {
     max-width: var(--max-reading-width);
     width: 100%;
     min-width: 400px;
+    max-width: var(--max-reading-width);
     border-radius: 8px;
     padding-left: 1em;
     padding-right: 1em;
@@ -246,7 +248,7 @@ img {
     margin-bottom: 1em;
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--header-font-size);
+    font-size: 1.15rem;
   }
 
   .home-div {
@@ -258,7 +260,7 @@ img {
     margin-right: auto;
     margin-bottom:10px;
     max-width: var(--max-reading-width);
-    min-width: 400px;
+    min-width: 350px;
   }
   
   footer {
@@ -271,9 +273,10 @@ img {
     margin-bottom: 0.5em;
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--h2-font-size);
-    width: var(--max-reading-width);
-    min-width: 400px;
+    font-size: 1.1rem;
+    color: #696969;
+    max-width: var(--max-reading-width);
+    min-width: 350px;
     
   }
 }
