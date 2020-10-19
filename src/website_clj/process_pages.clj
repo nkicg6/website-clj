@@ -32,7 +32,7 @@
           [:meta {:charset "utf-8"}]
           [:meta {:name "viewport"
                   :content "width=device-width, initial-scale=1.0"}]
-          (include-css "/css/style_cur.css")]
+          (include-css "/css/style.css")]
          [:body
           [:div {:class "header"}
            [:div {:class "name"}
