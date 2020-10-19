@@ -115,13 +115,16 @@ body{
 
 footer {
   /* border: 3px solid red; */
-  text-align: center;
-  position: center;
+  padding-left: 1em;
+  padding-right: 1em;
   margin-top: 2rem;
   margin-bottom: 2rem;
+  text-align: center;
+  position: center;
   margin-left: var(--main-lr-margins);
   margin-right: var(--main-lr-margins);
-  font-size: 1.1rem; /* var(--h2-font-size); */
+  font-size: 1.1rem;
+  color: #696969;  
   max-width: var(--max-reading-width);
 }
 /* end footer */
@@ -262,16 +265,8 @@ img {
   
   footer {
     /* border: 3px solid red; */
-    text-align: center;
-    position: center;
-    padding-left: 1em;
-    padding-right: 1em;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
     margin-left: auto;
     margin-right: auto;
-    font-size: 1.1rem;
-    color: #696969;
     max-width: var(--max-reading-width);
     min-width: var(--min-size-width);
     
