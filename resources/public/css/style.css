@@ -57,7 +57,6 @@ body{
   margin-right: var(--main-lr-margins);
   margin-bottom:10px;
   max-width: var(--max-reading-width);
-  min-width: 500px;
 }
 
 /* Header */
@@ -224,6 +223,7 @@ img {
     margin-left: auto;
     margin-right: auto;
   }
+  
   #table-of-contents, #article, #mainTitle{
     overflow: hidden;
     display: inline;
@@ -237,28 +237,15 @@ img {
 
   .header {
     /* border: 3px solid green; */
-    overflow: hidden;
-    background-color: #F1F1F1;
     max-width: var(--max-reading-width);
     min-width: var(--min-size-width);
-    border-radius: 8px;
-    padding-left: 1em;
-    padding-right: 1em;
-    margin-top: 0.5em;
-    margin-bottom: 1em;
     margin-left: auto;
     margin-right: auto;
-    font-size: 1.15rem;
   }
 
   .home-div {
-    font-size: var(--main-font-size);
-    padding-left: 1em;
-    padding-right: 1em;
-    margin-top: 10px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom:10px;
     max-width: var(--max-reading-width);
     min-width: var(--min-size-width);
   }
