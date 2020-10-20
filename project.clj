@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [stasis "1.0.0"]
                  [ring "1.7.1"]
+                 [digest "1.4.9"]
                  [hiccup "1.0.5"]
                  [enlive "1.1.6"]]
   :ring {:handler website-clj.website/app}

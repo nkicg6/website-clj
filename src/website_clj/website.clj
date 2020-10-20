@@ -2,6 +2,7 @@
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
             [stasis.core :as stasis]
+            [digest :as digest]
             [website-clj.export-helpers :as helpers]
             [website-clj.process-pages :as process]))
 
@@ -21,6 +22,16 @@
     (->> page-html
          (map process/format-html)
          (zipmap page-keys))))
+
+(defn cache-bust-css [path]
+  "hash css file value, rename file with first 8 digist of digest. Return a map of css-renmaed-path, css-val"
+  (let [css-map (stasis/slurp-directory path #".*\.(css)")
+        css-vals (vals css-map)
+        css-keys (keys css-map)
+        md5-hashes (map digest/md5 css-vals)
+        short-hash  (map #(apply str (take 8 %)) md5-hashes)
+        new-keys (map #(str/replace %1 ".css" (str "-" %2 ".css")) css-keys short-hash)]
+    (zipmap new-keys css-vals)))
 
 (defn home-page-header
   "Formatting for the landing/home page"
@@ -67,10 +78,4 @@
   "preview app"
   (stasis/serve-pages get-pages))
 
-;; TODO fmt css
 
-(let [css (stasis/slurp-directory "resources/public" #".*\.(css)")]
-  ;; md5 hash of val
-  ;; append to name of css file, add to header and page map for export
-  ;; probably use this but java would work too https://clojars.org/digest
-  css)
