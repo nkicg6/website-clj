@@ -7,7 +7,6 @@
                  [stasis "1.0.0"]
                  [ring "1.7.1"]
                  [hiccup "1.0.5"]
-                 [optimus "0.14.2"]
                  [enlive "1.1.6"]]
   :ring {:handler website-clj.website/app}
   :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}

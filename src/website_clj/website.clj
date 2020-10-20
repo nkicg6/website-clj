@@ -66,3 +66,11 @@
 (def app
   "preview app"
   (stasis/serve-pages get-pages))
+
+;; TODO fmt css
+
+(let [css (stasis/slurp-directory "resources/public" #".*\.(css)")]
+  ;; md5 hash of val
+  ;; append to name of css file, add to header and page map for export
+  ;; probably use this but java would work too https://clojars.org/digest
+  css)
