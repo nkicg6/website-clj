@@ -1,3 +1,6 @@
+;; too complicated. Read all the pages in as raw html, apply all formatting once merged.
+;; last step should be applying the header to ALL pages.
+
 (ns website-clj.website
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
@@ -78,4 +81,12 @@
   "preview app"
   (stasis/serve-pages get-pages))
 
+;;;; Scratch/repl play ;;;;
+
+;; this is all you need, no need for the appending stuff.
+;; copy the home/index.html to resources/
+(keys (stasis/slurp-directory "resources/" #".*\.html$"))
+;; in make-page-map you only need a :pages, :css, and :images
+;; this method also allows you to easily add new page categories
+;; main work will be doing a new edn metadata thing, maybe add a new key that classifies it?
 
