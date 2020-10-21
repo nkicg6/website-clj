@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Update in place is evil. How to write in a functional style with mutable defaults in Python" :date "2020-03-04" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "functional-programming"]}
+#+HTML: {:topic "programming" :title "Update in place is evil. How to write in a functional style with mutable defaults in Python" :date "2020-03-04" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "functional-programming"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

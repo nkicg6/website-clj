@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Building ImageJ/Fiji Plugins with Clojure" :date "2019-01-26" :tags ["clojure", "ImageJ", "Fiji"] :updated "{{{time(%Y-%m-%d %a)}}}"}
+#+HTML: {:topic "programming" :title "Building ImageJ/Fiji Plugins with Clojure" :date "2019-01-26" :tags ["clojure", "ImageJ", "Fiji"] :updated "{{{time(%Y-%m-%d %a)}}}"}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Setting up LaTeX on a Mac" :date "2017-07-04" :tags ["tutorial", "bash", "LaTeX"]}
+#+HTML: {:topic "programming" :title "Setting up LaTeX on a Mac" :date "2017-07-04" :tags ["tutorial", "bash", "LaTeX"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export :exports both 

@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Why Clojure?" :date "2018-09-08" :tags ["clojure", "programming","thoughts"]}
+#+HTML: {:topic "programming" :title "Why Clojure?" :date "2018-09-08" :tags ["clojure", "programming","thoughts"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

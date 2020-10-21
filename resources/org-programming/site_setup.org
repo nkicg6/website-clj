@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Building a static website with Flask" :date "2017-06-26" :tags ["python", "flask", "org-mode"]}
+#+HTML: {:topic "programming" :title "Building a static website with Flask" :date "2017-06-26" :tags ["python", "flask", "org-mode"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

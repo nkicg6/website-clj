@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Helpful git links and hints" :date "2018-08-13" :tags ("git")}
+#+HTML: {:topic "programming" :title "Helpful git links and hints" :date "2018-08-13" :tags ("git")}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

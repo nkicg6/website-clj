@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Using python in org-mode" :date "2017-08-27" :tags ["python", "org-mode", "programming"]}
+#+HTML: {:topic "programming" :title "Using python in org-mode" :date "2017-08-27" :tags ["python", "org-mode", "programming"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

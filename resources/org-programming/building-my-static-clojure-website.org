@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Building my static website with Clojure" :date "2018-08-18" :tags ["clojure"]}
+#+HTML: {:topic "programming" :title "Building my static website with Clojure" :date "2018-08-18" :tags ["clojure"]}
 #+HTML: </div>
 #+PROPERTY: header-args :eval never-export
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:t
@@ -554,7 +554,7 @@ First off, I'll put the metadata in a =div= at the top of my document with the =
 # key: blog
 # --
 #+HTML: <div id="edn">
-#+HTML: {:title "${1:title}" :date "`(format-time-string "%Y-%m-%d")`" :tags ${2:["clojure"]}}
+#+HTML: {:topic "programming" :title "${1:title}" :date "`(format-time-string "%Y-%m-%d")`" :tags ${2:["clojure"]}}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
@@ -566,7 +566,7 @@ when I type =blog<TAB>= it expands to the following
 
 #+BEGIN_EXAMPLE
 #+HTML: <div id="edn">
-#+HTML: {:title "title" :date "2018-08-19" :tags ["clojure"]}
+#+HTML: {:topic "programming" :title "title" :date "2018-08-19" :tags ["clojure"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 #+PROPERTY: header-args :eval never-export
@@ -606,7 +606,7 @@ and then run =lein deps= at the command line. I'd recommend going through this [
 
 #+BEGIN_EXAMPLE
 #+HTML: <div class="edn">
-#+HTML: {:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
+#+HTML: {:topic "programming" :title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{}
 
@@ -625,7 +625,7 @@ When I run =org-publish-project clj-site= I get this:
 
 #+BEGIN_EXAMPLE
 <div class="edn">
-{:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
+{:topic "programming" :title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
 </div>
 
 <div id="outline-container-orgd13af6f" class="outline-2">
@@ -707,7 +707,7 @@ Figuring out the parsing took some time, but eventually I figured out this code:
   (def metadata (parse-html test-html))
 
   metadata
-  ;; => {:title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
+  ;; => {:topic "programming" :title "renamed" :date "2018-08-05" :tags ["clojure" "testing" "post"]}
 
 #+END_SRC
 
@@ -757,7 +757,7 @@ The function =make-edn-page-map= works directly with the map from =stasis/slurp-
 
   (def metadata (parse-edn ("/test" slurped-raw)))
   metadata
-  ;; => {"/test/test" {:title "renamed" :date "2018-08-05" :tags ["tag1" "tag2"]}, "/test/test2" {:title "renamed2" :date "2018-08-06" ...}}
+  ;; => {"/test/test" {:topic "programming" :title "renamed" :date "2018-08-05" :tags ["tag1" "tag2"]}, "/test/test2" {:topic "programming" :title "renamed2" :date "2018-08-06" ...}}
 #+END_SRC
 
 1. applies =remove-index= to the =page-map=.
@@ -787,7 +787,7 @@ Now we have a nice map to work with, it is time to make some links. The function
   ;; testing
   ;; remember what metadata looks like? a map of maps
   metadata
-  ;; => {"/test/test" {:title "renamed", :date "2018-08-05"}, "/test/test2" {:title "renamed2", :date "2018-08-06"}}
+  ;; => {"/test/test" {:topic "programming" :title "renamed", :date "2018-08-05"}, "/test/test2" {:topic "programming" :title "renamed2", :date "2018-08-06"}}
 
   (format-html-links metadata)
 #+END_SRC

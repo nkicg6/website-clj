@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Org-mode changed my life-- resources and notes" :date "2018-08-18" :tags ("emacs", "org-mode")}
+#+HTML: {:topic "programming" :title "Org-mode changed my life-- resources and notes" :date "2018-08-18" :tags ("emacs", "org-mode")}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

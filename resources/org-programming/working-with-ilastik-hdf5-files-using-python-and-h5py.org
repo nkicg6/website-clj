@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Working with Ilastik HDF5 files using python and h5py" :date "2020-05-21" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "ilastik" "image-analysis"]}
+#+HTML: {:topic "programming" :title "Working with Ilastik HDF5 files using python and h5py" :date "2020-05-21" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "ilastik" "image-analysis"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

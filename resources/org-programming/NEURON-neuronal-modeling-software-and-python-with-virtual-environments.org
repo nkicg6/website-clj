@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Setting up and using NEURON modeling software and python with virtualenvwrapper" :date "2020-02-27" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "NEURON" "virtualenvwrapper"]}
+#+HTML: {:topic "programming" :title "Setting up and using NEURON modeling software and python with virtualenvwrapper" :date "2020-02-27" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "NEURON" "virtualenvwrapper"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

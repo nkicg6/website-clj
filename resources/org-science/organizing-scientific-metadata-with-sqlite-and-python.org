@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Organizing scientific metadata with SQLite3 and Python" :date "2020-09-19" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "SQL" "science" "data" ]}
+#+HTML: {:topic "programming" :title "Organizing scientific metadata with SQLite3 and Python" :date "2020-09-19" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "SQL" "science" "data" ]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

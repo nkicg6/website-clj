@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Platformio and Emacs" :date "2017-07-16" :tags ["emacs", "teensy", "programming"]}
+#+HTML: {:topic "programming" :title "Platformio and Emacs" :date "2017-07-16" :tags ["emacs", "teensy", "programming"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

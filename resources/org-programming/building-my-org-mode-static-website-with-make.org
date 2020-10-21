@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "Building and deploying my website with make" :date "2020-02-20" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "make"]}
+#+HTML: {:topic "programming" :title "Building and deploying my website with make" :date "2020-02-20" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "make"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

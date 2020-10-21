@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "A YASnippet for org-mode publishing" :date "2018-08-26" :tags ["clojure", "static website"]}
+#+HTML: {:topic "programming" :title "A YASnippet for org-mode publishing" :date "2018-08-26" :tags ["clojure", "static website"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
@@ -37,7 +37,7 @@ I have a standard format for all my pages on my website, and the default org-mod
 # key: blog
 # --
 #+HTML: <div id="edn">
-#+HTML: {:title "${1:title}" :date "`(format-time-string "%Y-%m-%d")`" :tags ${2:["clojure"]}}
+#+HTML: {:topic "programming" :title "${1:title}" :date "`(format-time-string "%Y-%m-%d")`" :tags ${2:["clojure"]}}
 #+HTML: </div> ;; 1
 #+OPTIONS: \n:1 toc:nil num:nil todo:nil ^:{} title:nil ;; 2
 #+PROPERTY: header-args :eval never-export ;; 2
