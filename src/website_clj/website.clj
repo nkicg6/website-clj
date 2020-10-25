@@ -1,4 +1,4 @@
-;; too complicated. Read all the pages in as raw html, apply all formatting once merged.
+;; too complicated. Read all the pages in as raw html, apply all formatting once merged.q
 ;; last step should be applying the header to ALL pages.
 
 (ns website-clj.website
@@ -6,6 +6,8 @@
   (:require [clojure.string :as str]
             [stasis.core :as stasis]
             [digest :as digest]
+            [net.cgrand.enlive-html :as enlive]
+            [clojure.edn :as edn]
             [website-clj.export-helpers :as helpers]
             [website-clj.process-pages :as process]))
 
@@ -77,16 +79,37 @@
   (helpers/clear-directory! export-dir)
   (stasis/export-pages (get-pages) export-dir))
 
-(def app
+#_(def app
   "preview app"
   (stasis/serve-pages get-pages))
 
 ;;;; Scratch/repl play ;;;;
 
-;; this is all you need, no need for the appending stuff.
-;; copy the home/index.html to resources/
-(keys (stasis/slurp-directory "resources/" #".*\.html$"))
-;; in make-page-map you only need a :pages, :css, and :images
-;; this method also allows you to easily add new page categories
-;; main work will be doing a new edn metadata thing, maybe add a new key that classifies it?
+(defn parse-edn
+  "returns edn metadata for page-text or nil"
+  [page-text]
+(edn/read-string
+ (apply str
+        (enlive/select (enlive/html-snippet page-text) [:#edn enlive/text-node]))))
 
+
+
+(defn get-pages-simple
+  "gets all pages and assets for website"
+  []
+  (let [all-pages-map (stasis/slurp-directory "resources/" #".*\.html$")
+        all-pages-keys (keys all-pages-map)
+        all-pages-vals (map process/apply-header-footer (vals all-pages-map))
+        edn-all (map parse-edn all-pages-vals)]
+    (zipmap all-pages-keys all-pages-vals)
+    ))
+
+
+(get-pages-simple)
+
+(def app
+  "preview app"
+  (stasis/serve-pages get-pages-simple))
+;; TODO apply html formatting, title adding, etc.
+;; TODO fix fns that add links to landing pages
+;; In make-page-map you only need a :pages, :css, and :images
