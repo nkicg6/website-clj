@@ -21,7 +21,7 @@
            (new java.util.Date)))
 
 ;;header
-(defn layout-base-header
+(defn apply-header-footer
   "Applies a header and footer to html strings."
   [page]
   (html5 {:lang "en"}
