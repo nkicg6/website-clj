@@ -1,5 +1,7 @@
-;; too complicated. Read all the pages in as raw html, apply all formatting once merged.q
-;; last step should be applying the header to ALL pages.
+;; Have to find a simpler way to handle links and adding links to the science and archive pages.
+;; Adding those links to programming, science, and homepage are the main steps left.
+;; and making the other pages are the only steps left
+;; more room for improvement would be stopping the multiple parses on the title adding part...
 
 (ns website-clj.website
   "main namespace for building and exporting the website"
@@ -53,7 +55,6 @@
          [:footer
           [:p (str "&copy Nick George 2017-") (get-copyright-date)]]))
 
-
 (defn parse-edn
   "returns edn metadata for page-text or nil"
   [page-text]
@@ -62,6 +63,32 @@
         (enlive/select (enlive/html-snippet page-text) [:#edn enlive/text-node]))))
 
 
+(get {"science" "science-page" "programming" "programming-page"} "science")
+
+
+(defn fmt-page-html [page]
+  (-> page
+      (str/replace #"<img src=.*/img" "<img src=\"/img")
+      (str/replace #"<h2>Table of Contents</h2>" "<h1>&gt contents</h1>")))
+
+(defn parse-html
+  "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
+  `html` is raw html"
+  [html]
+  (as-> html raw-text
+    (enlive/html-snippet raw-text)
+    (enlive/select raw-text [:#edn enlive/text-node])
+    (apply str raw-text)
+    (edn/read-string raw-text)))
+
+(defn insert-page-title
+  "insert-page-title parses edn metadata and return the html with a title inserted
+  `page` is the raw HTML of a page including the header."
+  [page]
+  (let [meta-title (get (parse-html page) :title "Nick's site")]
+    (-> page
+        (enlive/sniptest [:title]
+                         (enlive/html-content meta-title)))))
 
 (defn get-pages
   "gets all pages and assets for website"
@@ -71,9 +98,11 @@
         css-hashed (cache-bust-css "resources/public") ;; keys needed for later
         css-keys (keys css-hashed)
         header-footer-partial (partial apply-header-footer css-keys) ;; apply first arg for hashed css names
-        all-pages-vals (map header-footer-partial (vals all-pages-map)) ;; map over pages
+        all-pages-vals (->> (vals all-pages-map)
+                            (map header-footer-partial)
+                            (map fmt-page-html)
+                            (map insert-page-title)) ;; all html formatting done here
         edn-all (map parse-edn all-pages-vals)]
-    
     (stasis/merge-page-sources
      {:pages
       (zipmap all-pages-keys all-pages-vals)
@@ -101,6 +130,4 @@
 (def app
   "preview app"
   (stasis/serve-pages get-pages))
-;; TODO apply html formatting, title adding, etc.
 ;; TODO fix fns that add links to landing pages
-;; In make-page-map you only need a :pages, :css, and :images
