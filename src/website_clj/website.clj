@@ -8,7 +8,7 @@
   (:require [clojure.string :as str]
             [stasis.core :as stasis]
             [hiccup.core :refer [html]]
-            [hiccup.page :refer [html5 include-css include-js]]
+            [hiccup.page :refer [html5]]
             [hiccup.element :refer [link-to]]
             [digest :as digest]
             [net.cgrand.enlive-html :as enlive]
@@ -23,7 +23,7 @@
            (new java.util.Date)))
 
 (defn cache-bust-css [path]
-  "hash css file value, rename file with first 8 digist of digest. Return a map of css-renmaed-path, css-val"
+  "md5 hash css text, rename file with first 8 digist of digest. Return a map of css-renmaed-path, css-val."
   (let [css-map (stasis/slurp-directory path #".*\.(css)")
         css-vals (vals css-map)
         css-keys (keys css-map)
@@ -51,7 +51,7 @@
             [:div {:class "header-right"}
              [:a {:href "/science"} "Science"]
              [:a {:href "/programming"} "Programming"]]]]
-          page]
+          page] ; put main content here
          [:footer
           [:p (str "&copy Nick George 2017-") (get-copyright-date)]]))
 
@@ -63,29 +63,17 @@
         (enlive/select (enlive/html-snippet page-text) [:#edn enlive/text-node]))))
 
 
-(get {"science" "science-page" "programming" "programming-page"} "science")
-
-
 (defn fmt-page-html [page]
   (-> page
       (str/replace #"<img src=.*/img" "<img src=\"/img")
       (str/replace #"<h2>Table of Contents</h2>" "<h1>&gt contents</h1>")))
 
-(defn parse-html
-  "Takes raw html and returns keys from edn metadata under the <div id='edn'> html tag
-  `html` is raw html"
-  [html]
-  (as-> html raw-text
-    (enlive/html-snippet raw-text)
-    (enlive/select raw-text [:#edn enlive/text-node])
-    (apply str raw-text)
-    (edn/read-string raw-text)))
 
 (defn insert-page-title
   "insert-page-title parses edn metadata and return the html with a title inserted
   `page` is the raw HTML of a page including the header."
   [page]
-  (let [meta-title (get (parse-html page) :title "Nick's site")]
+  (let [meta-title (get (parse-edn page) :title "Nick's site")]
     (-> page
         (enlive/sniptest [:title]
                          (enlive/html-content meta-title)))))
@@ -101,7 +89,7 @@
         all-pages-vals (->> (vals all-pages-map)
                             (map header-footer-partial)
                             (map fmt-page-html)
-                            (map insert-page-title)) ;; all html formatting done here
+                            (map insert-page-title))
         edn-all (map parse-edn all-pages-vals)]
     (stasis/merge-page-sources
      {:pages
@@ -130,4 +118,13 @@
 (def app
   "preview app"
   (stasis/serve-pages get-pages))
-;; TODO fix fns that add links to landing pages
+;; TODO tasks for website (in no particular order)
+;; - read all files with `slurp-directory`.
+;; - apply header with renamed css
+;; - fmt html
+;; - parse edn add title to pages (make a map of path and edn content?)
+;; - make list of links for science and programming page (use :topic = index and :title Programming archive orScience archive to sort/select)
+
+(def test-page (slurp "resources/programming/next-image.html"))
+
+(enlive/select (enlive/html-snippet test-page) [:div#edn])
