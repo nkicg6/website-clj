@@ -1,7 +1,8 @@
-;; Have to find a simpler way to handle links and adding links to the science and archive pages.
-;; Adding those links to programming, science, and homepage are the main steps left.
-;; and making the other pages are the only steps left
-;; more room for improvement would be stopping the multiple parses on the title adding part...
+;; TODO:
+;; - Images are not rendering
+;; - sitemap and robots should be made in final fn. Don't add header to them
+;; - fmt links https://github.com/nkicg6/website-clj/blob/25f3a256c458b0eac3fff16d9d37ca5588a8ba36/src/website_clj/website.clj#L24
+
 
 (ns website-clj.website
   "main namespace for building and exporting the website"
@@ -153,13 +154,13 @@
         css-keys (keys css-hashed)
         header-footer-partial (partial apply-header-footer css-keys) ;; apply css vec arg first
         all-page-keys (keys m)
-        all-page-vals (->> (vals m)
-                           (map header-footer-partial)
-                           (map fmt-page-html)
-                           (map insert-page-title))
-        ]
+        all-page (->> (vals m)
+                      (map header-footer-partial)
+                      (map fmt-page-html)
+                      (map insert-page-title)
+                      (zipmap all-pages-keys))]
     (stasis/merge-page-sources
-     {:pages (zipmap all-page-keys all-page-vals)
+     {:pages all-pages
       :css css-hashed
       :img (stasis/slurp-directory "resources/public" #".*\.(png|jpg)$")})))
 
