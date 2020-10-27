@@ -163,7 +163,6 @@
       :css css-hashed
       :img (stasis/slurp-directory "resources/public" #".*\.(png|jpg)$")})))
 
-
 ;; test
 (defn make-site!
   []
@@ -171,6 +170,13 @@
      (fmt-links)
      (fmt-pages)))
 
+
+
+(def site
+  (make-site!))
+
+
+(keys site)
 (def app
   "preview app"
   (stasis/serve-pages make-site!))
@@ -191,39 +197,3 @@
 #_(def app
   "preview app"
   (stasis/serve-pages get-pages))
-
-;; TODO tasks for website (in no particular order)
-;; - read all files with `slurp-directory`.
-;; - apply header with renamed css
-;; - fmt html
-;; - parse edn add title to pages (make a map of path and edn content?)
-;; - make list of links for science and programming page (use :topic = index and :title Programming archive orScience archive to sort/select)
-
-(def test-page (slurp "resources/programming/index.html"))
-
-;; I get it, everything is relative to resources/ for enlive?
-
-
-(defn parse-edn
-  "returns edn metadata for page-text or nil"
-  [page-text]
-(edn/read-string
- (apply str
-        (enlive/select (enlive/html-snippet page-text) [:#edn enlive/text-node]))))
-
-(defn insert-page-title
-  "insert-page-title parses edn metadata and return the html with a title inserted
-  `page` is the raw HTML of a page including the header."
-  [page]
-  (let [meta-title (get (parse-edn page) :title "Nick's site")]
-    (-> page
-        (enlive/sniptest [:title]
-                         (enlive/html-content meta-title)))))
-
-
-(defn enlive-insert-links
-  [page links]
-  (-> page
-      (enlive/sniptest [:div#pageListDiv] (enlive/html-content links))))
-
-
