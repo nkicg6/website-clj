@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:topic "programming" :title "Scientists don't test their code" :date "2020-09-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["programming" "python" "testing" "science" "blog"]}
+#+HTML: {:topic "science" :title "Scientists don't test their code" :date "2020-09-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["programming" "python" "testing" "science" "blog"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

@@ -1,0 +1,62 @@
+#+OPTIONS: toc:nil author:nil title:nil date:nil num:nil ^:{} \n:1 todo:nil
+* 
+
+
+* References
+  bibliographystyle:apalike
+  bibliography:~/Dropbox/bibliography/zotero-library.bib
+
+
+
+* goal 
+
+Explain the unique problem of organizing projects for you phd project. What strategies helped you stay organized?
+* refs
+- [[file:~/PDFs/Delescluse_Pouzat_2011.pdf][Delescluse Pouzat 2011]]
+- file naming: http://www.jmu.edu/microscopy/resources/microscopyDataManagement2016-05-19.pdf
+  - http://www.datacarpentry.org/spreadsheet-ecology-lesson/00-intro/
+- 
+
+* post
+
+** intro
+PhD projects are a unique kind of nightmare from a data management and project organization standpoint. In the life sciences (specifically Neuroscience in my case), individual projects can last 5 or more years, contain multiple different types of data including large microscopy image files (in my case, 300MB to multiple GBs each), proprietary binary files from specialized equipment, and a number of CSVs/spreadsheets containing data, metadata, and ultimately figures and code summarizing your results. While this doesn't initially seem complicated, you have no idea when you start where things might lead or what might change or be added along the way. Experiments are performed and new ones are added or old ones modified as you gather more information and your project takes shape, and sometimes you take new approaches to analyzing data that may lead to dead ends or new directions. 
+Often, I will have to return to a set of images or data files months after gathering them, and the ability to re-orient myself to older data and experiments is crucial. 
+
+Below I will describe some of the basic techniques I developed through sweat, frustration, and hours of lost time due to mistakes so you hopefully have a guide to doing it better. 
+
+** a flexible but structured directory format. 
+
+In the beginning, there was a vague idea and a project folder. In my case, I used a generic acronym representing the direction I thought my project would take when starting. My main project directory is called =mnc= (ostensibly standing for /myelin neuron communication/, but this has changed dramatically since starting and is meaningless). I put this directory in my main Dropbox folder to start, so I had a just-in-case backup (I now use Backblaze to backup my disc as well). But where to go from here? 
+There has been some work done outlining the best ways to organize projects, however, most focus on keeping homogenous, structured data that will fit on your local disc organized. Anyone who deals with microscopy data knows that this is often not practical. I started my program with a laptop with 4GB of memory and 250GB HDD. At that point, my disc would be mostly full after 1 week of experiments, with no way to process the images locally, and no server to reliably connect to and store my data. 
+
+In my view, your project directory should be as simple and flat  as possible while maintaining the necessary information to quickly find and add things. I have the parent dir set up like so:
+
+#+BEGIN_EXAMPLE
+.
+├── analysis_and_data
+├── documents
+├── figures
+└── presentations_and_conferences
+
+#+END_EXAMPLE
+
+- =analysis_and_data=: this directory will contain a the data (which can fit on disc) and the associated analysis files. We will go into more detail on the structure of this later.
+- =documents=: Administrative and general paperwork related to your project. This directory will hold all the boring but essential stuff like:
+  - Antibody/chemical data sheets
+  - Vendor invoices
+  - Paperwork for 
+  - 
+
+
+*** figures
+
+*** presentations_and_conferences
+
+** Backups
+- Backblaze
+- =rsync=
+
+** dates for data
+dates are the best way to store data. This allows you to reference your notebook for details about when something was done. 
+Once you are satisfied with the analysis and the dataset you will use, you can condense the data and group it together in another folder (copy of the original of course) called control-data_YEAR_MONTH or set-one-occlusion_YEAR_MONTH

@@ -1,0 +1,70 @@
+How to interact with Java classes from python
+- focused on ImageJ/Fiji development for python programmers
+- How to read the docs
+- 
+
+** ImageJ Jython resources
+- Main [[https://imagej.net/Jython_Scripting][ImageJ Jython Scripting]] page
+- Albert Cardona's [[https://www.ini.uzh.ch/~acardona/fiji-tutorial/][Fiji Scripting Tutorial]] (excellent resource)
+- 
+
+** Using Jython and the ImageJ/FIJI Java API by example
+
+*** Problem: measuring fluorescence intensity and formatting the results in a standard way
+- folder full of blinded images which a user will manually trace and add to the ROI manager.
+- Analysis via a shortcut key
+  - make necessary measurements
+  - format them in a useful way in =CSV= format
+  - save the ROIs and =CSV= results in a =done= folder
+  - Close the current image, move the image to =done=
+  - open the next image
+*** Getting started: Opening =tif= images
+The first step is simple directory and file management. In our case, we will need a list of the full path for the files we are interested in, and a way of generating the folder =done=, which will contain the results and images we have already analyzed. We will do this with standard library python (but remember Jython is stuck at python version 2).
+
+We can do this succinctly with a list comprehension:
+
+#+NAME: listing-files
+#+BEGIN_SRC python :session new :results output
+  import os
+
+  target_dir = "/Users/nick/Desktop/th-analysis/all_th/blinded"
+
+  th_files = [
+      os.path.join(target_dir, i) for i in os.listdir(target_dir) if i.endswith(".tif")
+  ]
+  print(th_files)
+#+END_SRC
+
+Next, we need to open a file in ImageJ. One of the best ways to do this is to use the built-in macro recorder (=Plugins>Macros>Record...=)
+#+CAPTION: Macro recorder
+#+NAME: macro-record
+#+ATTR_HTML: :width 50% :height 50% :alt macro-recorder-option :title macro-recorder-option :align 
+#+ATTR_LATEX: :placement [H] :width 0.5\textwidth
+[[file:~/personal_projects/website-clj/resources/public/img/macro-record.png]]
+
+Set the language of choice to =JavaScript= because it has a somewhat similar syntax to Python for this type of scripting. Now, when I drag an image into ImageJ as I would to manually open it, I can see the following appear in the macro recorder:
+#+NAME: macro-record-open-img
+#+BEGIN_SRC python :session new :results output
+imp = IJ.openImage("/Users/nick/Desktop/th-analysis/all_th/blinded/0a025e5a73a44618b498e47e67b3aba7.tif");
+
+#+END_SRC
+
+
+Since these are simple =tif='s, we can use the =ImagePlus= class to open them. The =ImagePlus= class is one of the most important classes in ImageJ, as it is the internal representation of an image. You can learn more about the class and what it can do from the documentation at the [[https://javadoc.scijava.org/ImageJ1/ij/ImagePlus.html][ImagePlus Javadoc]]. The [[https://javadoc.scijava.org/ImageJ1/ij/ImagePlus.html][ImageJ Javadocs]] contain a lot of important information about all the classes and methods we will use to write out scripts, and we will explore more about how to navigate them here. 
+
+<<more on imagej javadoc navigation here>>
+
+Based on that documentation, we can open the image and see it like so:
+
+#+NAME: open-and-see
+#+BEGIN_SRC python :session new :results output
+
+  imp = ImagePlus(th_files[0])
+
+  imp.show()
+
+#+END_SRC
+
+So far, we have accomplished two important steps:
+- make a list of all our files
+- open an image for analysis

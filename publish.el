@@ -18,17 +18,17 @@
 
 (setq org-publish-project-alist
       '(("programming"
-         :base-directory "~/personal_projects/website-clj/resources/org-programming"
+         :base-directory "~/personal_projects/website_clj/resources/org_programming"
          :base-extension "org"
-         :publishing-directory "~/personal_projects/website-clj/resources/programming"
+         :publishing-directory "~/personal_projects/website_clj/resources/programming"
          :publishing-function org-html-publish-to-html
          :headline-levels 4
          :html-extension "html"
          :body-only t)
         ("science"
-         :base-directory "~/personal_projects/website-clj/resources/org-science"
+         :base-directory "~/personal_projects/website_clj/resources/org_science"
          :base-extension "org"
-         :publishing-directory "~/personal_projects/website-clj/resources/science"
+         :publishing-directory "~/personal_projects/website_clj/resources/science"
          :publishing-function org-html-publish-to-html
          :headline-levels 4
          :html-extension "html"

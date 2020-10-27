@@ -148,7 +148,6 @@ footer {
   padding-left: 1em;
   padding-right: 1em;
   max-width: var(--max-reading-width);
-  min-width: 550px;
 }
 
 code {

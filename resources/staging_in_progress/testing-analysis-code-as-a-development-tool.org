@@ -1,0 +1,39 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Testing software for scientists" :date "2020-02-23" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "data-analysis" "electrophysiology"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-02-23 Sun
+#+TITLE: Testing software for scientists
+#+HTML:<h1 id="mainTitle">Testing software for scientists</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+** links
+- https://web.archive.org/web/20171218185744/http://www.diveintopython.net/unit_testing/index.html
+- https://diveinto.org/python3/unit-testing.html
+
+If you have been programming or reading about it for any length of time you will undoubtedly come across the idea that it is very important to test your code. 
+As a scientist, this makes a lot of sense, as this is what we do for a living. We form (hopefully informed) ideas about how things might work based on previous work in the literature, then we design experiments to test and attempt to falsify these ideas.
+Programming is becoming an essential skill in science, and more and more individuals without a traditional computer science background are picking up serious programming languages like Python and R to analyze the data they generate in experiments. This is a great thing, but unfortunately after some introductory class there is very little guidance for writing /good/ software. 
+
+You have an idea about how something works (i.e. your hypothesis),  How do you know if what you are writing works as well as you think it does? 
+What implicit assumptions are baked into your method that you haven't thought of?
+When will it fail? What happens when it fails?
+
+You don't know any of the answers to these questions if your idea of testing is plotting a few examples and thinking that "yes this looks right". 
+I am certainly guilty of this analysis style. using the "this looks right" smell test and then moving on and thinking that I will test this or fix it up later, I just have a conference deadline I need this data for!
+
+This is wrong. You won't write the tests later. You likely won't look at it again except to add features because there is /always/ a deadline for a conference or paper that you need these results for /right now/ and if there is not then you are doing more experiments and now writing tests. 
+I am trying to get better about this, and here I will share an experience I had this weekend when solving a relatively simple problem that demonstrated the value of testing and inspired me to do more. 
+
+
+** Plotting features of action potentials
+
+
+
+
+Scientific analysis code should be optimized for readability fist and performance second. Skimming a paper I should be able to see where u did something I’m interested in quickly without looking through hundreds of lines of nested loops
+Inspired by Jonathan blows talksand oxide interview. Context matters,for pubs, speed is secondary to reusable and understandable 

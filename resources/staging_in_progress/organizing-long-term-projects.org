@@ -1,0 +1,30 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Organizing long term projects in science" :date "2019-09-26" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["programming" "science" "data" "organizing"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2019-09-26 Thu
+#+TITLE: Organizing long term projects in science
+#+HTML:<h1 id="mainTitle">Organizing long term projects in science</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+PhD often last projects last 4+ years, and change dramatically in topic and structure. How do you keep your data, analysis, figures, and writing organized for yourself and others with a constantly changing project? 
+When I pursued my Master's degree, I went in with no plan and saved things in directories which made sense to me at the time, but had no structure and quickly became disasters as time went on. I did some reading getting started ...
+*discuss background and what I have just tried with cookiecutter* 
+
+* topics/problems
+** what is the main structure?
+** When is a project distinct enough to get it's own top level?
+** Where do you store data so that you can re-run analysis? What if it is too big to store locally?
+Images are really big. My imaging data easily spans 2TB (with many individual files being >1GB) and I am barely three years in. There is no way I can store even a fraction of it on a local computer. Not only that, but often my local computer is far too under-powered to even load the images I use in memory (2013 Macbook Air 4GB RAM). How do you store it in a manner that makes sense but is organized enough to quickly grab for analysis? This one I think I have a good handle on. I use numerous microscopes and am often not the only one taking data for a particular experiment. I use the following scheme for organizing microscopy images on an external drive:
+
+** Organizing code
+** Organizing generated figures
+** Organizing conference analysis
+A LOT of serious analysis, figure making, and thinking happens under a time crunch while preparing for conferences, lab meetings, or local talks. A lot of diagramming in particular happens during this time. How do you stay on top of it?
+** Organizing scratch/preliminary analysis
+** Organizing sub-projects and quick-try ideas

@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:topic "programming" :title "Setting up and configuring org-ref" :date "2017-07-14" :tags ["LaTeX" "open-science", "org-mode", "science", "programming"]}
+#+HTML: {:topic "science" :title "Setting up and configuring org-ref" :date "2017-07-14" :tags ["LaTeX" "open-science", "org-mode", "science", "programming"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

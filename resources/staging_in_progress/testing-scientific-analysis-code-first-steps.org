@@ -1,0 +1,116 @@
+** set up for success in the beginning
+post on cookiecutter template for analysis code
+
+** how do you test scientific analysis code?
+
+The process of developing code (especially the style called [[https://en.wikipedia.org/wiki/Test-driven_development][Test-driven development]]) typically involves writing a test function that asserts something about the expected output from an /as-yet-unwritten-function/ (which will fail, as the function hasn't been written yet), then working on your function until the test passes. 
+
+One of the things I got hung up on when I started writing tests for my software was figuring out /what/ to test. For example, in my spike counting code, do I need to simulate action potentials with X number of spikes to ensure that it detects X spikes? Does =scipy.signal='s function X filter my arrays correctly?
+ 
+While these can be important questions to ask and become familiar with, I think it is the *wrong place* to start for testing your code. =scipy= and =numpy=  are [[https://numpy.org/doc/stable/reference/testing.html][well tested]] pieces of software, and generating realistic neuronal signal data will likely take way too long for not much benefit. 
+
+Instead, I like to start by testing edge cases and pipelines (especially places with IO (input/output)), rather than the spike-counting/filtering guts of the analysis first. 
+*Note* I am not saying that you shouldn't test that stuff too, you should. But it is easy to waste a lot of time and get discouraged by trying to generate an array with exactly X spikes detected by =scipy.signal.find_peaks()=, and abandon the whole project. A better approach would be to carefully inspect the results from some known file, then include that file and known results in the test. I'll cover that in a future post. 
+
+For my thesis work, I am currently writing Python code to batch analyze a lot of whole cell patch clamp data. This data comes in =ABF= files along with my personal notes and metadata in separate =CSV='s. I use the excellent [[https://github.com/swharden/pyABF][pyABF]] package to parse these files. While I initially design my functions to work for single =ABF= files, I have hundreds of files I will eventually need to batch process. Where there is IO and batch processing, there are errors. Some of the =ABF= files have malformed headers, causing =pyABF= to throw an error rather than reading them. It would suck to crash an analysis pipeline due to an IO error halfway through. So typically I will spend a few days playing with analyzing single files, work it out, then set out to formalize it into a serious, usable pipeline. 
+*** IO errors
+
+The first thing I have to deal with is those pesky IO errors. What if a file is missing or doesn't work? How does the process note this so that I can diagnose it and it doesn't crash my whole analysis?
+
+I decided to write a small utility function around the =pyabf.ABF= function which would handle the IO errors and return a simpler dictionary containing the info I want:
+
+#+NAME: read_abf_IO
+#+BEGIN_SRC python :session new :results output
+  # steps.py
+  def read_abf_IO(path, sweep, channel):
+      """reads an abf file at a specific sweep and channel.
+      returns X,Y data for that sweep and useful metadata"""
+      short = os.path.split(path)[-1].replace(".abf", "")
+      try:
+          abf = pyabf.ABF(path)
+          abf.setSweep(sweepNumber=sweep, channel=channel)
+          data = {
+              "path": path,
+              "sweep": sweep,
+              "channel": channel,
+              "x": abf.sweepX,
+              "y": abf.sweepY,
+              "short_name": short,
+              "error": [],
+          }
+          return data
+      except Exception as e:
+          print(e)
+          return {
+              "path": path,
+              "sweep": sweep,
+              "channel": channel,
+              "x": np.asarray([]),
+              "y": np.asarray([]),
+              "short_name": short,
+              "error": [f"io error: {e}"],
+          }
+
+
+#+END_SRC
+
+The most obvious error case is a malformed file or non-existent file error. If everything works as expected, I will get the data out from the =data= dict for further processing. If not, I get the same data structure with the filepath to the problematic file /and/ a useful error list containing the problem, making it easier to diagnose and replicate. Importantly, this dict still has the same fields as the correct one, except it will return empty numpy arrays for =x= and =y= rather than data. This will obviously have to be handled later in the pipeline, but we definitely will encounter this error. So let's build it into our test suite:
+
+*TEST AND EXPLANATION HERE* 
+
+The next function we have is a function to apply a filter to the data. 
+We can write a simple test to verify
+
+Next up, we need to filter the data. So I wrote the following function to calculate it using our data structure:
+
+#+NAME: 
+#+BEGIN_SRC python :session new :results output
+
+def abf_golay(abfd, window=11, polyorder=3):
+    abf = abfd.copy()
+    filtered = s.savgol_filter(abf["y"], polyorder=polyorder, window_length=window)
+    abf["filtered"] = filtered
+    abf["savgol_details"] = {"polyorder": polyorder, "window": window}
+    return abf
+
+#+END_SRC
+Testing it is simple enough, we can use the same test data as before and verify that the field exists, and the metadata is written properly (remember we are not testing whether the =scipy= function does what it says yet, just the mechanics). 
+
+*test fn here* 
+But what about if the =ABF= file is no good? Now we have a decision to make. We know that a data structure could possibly come through here that has empty =x= and =y= fields, so what do we want to do if that happens here?
+Let's pass the bad data structure in and see the test fail:
+[[
+file:~/personal_projects/website-clj/resources/public/img/bad-golay-test.png]]
+
+That doesn't look good. =pytest= recorded a crash due to an uncaught =scipy= error (a =ValueError=), which would definitely crash our pipeline. There are a few ways to handle this in the =abf_golay= function, the easiest is probably a =try/except= block around the =scipy= call:
+
+#+NAME: golay-fixed
+#+BEGIN_SRC python :session new :results output
+
+def abf_golay(abfd, window=11, polyorder=3):
+    abf = abfd.copy()
+    try:
+        filtered = s.savgol_filter(abf["y"], polyorder=polyorder, window_length=window)
+    except ValueError as e:
+        filtered = np.asarray([])
+        abf["error"].append(f"filter error: {e}")
+    abf["filtered"] = filtered
+    abf["savgol_details"] = {"polyorder": polyorder, "window": window}
+    return abf
+
+#+END_SRC
+
+And we can run our test suite and see it all passes. We should add a few more checks for the other output fields here in the case of the error, including whether the error is displayed correctly, but we now have two functions which will likely be tied together in an analysis pipeline with basic tests! By running and developing the tests alongside our analysis pipeline, we can more easily anticipate errors and deal with them as we go, rather than panicking and adding big =try/except= blocks at the end when we run into an error in 'production' (when we are running the batch analysis). 
+
+We can also easily add functionality tests, like does this function detect all the peaks it should in some test file or fake data? These are typically a bit harder to write, but are an important addition to our growing test suite as we progress. 
+
+I hope this simple example shows how tests can be used as a development tool, and not just an extra step. 
+
+** best practice standard project and tools for automated testing and builds
+*SEPARATE POST* 
+- pip (can you pip install this? If not, why???)
+- pytest (the best)
+- black (any color you like... formatting)
+- cookiecutter
+
+

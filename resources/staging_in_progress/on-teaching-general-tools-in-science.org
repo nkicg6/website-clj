@@ -1,0 +1,20 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "On tools in science" :date "2018-09-17" :tags ["science", "tools", "programming", "matlab"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2018-09-17 Mon
+#+TITLE: On tools in science
+#+HTML:<h1 id="mainTitle">On tools in science</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+
+General post on what we teach in science. Why is it better to learn general programming languages than something like matlab? Besides just commercial/open source, though that is a really important part of it. Why is it better to teach people how to design with open tools as opposed to "Adobe". Example of Katie's sister who basically got a degree in Adobe tools.. 
+- learn ideas vs learn a technology https://www.youtube.com/watch?v=y-xgWLYQc4g&list=PLcGKfGEEONaBUdko326yL6ags8C_SYgqH just a few minutes before this he talks about learning how stupid it was to teach microsoft office in schools. vs teaching ideas. great talk to listen to before writing "ideas not technology"
+- "Computer science is no more about computers than astronomy is about telescopes."
+  - EJW Dijkstra
+** Topics: Future proof, leverage, learning to think rather than learning an app, etc. 
+

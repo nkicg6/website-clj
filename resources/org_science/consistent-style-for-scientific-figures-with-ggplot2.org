@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:topic "programming" :title "Consistent style for scientific figures with ggplot2" :date "2020-08-30" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["ggplot2", "science", "figures", "R", "statistics"]}
+#+HTML: {:topic "science" :title "Consistent style for scientific figures with ggplot2" :date "2020-08-30" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["ggplot2", "science", "figures", "R", "statistics"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export

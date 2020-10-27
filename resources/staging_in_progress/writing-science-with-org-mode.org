@@ -1,0 +1,130 @@
+
+
+- writing in emacs with org-mode
+- Using a LaTeX template (https://submit.elifesciences.org/html/elife_author_instructions.html#process) in org-mode
+- citations (org-ref)
+- edit-compile-look
+- why do this?
+  - I do everything else in emacs and org-mode...
+  - I've written papers like this in word and it is much more painful, especially as doc size gets too big and as soon as you have to insert a figure (or figure reference)
+  - I can tweak settings to my compulsive heart's desire
+  - I LOVE +wasting+ time learning things like this (especially when I am on a deadline)
+  - I haven't seen a better motivator than seeing a compiled, paper-looking PDF sitting next to the text, updating as I go. 
+
+https://stackoverflow.com/questions/40566633/using-a-custom-latex-export-class-in-org-mode
+
+https://emacs.stackexchange.com/questions/52242/how-can-i-reliably-create-latex-classes-in-org-mode
+
+here is my =init.el= config setup for org-ref and publishing
+
+#+BEGIN_SRC emacs-lisp 
+;;; publishing and org-ref
+
+(with-eval-after-load 'ox-latex
+   (add-to-list 'org-latex-classes
+                '("elifecustom"
+                "\\documentclass[9pt,lineno]{elife} [NO-DEFAULT-PACKAGES]"
+             ("\\section{%s}" . "\\section{%s}")
+             ("\\subsection{%s}" . "\\subsection{%s}")
+             ("\\subsubsection{%s}" . "\\subsubsection{%s}")
+             ("\\paragraph{%s}" . "\\paragraph{%s}")
+             ("\\subparagraph{%s}" . "\\subparagraph{%s}"))))
+
+(use-package helm-bibtex
+  :init (setq bibtex-completion-bibliography
+      '("/Users/nick/Dropbox/bibliography/zotero-library.bib")))
+
+(use-package org-ref
+  :after org
+  :init
+  (setq reftex-default-bibliography '("/Users/Nick/Dropbox/bibliography/zotero-library.bib"))
+  (setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "bibtex %b"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))  
+  :config
+  (setq reftex-default-bibliography '("/Users/nick/Dropbox/bibliography/zotero-lib.bib"))
+  (bind-key* "C-c ]" 'org-ref-helm-insert-cite-link)
+  (setq org-ref-pdf-directory '("~/PDFs"))
+  (require 'org-ref))
+
+(setq org-export-cording-system 'utf-8)
+
+;;; end publishing
+
+#+END_SRC
+
+* Yas-snippet to make life easier
+[[https://github.com/joaotavora/yasnippet][yas-snippet]] is one of my favorites productivity packages for emacs. It allows you to define templates that can be inserted and auto-filled by pressing =TAB= after some keyboard shortcut (see video for demo: https://youtu.be/ZCGmZK4V7Sg?t=160). LaTeX uses a lot of bespoke markup, so I made a few shortcuts based on some common things I need to do (specific for this LaTeX template):
+- bold text
+#+BEGIN_EXAMPLE
+# -*- mode: snippet -*-
+# name: latex-bold
+# key: lb
+# --
+\textbf{$1}$0
+#+END_EXAMPLE
+
+- insert full width figure
+
+#+BEGIN_EXAMPLE
+# -*- mode: snippet -*-
+# name: figure-full
+# key: ff
+# --
+\begin{figure}
+\begin{fullwidth}
+\includegraphics[width=0.95\linewidth]{figures/$1.png}
+\caption{$2}
+\label{fig:$1}
+ \end{fullwidth}
+\end{figure}
+$0
+#+END_EXAMPLE
+
+- insert half width figure
+
+#+BEGIN_EXAMPLE
+# -*- mode: snippet -*-
+# name: figure-half
+# key: fh
+# --
+
+\begin{wrapfigure}{l}{.46\textwidth}
+\includegraphics[width=\hsize]{figures/$1.png}
+\caption{$2}
+\label{fig:$1}
+\end{wrapfigure}
+$0
+#+END_EXAMPLE
+
+Now I can type =ff-TAB= and the =full-figure= snippet text will appear, prompting me to enter the figure path (=$1=), automatically filling the label based on the path (the second =$1= will mirror what I type), prompting for the caption (=$2=), then ending with my cursor below it (=$0=). 
+
+* Citations
+- install and setup [[https://github.com/jkitchin/org-ref][org-ref]]
+  - I've written about this [[https://nickgeorge.net/science/org_ref_setup/][as well]] 
+- copy =vancouver-elife.bst= to the same directory as your document
+- write the following at the bottom of the document:
+
+#+BEGIN_EXAMPLE
+bibliographystyle:vancouver-elife
+bibliography:/Users/nick/Dropbox/bibliography/zotero-library.bib # replace with path to your bibtex bibliography
+#+END_EXAMPLE
+  - Note you can also move the style to the same spot you have your bibliography, and just use the path to the style like: =path/to/bibstyle/vacouver-elife.bst=. 
+- add the following to your publishing setup in your =init.el= file (if using =pdflatex=):
+
+(see above for full setup)
+
+#+BEGIN_SRC emacs-lisp 
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "bibtex %b"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+#+END_SRC
+
+- Now you insert citations with =org-ref= using the default =C-c ]=
+
+- =C-c C-e l o= will now export and open your paper, citations and all. 
+(bind-key* "C-c ]" 'org-ref-helm-insert-cite-link) very important to override org-mode agenda key

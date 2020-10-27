@@ -1,0 +1,15 @@
+I first wrote about writing my static website using Clojure a few years ago <add link>. At that time, I was just picking up Clojure and had very little knowledge about what went into a static site (or static site generator for that matter). I struggled through it as an exercise and it worked well, but recently I've come to see how brittle and unnecessarily complex a lot of it was, so in this post I'll write about my recent re-write in a way that might actually be helpful to those who want to build one in a similar way. 
+
+** What is a static website?
+- linked HTML docs and "assets" (fancy language for images, CSS, and JavaScript).
+** What do you need a static site generator for?
+Most static websites are personal blogs, where someone writes posts in simple markup language like Markdown, and those posts are converted to HTML and organized in a manner that makes them accessible from a static web server. 
+- convert markup to valid HTML
+- Apply any standard "template" HTML (headers, footers, etc.)
+- move the newly structured thing to a location where it can be presented by a web server
+** Stasis
+Stasis is a self described minimalist site generator (compare to things like Hugo or Pelican). It provides simple functions for reading files in and writing them out and avoiding conflicts. It leaves the work of applying templates, converting to HTML, etc. to you. 
+
+**  
+I write in org-mode markup, and use Emacs to convert to HTML.
+

@@ -1,0 +1,21 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "Workflow for deploying ImageJ/Fiji plugins with the update site" :date "2018-10-22" :tags ["git", "python", "imagej"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2018-10-22 Mon
+#+TITLE: Workflow for deploying ImageJ/Fiji plugins with the update site
+#+HTML:<h1 id="mainTitle">Workflow for deploying ImageJ/Fiji plugins with the update site</h1>
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+#+TOC: headlines 2
+
+I develop in emacs in a directory that is separate from the =Fiji/plugins/<plugin-name-folder>=. Once I make updates, I wrote a post-commit .git hook to automatically copy my development directory to my main directory. 
+
+MORE DETAILS HERE
+
+helpful https://www.digitalocean.com/community/tutorials/how-to-use-git-hooks-to-automate-development-and-deployment-tasks
+
+

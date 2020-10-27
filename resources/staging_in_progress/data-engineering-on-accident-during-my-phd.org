@@ -1,0 +1,29 @@
+* Keeping track of patch clamp data
+
+Whole cell patch clamp experiments can generate a lot of unstructured and heterogeneous data which can accumulate quickly. By heterogenous I mean that the data I gather comes in the form of handwritten notes in my notebook and metadata stored automatically in the proprietary axon binary format (ABF) files. 
+
+The ABF files names are automatically generated in a standard way, and are a combination of the date and a zero padded number that is sequentially incremented for each new file. So for example a set of files from experiments performed on 2020-03-19 looks like so:
+
+
+=20319000.abf, 20319001.abf,... 20319101.abf=
+
+The files contain the experiment data including:
+- different input channels from the amplifier
+- time of experiment
+- protocol name
+and much more. 
+
+However, each file is missing a lot of other information which I will need to do analysis, for example:
+- animal id
+- slice/section id
+- animal treatment group
+- any drugs used during the experiment
+- free form notes
+- whether to use the file or not
+
+These data need to be merged for analysis, and data from several different experiments (sometimes separated by days or months) must be merged and selected for later analysis. The metadata I collect in my notebook is definitely flexible and possible to change as well.
+
+<<<image of notebook here>>>
+
+* handling heterogenous, flexible data
+

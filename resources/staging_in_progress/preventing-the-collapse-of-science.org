@@ -1,0 +1,21 @@
+https://youtu.be/pW-SOdj4Kkk
+- This is an important talk and I think needs to be heard by scientists.
+- we all know there is a problem with modern science. Is it reproducible? Does it matter?
+  - statistics are done improperly (we used n common to standards of the field)
+  - doing flashy high risk stuff and making big claims to end up in the big journals
+  - doing things wrong. Most of us /know/ that counting relative cells (cells/mm^{2} ) is (objectively) the wrong thing to do. We /know/ that we should do a pilot study with a few animals (maybe 3) then do a power analysis to measure the effect size and plan the whole study. But we /dont do it/. Why?
+  - Most of us /know/ that in electrophysiology counting each cell/slice as a different sample (/n/) to be compared with a t-test or wilcox test is (objectively) /wrong/ (cells from the same animal or slice are likely (by definition) to be correlated and are not independent identically distributed samples)
+    - a good citation is [[file:~/PDFs/Saravanan_Sober_2019-arx.pdf]] they have an assessment of the hierarcical data in neuroscience (citation 1 here)
+
+  - We claim it is because the incetives are misaligned-- and they are.
+  - The few jobs we have available are judged almost exclusively on "quality of science" which is a euphemism for "Do I recognize the journal?" and "is it in CNS?"
+    - Once hired, tenure depends on the /same thing/ (maybe to a slightly lesser degree, tenure committees care about funding above all else).
+  - The point is, if we fix the incentives will we know how to do good science?
+- What is good science?
+Right now, flashy people who do the minimum work to get positive results get in the top journals and get the top jobs. Then recruit the top post-docs to do real work and the cycle continues as underlings do great work and reinforce the vision of this flashy minimum work person being a genius
+
+- 
+Maybe this should be called "in defense of preregistered reports" is that how we fix science?
+is science even broken?
+
+https://duckduckgo.com/?t=ffab&q=preregistered+reports&ia=web

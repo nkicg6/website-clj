@@ -68,7 +68,6 @@
       (str/replace #"<img src=.*/img" "<img src=\"/img")
       (str/replace #"<h2>Table of Contents</h2>" "<h1>&gt contents</h1>")))
 
-
 (defn insert-page-title
   "insert-page-title parses edn metadata and return the html with a title inserted
   `page` is the raw HTML of a page including the header."
@@ -78,6 +77,63 @@
         (enlive/sniptest [:title]
                          (enlive/html-content meta-title)))))
 
+(defn reverse-sort-by-date
+  [metadata-map]
+  (html [:ul (for [[k v] (reverse (sort-by #(get-in (val %) [:date]) metadata-map))] ;; reverse chrono order
+               [:li (link-to k (get v :title)) (str "<em> Published: " (get v :date) "</em>")])]))
+
+(defn metadata-to-links
+  "build html list from a vec of metadata dicts"
+  [metadata]
+  (html [:ul (for [k metadata]
+               [:li (link-to (get k :path) (get k :title))
+                (str "<em> Published: " (get k :date) "</em>")])]))
+
+
+(defn reverse-chrono
+  [v-map]
+  (reverse (sort-by :date v-map)))
+
+(defn filter-metadata-topic
+  "select only items from metadata vector `v` which match `topic`"
+  [topic v]
+  (filter #(= topic (:topic %)) v))
+
+(defn get-pages!
+  "read pages from disk and separate them into a map for further processing"
+  [path]
+  (let [all-pages-map (stasis/slurp-directory path #".*\.html$")
+        landing-index (get all-pages-map "/index.html")
+        science-index (get all-pages-map "/science/index.html")
+        programming-index (get all-pages-map "/programming/index.html")
+        no-index-map (apply dissoc all-pages-map ["/index.html" "/science/index.html"
+                                                  "/programming/index.html"])
+        no-index-metadata (reverse-chrono (map #(assoc %1 :path %2)
+                                               (map parse-edn (vals no-index-map))
+                                               (keys no-index-map)))]
+    {:landing landing-index
+     :sci-index science-index
+     :prog-index programming-index
+     :pages no-index-map
+     :metadata no-index-metadata}))
+
+(defn fmt-links
+  "formats and adds links to homepages"
+  [page-map]
+  (let [{homepage :landing
+         sci-home :sci-index
+         prog-home :prog-index
+         pages :pages
+         metadata :metadata} page-map
+        recent-five-links (metadata-to-links (take 5 metadata))
+        sci-links (->> metadata
+                       (filter-metadata-topic "science")
+                       (metadata-to-links))
+        prog-links (->> metadata
+                       (filter-metadata-topic "programming")
+                       (metadata-to-links))]))
+
+
 (defn get-pages
   "gets all pages and assets for website"
   []
@@ -85,12 +141,15 @@
         all-pages-keys (keys all-pages-map)
         css-hashed (cache-bust-css "resources/public") ;; keys needed for later
         css-keys (keys css-hashed)
-        header-footer-partial (partial apply-header-footer css-keys) ;; apply first arg for hashed css names
+        header-footer-partial (partial apply-header-footer css-keys) ;; apply arg for css vec first
+        all-metadata-map (zipmap all-pages-keys (map parse-edn (vals all-pages-map)))
+        homepage-links-partial (partial add-homepage-links (reverse-sort-by-date all-metadata-map))
         all-pages-vals (->> (vals all-pages-map)
                             (map header-footer-partial)
                             (map fmt-page-html)
-                            (map insert-page-title))
-        edn-all (map parse-edn all-pages-vals)]
+                            (map insert-page-title)
+                            (map homepage-links-partial))
+]
     (stasis/merge-page-sources
      {:pages
       (zipmap all-pages-keys all-pages-vals)
@@ -118,6 +177,7 @@
 (def app
   "preview app"
   (stasis/serve-pages get-pages))
+
 ;; TODO tasks for website (in no particular order)
 ;; - read all files with `slurp-directory`.
 ;; - apply header with renamed css
@@ -125,6 +185,21 @@
 ;; - parse edn add title to pages (make a map of path and edn content?)
 ;; - make list of links for science and programming page (use :topic = index and :title Programming archive orScience archive to sort/select)
 
-(def test-page (slurp "resources/programming/next-image.html"))
+(def test-page (slurp "resources/programming/index.html"))
+
+
+(apply-str (index "<li>stuff</li>"))
+
+(reduce str (place-links-in-div :div#pageListDiv "<li>stuff</li>" test-page))
+
+(place-links-in-div :div#pageListDiv "<li>stuff</li>" test-page)
+
+(let [all (stasis/slurp-directory "resources/" #".*\.html$")
+      k (keys all)
+      v (vals all)
+      metadata (map parse-edn v)
+      mm (zipmap k metadata)]
+  (reverse-sort-by-date mm))
+
 
 (enlive/select (enlive/html-snippet test-page) [:div#edn])
