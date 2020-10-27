@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Nick's site</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  </head>
+  <body>
+    <div class="header">
+      <div class="name">
+        <a class="name" href="/">Nick George</a>
+        <div class="header-right">
+          <a href="/science">Science</a>
+          <a href="/programming">Programming</a>
+        </div>
+      </div>
+    </div>
+    Page content here
+  </body>
+  <footer>
+    <p>&copy Nick George 2017-</p>
+  </footer>
+</html>

@@ -1,0 +1,21 @@
+<div id="edn">  
+  {:topic "index" :title "Programming archive" :date "2018-08-05" :tags ("clojure" "testing" "post")} 
+</div>
+
+<div class="home-div">
+  <h1 id="index-header">Programming Projects</h1>
+  
+  <p> I have no formal training in computer science, but I love programming languages and building tools for science and pipelines for data analysis.</p>
+
+  <p>I am most familiar with <b>Python</b>, and that will always be my go-to scripting and data-analysis language. You really can't beat <b>R</b> for statistics or scientific graphics, so I use that a lot as well. I am learning <b>Clojure</b> and <b>ClojureScript</b>, and I love the totally new (data-oriented) way of thinking about problems that Clojure has given me. </p>
+  
+      
+  <h2>Some tools I made/worked on</h2>
+  <ul>
+    <li><a href="https://github.com/nkicg6/ABF_Explorer">ABF_Explorer</a> A GUI for looking at and simple analysis of ABF files from electrophysiology experiments</li>
+    <li><a href="https://github.com/Macklin-Lab/imagej-microscopy-scripts">ImageJ Microscopy Scripts</a> Plugin for Fiji/ImageJ. Tools for automating common and tedious image processing tasks.</li>
+    <li><a href="https://github.com/nkicg6/python-image-analysis">Python image analysis</a> Notes for plotting and image analysis in python</li>
+  </ul>
+  <h2>Programming posts:</h2>
+  <div id="pageListDiv">Page nav list Here</div>
+</div>

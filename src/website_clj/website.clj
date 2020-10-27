@@ -55,6 +55,7 @@
          [:footer
           [:p (str "&copy Nick George 2017-") (get-copyright-date)]]))
 
+
 (defn parse-edn
   "returns edn metadata for page-text or nil"
   [page-text]
@@ -185,10 +186,12 @@
 ;; - parse edn add title to pages (make a map of path and edn content?)
 ;; - make list of links for science and programming page (use :topic = index and :title Programming archive orScience archive to sort/select)
 
-(def test-page (slurp "resources/programming/index.html"))
+(def test-page (slurp "resources/programming/why-learn-clojure.html"))
 
 ;; I get it, everything is relative to resources/ for enlive?
 
-(enlive/deftemplate index "programming/index.html" [p] [:div#pageListDiv] (enlive/content p))
+(enlive/deftemplate index "templates/programming_index.template" [p] [:div#pageListDiv] (enlive/content p))
 
-(index "test stuff")
+(enlive/deftemplate header-footer "templates/header_footer.template" [p] [:body] (enlive/content p))
+
+;; templates in this way may not be worth it, just stick with sniptest. and revert to other branch
