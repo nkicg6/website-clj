@@ -134,7 +134,7 @@
                        (metadata-to-links))]))
 
 
-(defn get-pages
+#_(defn get-pages
   "gets all pages and assets for website"
   []
   (let [all-pages-map (stasis/slurp-directory "resources/" #".*\.html$")
@@ -187,19 +187,8 @@
 
 (def test-page (slurp "resources/programming/index.html"))
 
+;; I get it, everything is relative to resources/ for enlive?
 
-(apply-str (index "<li>stuff</li>"))
+(enlive/deftemplate index "programming/index.html" [p] [:div#pageListDiv] (enlive/content p))
 
-(reduce str (place-links-in-div :div#pageListDiv "<li>stuff</li>" test-page))
-
-(place-links-in-div :div#pageListDiv "<li>stuff</li>" test-page)
-
-(let [all (stasis/slurp-directory "resources/" #".*\.html$")
-      k (keys all)
-      v (vals all)
-      metadata (map parse-edn v)
-      mm (zipmap k metadata)]
-  (reverse-sort-by-date mm))
-
-
-(enlive/select (enlive/html-snippet test-page) [:div#edn])
+(index "test stuff")
