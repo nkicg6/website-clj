@@ -62,11 +62,10 @@
  (apply str
         (enlive/select (enlive/html-snippet page-text) [:#edn enlive/text-node]))))
 
-
-(defn fmt-page-html [page]
+(defn enlive-insert-links
+  [page links]
   (-> page
-      (str/replace #"<img src=.*/img" "<img src=\"/img")
-      (str/replace #"<h2>Table of Contents</h2>" "<h1>&gt contents</h1>")))
+      (enlive/sniptest [:div#pageListDiv] (enlive/html-content links))))
 
 (defn insert-page-title
   "insert-page-title parses edn metadata and return the html with a title inserted
@@ -77,10 +76,10 @@
         (enlive/sniptest [:title]
                          (enlive/html-content meta-title)))))
 
-(defn reverse-sort-by-date
-  [metadata-map]
-  (html [:ul (for [[k v] (reverse (sort-by #(get-in (val %) [:date]) metadata-map))] ;; reverse chrono order
-               [:li (link-to k (get v :title)) (str "<em> Published: " (get v :date) "</em>")])]))
+(defn fmt-page-html [page]
+  (-> page
+      (str/replace #"<img src=.*/img" "<img src=\"/img")
+      (str/replace #"<h2>Table of Contents</h2>" "<h1>&gt contents</h1>")))
 
 (defn metadata-to-links
   "build html list from a vec of metadata dicts"
@@ -88,7 +87,6 @@
   (html [:ul (for [k metadata]
                [:li (link-to (get k :path) (get k :title))
                 (str "<em> Published: " (get k :date) "</em>")])]))
-
 
 (defn reverse-chrono
   [v-map]
@@ -98,6 +96,12 @@
   "select only items from metadata vector `v` which match `topic`"
   [topic v]
   (filter #(= topic (:topic %)) v))
+
+(defn make-site-map
+  "compile a list of all the pages for search engines."
+  [metadata]
+  (apply str (for [x (:path metadata)]
+               (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
 
 (defn get-pages!
   "read pages from disk and separate them into a map for further processing"
@@ -131,41 +135,51 @@
                        (metadata-to-links))
         prog-links (->> metadata
                        (filter-metadata-topic "programming")
-                       (metadata-to-links))]))
+                       (metadata-to-links))
+        home (enlive-insert-links homepage recent-five-links)
+        sci (enlive-insert-links homepage sci-links)
+        prog (enlive-insert-links homepage sci-links)]
+    (stasis/merge-page-sources {:pages pages 
+                                :home {"/index.html" home}
+                                :prog-home {"/programming/index.html" prog}
+                                :sci-home {"/science/index.html" sci}
+                                :site-map {"/sitemap.txt" (make-site-map metadata)}
+                                :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}})))
 
-
-#_(defn get-pages
-  "gets all pages and assets for website"
-  []
-  (let [all-pages-map (stasis/slurp-directory "resources/" #".*\.html$")
-        all-pages-keys (keys all-pages-map)
-        css-hashed (cache-bust-css "resources/public") ;; keys needed for later
+(defn fmt-pages
+  "applies header/footer and css, returns site"
+  [m]
+  (let [css-hashed (cache-bust-css "resources/public")
         css-keys (keys css-hashed)
-        header-footer-partial (partial apply-header-footer css-keys) ;; apply arg for css vec first
-        all-metadata-map (zipmap all-pages-keys (map parse-edn (vals all-pages-map)))
-        homepage-links-partial (partial add-homepage-links (reverse-sort-by-date all-metadata-map))
-        all-pages-vals (->> (vals all-pages-map)
-                            (map header-footer-partial)
-                            (map fmt-page-html)
-                            (map insert-page-title)
-                            (map homepage-links-partial))
-]
+        header-footer-partial (partial apply-header-footer css-keys) ;; apply css vec arg first
+        all-page-keys (keys m)
+        all-page-vals (->> (vals m)
+                           (map header-footer-partial)
+                           (map fmt-page-html)
+                           (map insert-page-title))
+        ]
     (stasis/merge-page-sources
-     {:pages
-      (zipmap all-pages-keys all-pages-vals)
+     {:pages (zipmap all-page-keys all-page-vals)
       :css css-hashed
       :img (stasis/slurp-directory "resources/public" #".*\.(png|jpg)$")})))
 
 
-(defn make-site-map
-  "compile a list of all the pages for search engines."
-  [sci-metadata prog-metadata]
-  (apply str (for [x (keys (merge prog-metadata sci-metadata))]
-               (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
+;; test
+(defn make-site!
+  []
+  (-> (get-pages! "resources")
+     (fmt-links)
+     (fmt-pages)))
+
+(def app
+  "preview app"
+  (stasis/serve-pages make-site!))
+
+
 
 
 ;; main export function, called by lein build-site
-(defn export
+#_(defn export
   "main export function for static site. See docs for functions included."
   []
   (helpers/clear-directory! export-dir)
@@ -174,7 +188,7 @@
 ;;;; Scratch/repl play ;;;;
 
 
-(def app
+#_(def app
   "preview app"
   (stasis/serve-pages get-pages))
 
@@ -189,6 +203,27 @@
 
 ;; I get it, everything is relative to resources/ for enlive?
 
-(enlive/deftemplate index "programming/index.html" [p] [:div#pageListDiv] (enlive/content p))
 
-(index "test stuff")
+(defn parse-edn
+  "returns edn metadata for page-text or nil"
+  [page-text]
+(edn/read-string
+ (apply str
+        (enlive/select (enlive/html-snippet page-text) [:#edn enlive/text-node]))))
+
+(defn insert-page-title
+  "insert-page-title parses edn metadata and return the html with a title inserted
+  `page` is the raw HTML of a page including the header."
+  [page]
+  (let [meta-title (get (parse-edn page) :title "Nick's site")]
+    (-> page
+        (enlive/sniptest [:title]
+                         (enlive/html-content meta-title)))))
+
+
+(defn enlive-insert-links
+  [page links]
+  (-> page
+      (enlive/sniptest [:div#pageListDiv] (enlive/html-content links))))
+
+
