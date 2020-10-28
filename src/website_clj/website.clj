@@ -3,7 +3,6 @@
 ;; - sitemap and robots should be made in final fn. Don't add header to them
 ;; - fmt links https://github.com/nkicg6/website-clj/blob/25f3a256c458b0eac3fff16d9d37ca5588a8ba36/src/website_clj/website.clj#L24
 
-
 (ns website-clj.website
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
@@ -138,14 +137,14 @@
                        (filter-metadata-topic "programming")
                        (metadata-to-links))
         home (enlive-insert-links homepage recent-five-links)
-        sci (enlive-insert-links homepage sci-links)
-        prog (enlive-insert-links homepage sci-links)]
+        sci (enlive-insert-links sci-home sci-links)
+        prog (enlive-insert-links prog-home sci-links)]
     (stasis/merge-page-sources {:pages pages 
                                 :home {"/index.html" home}
                                 :prog-home {"/programming/index.html" prog}
                                 :sci-home {"/science/index.html" sci}
                                 :site-map {"/sitemap.txt" (make-site-map metadata)}
-                                :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}})))
+})))
 
 (defn fmt-pages
   "applies header/footer and css, returns site"
@@ -154,17 +153,19 @@
         css-keys (keys css-hashed)
         header-footer-partial (partial apply-header-footer css-keys) ;; apply css vec arg first
         all-page-keys (keys m)
-        all-page (->> (vals m)
+        all-pages (->> (vals m)
                       (map header-footer-partial)
                       (map fmt-page-html)
                       (map insert-page-title)
-                      (zipmap all-pages-keys))]
+                      (zipmap all-page-keys))]
     (stasis/merge-page-sources
      {:pages all-pages
       :css css-hashed
+      :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}
       :img (stasis/slurp-directory "resources/public" #".*\.(png|jpg)$")})))
 
 ;; test
+
 (defn make-site!
   []
   (-> (get-pages! "resources")
@@ -175,6 +176,18 @@
 
 (def site
   (make-site!))
+
+(defn make-site-map
+  "compile a list of all the pages for search engines."
+  [v]
+  (apply str (for [x v]
+               (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
+
+(make-site-map(keys site))
+
+(def stasis-version (keys (stasis/slurp-directory "resources" #".*\.html$")))
+stasis-version
+
 
 
 (keys site)
