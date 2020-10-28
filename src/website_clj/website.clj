@@ -1,5 +1,7 @@
 ;; TODO:
-;; - Images are not rendering
+;; - Images are not rendering on server
+;; - syntax highlighting
+;; - helpers/clear-directory! needs to remove dirs too. 
 
 (ns website-clj.website
   "main namespace for building and exporting the website"
@@ -15,6 +17,10 @@
 
 (def export-dir "target/nickgeorge.net")
 
+(def google-analytics (str "window.dataLayer = window.dataLayer ||s [];"
+                           "function gtag(){dataLayer.push(arguments);}"
+                           "gtag('js', new Date());"
+                           "gtag('config', 'UA-124749948-1');"))
 
 (defn get-copyright-date []
   (.format (java.text.SimpleDateFormat. "yyyy")
@@ -35,8 +41,8 @@
   [css-seq page]
   (html5 {:lang "en"}
          [:head
-          #_[:script {:src "https://www.googletagmanager.com/gtag/js?id=UA-124749948-1" :async "async"}]
-          #_[:script google-analytics]
+          [:script {:src "https://www.googletagmanager.com/gtag/js?id=UA-124749948-1" :async "async"}]
+          [:script google-analytics]
           [:title "Nick's site"]
           [:meta {:charset "utf-8"}]
           [:meta {:name "viewport"
@@ -99,7 +105,7 @@
   "compile a list of all the pages for search engines."
   [v]
   (apply str (for [x v]
-               (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
+               (str "http://nickgeorge.net" x "\n" "https://nickgeorge.net" x "\n"))))
 
 (defn get-pages!
   "read pages from disk and separate them into a map for further processing"
