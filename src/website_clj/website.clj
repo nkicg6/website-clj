@@ -1,6 +1,5 @@
 ;; TODO:
 ;; - Images are not rendering
-;; - fmt links https://github.com/nkicg6/website-clj/blob/25f3a256c458b0eac3fff16d9d37ca5588a8ba36/src/website_clj/website.clj#L24
 
 (ns website-clj.website
   "main namespace for building and exporting the website"
@@ -111,13 +110,14 @@
         programming-index (get all-pages-map "/programming/index.html")
         no-index-map (apply dissoc all-pages-map ["/index.html" "/science/index.html"
                                                   "/programming/index.html"])
+        fmt-keys-no-index (map #(str/replace % #"(?<!index)\.html$" "") (keys no-index-map))
         no-index-metadata (reverse-chrono (map #(assoc %1 :path %2)
                                                (map parse-edn (vals no-index-map))
-                                               (keys no-index-map)))]
+                                               fmt-keys-no-index))]
     {:landing landing-index
      :sci-index science-index
      :prog-index programming-index
-     :pages no-index-map
+     :pages (zipmap fmt-keys-no-index (vals no-index-map))
      :metadata no-index-metadata}))
 
 (defn fmt-links
@@ -162,46 +162,21 @@
       :sitemap {"/sitemap.txt" (make-site-map all-page-keys)}
       :img (stasis/slurp-directory "resources/public" #".*\.(png|jpg)$")})))
 
-;; test
-
 (defn make-site!
+  "main site building"
   []
   (-> (get-pages! "resources")
      (fmt-links)
      (fmt-pages)))
 
-
-
-(def site
-  (make-site!))
-
-
-
-(make-site-map(keys site))
-
-(def stasis-version (keys (stasis/slurp-directory "resources" #".*\.html$")))
-stasis-version
-
-
-
-(keys site)
 (def app
   "preview app"
   (stasis/serve-pages make-site!))
 
-
-
-
 ;; main export function, called by lein build-site
-#_(defn export
-  "main export function for static site. See docs for functions included."
+
+(defn export
+  "main export function for static site."
   []
   (helpers/clear-directory! export-dir)
-  (stasis/export-pages (get-pages) export-dir))
-
-;;;; Scratch/repl play ;;;;
-
-
-#_(def app
-  "preview app"
-  (stasis/serve-pages get-pages))
+  (stasis/export-pages (make-site!) export-dir))
