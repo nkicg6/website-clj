@@ -136,8 +136,13 @@ footer {
   margin-left: 1em;
   margin-right: 1em;
   padding-right: 1em;
+  padding-left: 1em;
   height: 100vw;
   max-width: 300px;
+}
+
+#table-of-contents ul {
+  list-style-type:none;
 }
 
 #article, #mainTitle {
