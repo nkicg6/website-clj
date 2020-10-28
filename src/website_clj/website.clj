@@ -110,7 +110,7 @@
         programming-index (get all-pages-map "/programming/index.html")
         no-index-map (apply dissoc all-pages-map ["/index.html" "/science/index.html"
                                                   "/programming/index.html"])
-        fmt-keys-no-index (map #(str/replace % #"(?<!index)\.html$" "") (keys no-index-map))
+        fmt-keys-no-index (map #(str/replace % #"(?<!index)\.html$" "/") (keys no-index-map))
         no-index-metadata (reverse-chrono (map #(assoc %1 :path %2)
                                                (map parse-edn (vals no-index-map))
                                                fmt-keys-no-index))]
