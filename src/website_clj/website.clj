@@ -1,6 +1,5 @@
 ;; TODO:
 ;; - Images are not rendering
-;; - sitemap and robots should be made in final fn. Don't add header to them
 ;; - fmt links https://github.com/nkicg6/website-clj/blob/25f3a256c458b0eac3fff16d9d37ca5588a8ba36/src/website_clj/website.clj#L24
 
 (ns website-clj.website
@@ -99,8 +98,8 @@
 
 (defn make-site-map
   "compile a list of all the pages for search engines."
-  [metadata]
-  (apply str (for [x (:path metadata)]
+  [v]
+  (apply str (for [x v]
                (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
 
 (defn get-pages!
@@ -142,9 +141,7 @@
     (stasis/merge-page-sources {:pages pages 
                                 :home {"/index.html" home}
                                 :prog-home {"/programming/index.html" prog}
-                                :sci-home {"/science/index.html" sci}
-                                :site-map {"/sitemap.txt" (make-site-map metadata)}
-})))
+                                :sci-home {"/science/index.html" sci}})))
 
 (defn fmt-pages
   "applies header/footer and css, returns site"
@@ -162,6 +159,7 @@
      {:pages all-pages
       :css css-hashed
       :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}
+      :sitemap {"/sitemap.txt" (make-site-map all-page-keys)}
       :img (stasis/slurp-directory "resources/public" #".*\.(png|jpg)$")})))
 
 ;; test
@@ -177,11 +175,7 @@
 (def site
   (make-site!))
 
-(defn make-site-map
-  "compile a list of all the pages for search engines."
-  [v]
-  (apply str (for [x v]
-               (str "http://nickgeorge.net" x "/\n" "https://nickgeorge.net" x "/\n"))))
+
 
 (make-site-map(keys site))
 
