@@ -184,5 +184,5 @@
 (defn export
   "main export function for static site."
   []
-  (helpers/clear-directory! export-dir)
+  #_(helpers/clear-directory! export-dir)
   (stasis/export-pages (make-site!) export-dir))
