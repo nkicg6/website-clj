@@ -12,8 +12,6 @@
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
 
-You don't need Bootstrap for your personal website-- write your own CSS. 
-
 My website is a personal project I use to learn more about the web and document what I do. When I first set it up, I used some simple =<div>='s and Bootstrap CSS to make it look (kinda) nice. This works fine, and a lot of websites do just that. 
 I recently wanted to fine-tune some settings. Simple things, like change the max-width of the text and float my table of contents in a left margin. So I started wading through the Bootstrap docs, trying to find out how to name my =<div>='s classes to get the desired effect... But why? I really only use Bootstrap for my header and ensuring the body sizes correctly. Bootstrap is ~160kB of /minified/ CSS downloaded on page-load from a CDN ([[https://shkspr.mobi/blog/2020/10/please-stop-using-cdns-for-external-javascript-libraries/][probably a bad idea]] especially with how simple my use was).
 
