@@ -165,9 +165,8 @@
      {:pages all-pages
       :css css-hashed
       :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}
-      :sitemap {"/sitemap.txt" (make-site-map all-page-keys)}
-      ;:img (stasis/slurp-directory "resources/public" #".*\.(png|jpg)$")
-      })))
+      :CNAME {"/CNAME" "nickgeorge.net"}
+      :sitemap {"/sitemap.txt" (make-site-map all-page-keys)}})))
 
 (defn make-site!
   "main site building"
