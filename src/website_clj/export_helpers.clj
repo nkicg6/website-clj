@@ -15,3 +15,24 @@
   (map clojure.java.io/delete-file (make-filtered-list  base)))
 
 ;;(clear-directory! "/Users/nick/test_dir")
+(def test-dir "/Users/nick/Desktop/test")
+
+(defn- make-file-list
+  "returns a filtered list of file paths"
+  [dir]
+  (->> (file-seq (clojure.java.io/file dir))
+       (map str)
+       (filter #(not (str/includes? % "CNAME")))
+       (filter #(not (str/includes? % ".git")))
+       (filter #(not (= % dir)))))
+
+(defn clear-directory!
+  [str-files]
+  (let [as-files (map clojure.java.io/file str-files)
+        files (filter #(.isFile %) as-files)
+        dirs (filter #(.isDirectory %) as-files)]
+    (map clojure.java.io/delete-file files)
+    (map clojure.java.io/delete-file dirs)))
+
+(clear-directory! (make-file-list test-dir))
+

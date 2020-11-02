@@ -1,0 +1,49 @@
+#+HTML: <div id="edn">
+#+HTML: {:title "You don't need Bootstrap for your personal website-- write your own CSS" :date "2020-11-02" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["CSS" "web" "learning"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2020-11-02 Mon
+#+HTML:<h1 id="mainTitle">You don't need Bootstrap for your personal website-- write your own CSS</h1>
+#+TOC: headlines 1
+#+HTML:<div id="article">
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+You don't need Bootstrap for your personal website-- write your own CSS. 
+
+My website is a personal project I use to learn more about the web and document what I do. When I first set it up, I used some simple =<div>='s and Bootstrap CSS to make it look (kinda) nice. This works fine, and a lot of websites do just that. 
+I recently wanted to fine-tune some settings. Simple things, like change the max-width of the text and float my table of contents in a left margin. So I started wading through the Bootstrap docs, trying to find out how to name my =<div>='s classes to get the desired effect... But why? I really only use Bootstrap for my header and ensuring the body sizes correctly. Bootstrap is ~160kB of /minified/ CSS downloaded on page-load from a CDN ([[https://shkspr.mobi/blog/2020/10/please-stop-using-cdns-for-external-javascript-libraries/][probably a bad idea]] especially with how simple my use was).
+
+I realized learning a bit of raw CSS would be a much better use of time than searching for bootstrap snippets/class names to get the desired effect.
+
+** CSS
+
+Cascading stylesheets get a lot of hate, but I've found them to be pretty cool. I have a simple website and I love fine-grained control and CSS gives me that. CSS makes it easy to quickly experiment with different design ideas and see what you like best. 
+Matthew Butterick has an excellent website/book (https://practicaltypography.com/) that I've been using along with CSS to experiment with layout and typography to develop a more custom experience. Nikita also has a great website on design (https://tonsky.me/). 
+Modern browsers also make experimenting easy, even if you aren't running a web server. I can edit the stylesheet in Firefox's devtools and see the changes in real time!
+
+#+ATTR_HTML: :alt "CSS editing in firefox devtools"  :title "Firefox devtools"
+[[file:~/personal_projects/website_clj/resources/public/img/css-devtools.png]]
+ 
+CSS can also do things that I thought were exclusively in the wheelhouse of JavaScript (see [[https://www.w3schools.com/CSSref/sel_hover.asp][:hover]], [[https://www.w3schools.com/CSSref/sel_after.asp][::after]], [[https://www.w3schools.com/CSSref/sel_active.asp][:active]], media queries, flexbox, and more). 
+
+** W3 schools
+
+https://www.w3schools.com/ are an excellent reference for all things web programming. My first step on my CSS journey was following their guide to make a [[https://www.w3schools.com/howto/howto_css_responsive_header.asp][simple header]]. No JavaScript required. W3Schools are excellent, I use them as my primary reference for CSS/HTML. 
+
+** @Media queries
+
+Mobile-focused page sizing  (Bootstrap's specialty) was a bit more difficult. There are a few options I came across including [[https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries][media queries]] and [[https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Basic_Concepts_of_Flexbox][flexbox]]. I ended up going with media queries, they seemed simpler to me as they allowed me to change just a few variables to collapsing the left contents onto the top of the article when page size dropped so it was still readable and nice. Flexbox would have required a total redesign of my HTML =div= layout, and the (perceived) complexity didn't seem worth it.
+
+** Write your own CSS
+
+It took me less than a day to get the layout of my website how I wanted it (from 0 web-dev or CSS experience). My website is vastly simpler now, and there aren't any black boxes that require Stackoverflow and a CDN to work correctly. I have a really good idea of how it works and how to change it, and it takes up only 4.76kB (non-minified) on the GitHub pages server. 
+Sure, I could have spent that time learning Bootstrap, and it might have even looked nicer. But why learn a product (even if it's free) when you can learn a standard? Why download and rely on a (possibly sketchy) CDN when I can serve a fraction of the data and get a more customized experience and fine grained control? 
+No doubt for some large websites Bootstrap makes sense, but if you are using it for a personal, handmade static website, think about writing your own CSS instead. 
+
+My website's [[https://github.com/nkicg6/nkicg6.github.io/blob/master/css/][css]]. 
+
+#+HTML:</div>
