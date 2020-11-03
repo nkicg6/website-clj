@@ -1,11 +1,11 @@
 ;; TODO:
-;; - Images are not rendering on server
 ;; - syntax highlighting
 ;; - helpers/clear-directory! needs to remove dirs too. 
 
 (ns website-clj.website
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
+            [me.raynes.fs :as fs]
             [stasis.core :as stasis]
             [hiccup.core :refer [html]]
             [hiccup.page :refer [html5]]
@@ -176,7 +176,7 @@
      (fmt-pages)))
 
 (def app
-  "preview app"
+  "preview app. images are not rendering..."
   (stasis/serve-pages make-site!))
 
 ;; main export function, called by lein build-site
@@ -185,4 +185,10 @@
   "main export function for static site."
   []
   #_(helpers/clear-directory! export-dir)
+  (fs/copy-dir "resources/public/img" "target/nickgeorge.net/img")
   (stasis/export-pages (make-site!) export-dir))
+
+;; copy image assets
+
+
+(System/getProperty "user.dir")
