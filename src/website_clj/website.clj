@@ -1,6 +1,5 @@
 ;; TODO:
 ;; - syntax highlighting
-;; - helpers/clear-directory! needs to remove dirs too. 
 
 (ns website-clj.website
   "main namespace for building and exporting the website"
@@ -184,11 +183,6 @@
 (defn export
   "main export function for static site."
   []
-  #_(helpers/clear-directory! export-dir)
+  (helpers/clear-directory! export-dir)
   (fs/copy-dir "resources/public/img" "target/nickgeorge.net/img")
   (stasis/export-pages (make-site!) export-dir))
-
-;; copy image assets
-
-
-(System/getProperty "user.dir")
