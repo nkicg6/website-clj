@@ -164,7 +164,7 @@
      {:pages all-pages
       :css css-hashed
       :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}
-      :CNAME {"/CNAME" "nickgeorge.net"}
+      :CNAME {"/CNAME/" "nickgeorge.net"}
       :sitemap {"/sitemap.txt" (make-site-map all-page-keys)}})))
 
 (defn make-site!
