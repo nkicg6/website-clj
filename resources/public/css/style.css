@@ -1,5 +1,5 @@
 /* Custom style for website
-   updated: 2020-10-21
+   updated: 2020-11-11
    author: nick
  */
 
@@ -63,16 +63,13 @@ body{
 .header {
   /* border: 3px solid green; */
   overflow: hidden;
-  background-color: #F1F1F1;
   max-width: var(--max-reading-width);
-  border-radius: 8px;
-  padding-left: 1em;
-  padding-right: 1em;
   margin-top: 0.5em;
   margin-bottom: 1em;
   margin-left: var(--main-lr-margins);
   margin-right: var(--main-lr-margins);
   font-size: 1.15rem; /* var(--header-font-size); */
+  border-bottom: 1px solid black;
 }
 
 .header a {
@@ -99,7 +96,7 @@ body{
 
 
 .header a:hover {
-  background-color: #ddd;
+  background-color: #F1F1F1;
   color: black;
   padding: 0.5em;
   border-radius: 8px;
