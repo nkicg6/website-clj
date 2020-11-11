@@ -1,6 +1,8 @@
 ;; TODO:
 ;; - syntax highlighting
-
+;; - fix the delete thing, it didn't work
+;; - add CNAME manually, or just use the optimus version...
+;; build is broken without the ignore form part. 
 (ns website-clj.website
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
@@ -164,7 +166,6 @@
      {:pages all-pages
       :css css-hashed
       :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}
-      :CNAME {"/CNAME/" "nickgeorge.net"}
       :sitemap {"/sitemap.txt" (make-site-map all-page-keys)}})))
 
 (defn make-site!
@@ -183,6 +184,6 @@
 (defn export
   "main export function for static site."
   []
-  (helpers/clear-directory! export-dir)
+  #_(helpers/clear-directory! export-dir)
   (fs/copy-dir "resources/public/img" "target/nickgeorge.net/img")
   (stasis/export-pages (make-site!) export-dir))
