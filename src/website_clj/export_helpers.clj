@@ -16,3 +16,4 @@
   (let [as-files (fs/list-dir target)
         no-git (filter #(not (str/includes? % ".git")) as-files)]
     (map delete! no-git)))
+

@@ -1,8 +1,6 @@
 ;; TODO:
 ;; - syntax highlighting
-;; - fix the delete thing, it didn't work
-;; - add CNAME manually, or just use the optimus version...
-;; build is broken without the ignore form part. 
+
 (ns website-clj.website
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
@@ -184,6 +182,7 @@
 (defn export
   "main export function for static site."
   []
-  #_(helpers/clear-directory! export-dir)
-  (fs/copy-dir "resources/public/img" "target/nickgeorge.net/img")
-  (stasis/export-pages (make-site!) export-dir))
+  (helpers/clear-directory! export-dir)
+  (fs/copy-dir "resources/public/img" "target/nickgeorge.net/")
+  (stasis/export-pages (make-site!) export-dir)
+  (spit "target/nickgeorge.net/CNAME" "nickgeorge.net"))
