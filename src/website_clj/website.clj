@@ -70,7 +70,8 @@
 (defn enlive-insert-links
   [page links]
   (-> page
-      (enlive/sniptest [:div#pageListDiv] (enlive/html-content links))))
+      (enlive/sniptest [:div#pageListDiv]
+                       (enlive/html-content links))))
 
 (defn insert-page-title
   "insert-page-title parses edn metadata and return the html with a title inserted
@@ -88,8 +89,8 @@
 
 (defn metadata-to-links
   "build html list from a vec of metadata dicts"
-  [metadata]
-  (html [:ul (for [k metadata]
+  [m]
+  (html [:ul (for [k m]
                [:li (link-to (get k :path) (get k :title))
                 (str "<em> Published: " (get k :date) "</em>")])]))
 
@@ -144,7 +145,7 @@
                        (metadata-to-links))
         home (enlive-insert-links homepage recent-five-links)
         sci (enlive-insert-links sci-home sci-links)
-        prog (enlive-insert-links prog-home sci-links)]
+        prog (enlive-insert-links prog-home prog-links)]
     (stasis/merge-page-sources {:pages pages 
                                 :home {"/index.html" home}
                                 :prog-home {"/programming/index.html" prog}

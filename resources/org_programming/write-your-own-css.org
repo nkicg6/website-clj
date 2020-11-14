@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:title "You don't need Bootstrap for your personal website-- write your own CSS" :date "2020-11-02" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["CSS" "web" "learning"]}
+#+HTML: {:topic "programming" :title "You don't need Bootstrap for your personal website-- write your own CSS" :date "2020-11-02" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["CSS" "web" "learning"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
