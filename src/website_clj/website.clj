@@ -31,12 +31,15 @@
         new-keys (map #(str/replace %1 ".css" (str "-" %2 ".css")) css-keys short-hash)]
     (zipmap new-keys css-vals)))
 
+
 (defn apply-header-footer
   "Applies a header and footer and css to an html strings."
   [css-seq page]
   (html5 {:lang "en"}
          [:head
           [:title "Nick's site"]
+          [:script "var clicky_site_ids = clicky_site_ids || []; clicky_site_ids.push(101287299);"]
+          [:script {:src "//static.getclicky.com/js"}]
           [:meta {:charset "utf-8"}]
           [:meta {:name "viewport"
                   :content "width=device-width, initial-scale=1.0"}]
