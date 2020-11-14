@@ -1,0 +1,26 @@
+The Sqlite3 [[%0Ahttps://docs.python.org/3/library/sqlite3.html#sqlite3.Row][Row]] class allows you to return queries from your database as a case insensitive dictionary-like structure, rather than a list of unnamed tuples. 
+
+#+BEGIN_SRC python :session new :results output
+# make db, add items
+
+#+END_SRC
+
+Now using a simple query, I'll grab all the items from that database:
+
+#+BEGIN_SRC python :session new :results output
+# get items
+
+#+END_SRC
+
+Hard to keep track of what's what. Luckily, the =Row= class can help:
+
+#+BEGIN_SRC python :session new :results output
+# show row, what happens. 
+
+#+END_SRC
+
+I wrote this function to extract all the parts and return it as a list of dicts for some of my work:
+
+
+
+
