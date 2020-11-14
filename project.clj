@@ -9,7 +9,8 @@
                  [ring "1.7.1"]
                  [digest "1.4.9"]
                  [hiccup "1.0.5"]
-                 [enlive "1.1.6"]]
+                 [enlive "1.1.6"]
+                 [clygments "2.0.2"]]
   :ring {:handler website-clj.website/app}
   :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}
   :aliases {"build-site" ["run" "-m" "website-clj.website/export"]})

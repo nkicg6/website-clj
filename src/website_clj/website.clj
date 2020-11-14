@@ -12,10 +12,15 @@
             [digest :as digest]
             [net.cgrand.enlive-html :as enlive]
             [clojure.edn :as edn]
+            [clygments.core :as clygments]
             [website-clj.export-helpers :as helpers]))
 
 (def export-dir "target/nickgeorge.net")
+;; working on highlighting
+;; based on https://cjohansen.no/building-static-sites-in-clojure-with-stasis#post-processing-syntax-highlighting
 
+(let [page (slurp "resources/science/sqlite3-for-storage-and-interchange.html")]
+  )
 
 (defn get-copyright-date []
   (.format (java.text.SimpleDateFormat. "yyyy")
