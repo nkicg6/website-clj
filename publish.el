@@ -9,12 +9,11 @@
 (require 'org)
 (require 'ox-publish)
 (require 'ox-html)
-(require 'htmlize)
 ;;(require 'htmlize)
 
-(setq org-src-fontify-natively t)
+;;(setq org-src-fontify-natively t)
 
-(load-theme 'leuven t)
+;;(load-theme 'leuven t)
 
 (setq org-publish-project-alist
       '(("programming"

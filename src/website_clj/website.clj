@@ -19,8 +19,12 @@
 ;; working on highlighting
 ;; based on https://cjohansen.no/building-static-sites-in-clojure-with-stasis#post-processing-syntax-highlighting
 
-(let [page (slurp "resources/science/sqlite3-for-storage-and-interchange.html")]
-  )
+#_(defn highlight-code [page]
+  (enlive/sniptest page
+                   ))
+
+(let [page (slurp "resources/programming/building-imagej-plugins-with-clojure.html")]
+  page)
 
 (defn get-copyright-date []
   (.format (java.text.SimpleDateFormat. "yyyy")
