@@ -1,6 +1,3 @@
-;; TODO:
-;; - syntax highlighting
-
 (ns website-clj.website
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
@@ -16,15 +13,18 @@
             [website-clj.export-helpers :as helpers]))
 
 (def export-dir "target/nickgeorge.net")
-;; working on highlighting
-;; based on https://cjohansen.no/building-static-sites-in-clojure-with-stasis#post-processing-syntax-highlighting
 
-#_(defn highlight-code [page]
+(defn highlight
+  [enlive-node]
+  (let [code (->> enlive-node :content (apply str))
+        lang (keyword (str/replace (->> enlive-node :attrs :class) "src src-" ""))
+        hl-code (clygments/highlight code lang :html)]
+    (enlive/html-snippet hl-code)))
+
+(defn highlight-code [page]
   (enlive/sniptest page
-                   ))
-
-(let [page (slurp "resources/programming/building-imagej-plugins-with-clojure.html")]
-  page)
+                   [:div.org-src-container :pre] highlight
+                   [:div.org-src-container :pre] #(assoc-in % [:attrs :class] "codehilite")))
 
 (defn get-copyright-date []
   (.format (java.text.SimpleDateFormat. "yyyy")
@@ -60,7 +60,7 @@
             [:div {:class "header-right"}
              [:a {:href "/science"} "Science"]
              [:a {:href "/programming"} "Programming"]]]]
-          page] ; put main content here
+          (highlight-code page)] ; put main content here
          [:footer
           [:p (str "&copy Nick George 2017-") (get-copyright-date)]]))
 

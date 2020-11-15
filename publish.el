@@ -3,17 +3,10 @@
 ;; command:
 ;; 
 (add-to-list 'load-path "~/.emacs.d/elpa/org-20191125")
-(add-to-list 'load-path "~/.emacs.d/elpa/")
-(add-to-list 'load-path "~/.emacs.d/manual-packages")
 
 (require 'org)
 (require 'ox-publish)
 (require 'ox-html)
-;;(require 'htmlize)
-
-;;(setq org-src-fontify-natively t)
-
-;;(load-theme 'leuven t)
 
 (setq org-publish-project-alist
       '(("programming"
