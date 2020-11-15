@@ -1,3 +1,4 @@
+
 #+HTML: <div id="edn">
 #+HTML: {:topic "science" :title "Consistent style for scientific figures with ggplot2" :date "2020-08-30" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["ggplot2", "science", "figures", "R", "statistics"]}
 #+HTML: </div>

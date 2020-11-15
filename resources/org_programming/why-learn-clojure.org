@@ -1,3 +1,4 @@
+
 #+HTML: <div id="edn">
 #+HTML: {:topic "programming" :title "Why Clojure?" :date "2018-09-08" :tags ["clojure", "programming","thoughts"]}
 #+HTML: </div>

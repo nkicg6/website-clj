@@ -1,3 +1,4 @@
+
 #+HTML: <div id="edn">
 #+HTML: {:topic "science" :title "Scientists don't test their code" :date "2020-09-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["programming" "python" "testing" "science" "blog"]}
 #+HTML: </div>

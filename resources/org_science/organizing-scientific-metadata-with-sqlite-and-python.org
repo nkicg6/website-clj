@@ -1,3 +1,4 @@
+
 #+HTML: <div id="edn">
 #+HTML: {:topic "science" :title "Organizing scientific metadata with SQLite3 and Python" :date "2020-09-19" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "SQL" "science" "data" ]}
 #+HTML: </div>

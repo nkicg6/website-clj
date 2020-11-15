@@ -1,3 +1,4 @@
+
 #+HTML: <div id="edn">
 #+HTML: {:topic "programming" :title "Next_image_clj: a simple utility plugin for semi-automated analysis" :date "2019-12-31" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "imagej" "Fiji" "programming" "science"]}
 #+HTML: </div>
