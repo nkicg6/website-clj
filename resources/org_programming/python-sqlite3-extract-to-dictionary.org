@@ -1,5 +1,5 @@
 #+HTML: <div id="edn">
-#+HTML: {:topic "programming/science" :title "Returning a list of dictionaries from a Python SQLite3 query" :date "2020-12-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "sql" "data"]}
+#+HTML: {:topic "programming" :title "Returning a list of dictionaries from a Python SQLite3 query" :date "2020-12-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "sql" "data"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
