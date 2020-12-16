@@ -1,10 +1,10 @@
 #+HTML: <div id="edn">
-#+HTML: {:topic "programming/science" :title "Returning a list of dictionaries from a Python SQL query" :date "2020-12-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "sql" "data"]}
+#+HTML: {:topic "programming/science" :title "Returning a list of dictionaries from a Python SQLite3 query" :date "2020-12-16" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["python" "sql" "data"]}
 #+HTML: </div>
-#+OPTIONS: \n:1 toc:t num:0 todo:nil ^:{} title:nil
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2020-12-16 Wed
-#+HTML:<h1 id="mainTitle">Returning a list of dictionaries from a Python SQL query</h1>
+#+HTML:<h1 id="mainTitle">Returning a list of dictionaries from a Python SQLite3 query</h1>
 #+TOC: headlines 1
 #+HTML:<div id="article">
 #+HTML:<div id="timedate">
@@ -15,24 +15,25 @@
 Let's write a simple function which returns data in a sane and organized way from a SQLite3 database using only the Python 3 standard library. 
 We will be working in Python 3.8 for this example and will be using some very basic SQL statements. If you are new to SQL, I highly recommend this course: https://www.executeprogram.com/courses/sql
 
-I wrote a gist as an example program/test demonstrating the concept as well 
+[[https://gist.github.com/nkicg6/473a7b7c1004859aca1314d073d4196d][I wrote a gist]] as an example program to test and demonstrate this concept as well. 
 
 
 ** Problem
+:PROPERTIES:
+:CUSTOM_ID: problem
+:END:
 
 Say we have a database containing the results of an experiment you just ran containing the following fields (SQLite3 datatypes):
-- fpath: =TEXT=
-  - Filepath with the original, un-analyzed data
-- n_measure: =INTEGER=
-  - Replicate number
-- treatment: =TEXT= 
-  - Treatment group
-- amplitude: =REAL=
-  - The measure we are interested in, amplitude of whatever
-
+- fpath: =TEXT= (Filepath with the original, un-analyzed data)
+- n_measure: =INTEGER= (Replicate number)
+- treatment: =TEXT= (Treatment group)
+- amplitude: =REAL= (The measure we are interested in, amplitude of whatever)
 You are planning on analyzing and making a plot of the data using Python or R or whatever you use and you need to get the data out of the SQLite3 database. How do you do it?
 
 ** Making the sample database
+:PROPERTIES:
+:CUSTOM_ID: making_the_sample_dataset
+:END:
 
 First, let's create a simple database to work with:
 
@@ -82,7 +83,7 @@ The set of commands above will create an SQLite3 database with a table called =d
   ]
 #+END_SRC
 
-We can add the data to our database in a simple loop using an Python SQLite3 parameterized statement (this one uses [[ https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.execute][named parameters]], allowing you to add directly from a dictionary):
+We can add the data to our database in a simple loop using an Python SQLite3 parameterized statement (this one uses [[https://docs.python.org/3/library/sqlite3.html#sqlite3.Cursor.execute][named parameters]], allowing you to add directly from a dictionary):
 
 #+BEGIN_SRC python :session new :results output
   temp_db = sqlite3.connect(SAMPLE_DB) # re-connect to the sample database we just made
@@ -104,6 +105,9 @@ We can add the data to our database in a simple loop using an Python SQLite3 par
 The data is now in our example database, now how would we get it out?
 
 ** Getting the data out, first attempt
+:PROPERTIES:
+:CUSTOM_ID: getting_the_data_out_first_attempt
+:END:
 
 Here is the simplest way to get all the data:
 
@@ -121,8 +125,11 @@ Here is the simplest way to get all the data:
 That works, but it returns a list of tuples, without any information about what it what. For a small database like this that's not a problem, but if we had a big set of returned columns, it could get confusing. Let's explore an alternate method.
 
 ** Getting the data out, second attempt
+:PROPERTIES:
+:CUSTOM_ID: getting_the_data_out_second_attempt
+:END:
 
-SQLite3 contains a helper class called a [[https://docs.python.org/3/library/sqlite3.html#accessing-columns-by-name-instead-of-by-index][row_factory]], and setting this class on your =connection= object allows you to access values by either index or name:
+SQLite3 contains a helper class called a [[https:https://docs.python.org/3/library/sqlite3.html#accessing-columns-by-name-instead-of-by-index][row_factory]], and setting this class on your =connection= object allows you to access values by either index or name:
 
 #+NAME: using row_factory
 #+BEGIN_SRC python :session new :results output
@@ -238,6 +245,9 @@ Awesome! I mentioned list comprehensions above, we could actually make this loop
 We do this at the risk of being less clear ('too clever'), but in this case I think it is worth it to get rid of loops and mutable variables. 
 
 ** Writing a function
+:PROPERTIES:
+:CUSTOM_ID: writing_a_function
+:END:
 
 We have solved our original problem, but the cool thing is that this statement is general and can easily be re-used. Rather than re-writing it every time, we can generalize this into a function that we can import and use later:
 
@@ -284,10 +294,14 @@ I've added a few error/exception handlers, but this is very similar to our origi
 
 #+END_SRC
 
-
 ** Wrapping up: use the standard library if you can
+:PROPERTIES:
+:CUSTOM_ID: wrapping_up
+:END:
 
 This is a nice way to work when programming: Solve your original problem, then think about how to generalize it into a function for re-use. 
 Sometimes the generalization is not worth the trouble, but in this case, we have a very useful function for serializing and returning data using only pure python + the standard library. Simplicity is *essential* for re-usable code. While no doubt =pandas= has great helper functions for similar tasks, if you don't have to take on a heavy dependency you probably shouldn't. Pure python and the standard library are powerful and this will work anywhere python3 is available, no =pip install pandas= or virtual environments needed. 
+
+You can run this example using [[https://gist.github.com/nkicg6/473a7b7c1004859aca1314d073d4196d][this github gist]].
 
 #+HTML:</div>

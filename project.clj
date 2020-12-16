@@ -10,6 +10,7 @@
                  [digest "1.4.9"]
                  [hiccup "1.0.5"]
                  [enlive "1.1.6"]
+                 [optimus "0.20.2"]
                  [clygments "2.0.2"]]
   :ring {:handler website-clj.website/app}
   :profiles {:dev {:plugins [[lein-ring "0.8.10"]]}}

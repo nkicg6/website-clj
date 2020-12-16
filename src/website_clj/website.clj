@@ -3,6 +3,7 @@
   (:require [clojure.string :as str]
             [me.raynes.fs :as fs]
             [stasis.core :as stasis]
+            [optimus.assets :as assets]
             [hiccup.core :refer [html]]
             [hiccup.page :refer [html5]]
             [hiccup.element :refer [link-to]]
@@ -63,6 +64,9 @@
           (highlight-code page)] ; put main content here
          [:footer
           [:p (str "&copy Nick George 2017-") (get-copyright-date)]]))
+
+(defn get-assets []
+  (assets/load-assets "public/"))
 
 (defn parse-edn
   "returns edn metadata for page-text or nil"
