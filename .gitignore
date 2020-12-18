@@ -12,9 +12,9 @@ pom.xml.asc
 .DS_Store
 /nkicg6.github.io/*
 *.html
-/resources/staging-in-progress
 .RHistory
 *.*~
 *woff2
 citations*
-staging-in-progress*
+staging_in_progress*
+
