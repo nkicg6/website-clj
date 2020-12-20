@@ -27,8 +27,13 @@ gitlabdeploy:
 	rm -rf $(gitlabpath)public/*; \
 	echo "Adding font dir $(gitlabpath)public/fonts..."; \
 	mkdir $(gitlabpath)public/fonts;\
+	mkdir $(gitlabpath)public/img;\
 	echo "Copying fonts $(gitlabpath)font-backup/ to $(gitlabpath)public/fonts/ ..."; \
 	cp -R "$(gitlabpath)font-backup/" "$(gitlabpath)public/fonts/";\
+	echo "Copying images..."; \
+	cp -R "resources/public/img/" "$(gitlabpath)public/img/";\
+	echo "Making CNAME...";\
+	"echo nickgeorge.net > $(gitlabpath)public/CNAME";\
 	echo "converting site with emacs...";\
 	emacs -batch --load publish.el --eval '(org-publish "clj-site")';\
 	echo "Building site with clojure...";\

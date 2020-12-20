@@ -3,11 +3,58 @@
    author: nick
  */
 
+/* fonts */
+
+/* Normal Century Supra */
+
+@font-face {
+  font-family: centurysuprat3;
+  font-weight: normal;
+  src: url('/fonts/century_supra_t3_regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: centurysuprat3;
+  font-weight: bold;
+  src:  url('/fonts/century_supra_t3_bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: centurysuprat3;
+  font-weight: normal;
+  font-style: italic;
+  src: url('/fonts/century_supra_t3_italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: centurysuprat3;
+  font-weight: bold;
+  font-style: italic;
+  src: url('/fonts/century_supra_t3_bold_italic.woff2') format('woff2');
+}
+
+
+/* Caps Century Supra  */
+@font-face {
+  font-family: centurysuprac3;
+  font-weight: normal;
+  src:  url('/fonts/century_supra_c3_regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: centurysuprac3;
+  font-weight: bold;
+  src: url('/fonts/century_supra_c3_bold.woff2') format('woff2');
+}
+
+/* end fonts */
+
+
 /* vars */
 :root {
   --code-background: #F1F1F1;
   --main-font-size: 16px;
-  --main-font-family: sans-serif;
+  --main-font-family: "centurysuprat3", "sans-serif";
   --h1-font-size: 1.15rem;
   --h2-font-size: 1.05rem;
   --max-reading-width: 600px;

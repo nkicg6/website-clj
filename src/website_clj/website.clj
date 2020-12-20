@@ -10,10 +10,9 @@
             [digest :as digest]
             [net.cgrand.enlive-html :as enlive]
             [clojure.edn :as edn]
-            [clygments.core :as clygments]
-            [website-clj.export-helpers :as helpers]))
+            [clygments.core :as clygments]))
 
-(def export-dir "target/nickgeorge.net")
+(def export-dir "/Users/nick/personal_projects/nkicg6.gitlab.io/public")
 
 (defn highlight
   [enlive-node]
@@ -193,7 +192,4 @@
 (defn export
   "main export function for static site."
   []
-  (helpers/clear-directory! export-dir)
-  (fs/copy-dir "resources/public/img" "target/nickgeorge.net/")
-  (stasis/export-pages (make-site!) export-dir)
-  (spit "target/nickgeorge.net/CNAME" "nickgeorge.net"))
+  (stasis/export-pages (make-site!) export-dir))
