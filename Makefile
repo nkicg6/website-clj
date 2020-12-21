@@ -25,8 +25,6 @@ deploy:
 	cp -R "$(gitlabpath)font-backup/" "$(gitlabpath)public/fonts/";\
 	echo "Copying images..."; \
 	cp -R "resources/public/img/" "$(gitlabpath)public/img/";\
-	echo "Making CNAME...";\
-	"echo nickgeorge.net > $(gitlabpath)public/CNAME";\
 	echo "converting site with emacs...";\
 	emacs -batch --load publish.el --eval '(org-publish "clj-site")';\
 	echo "Building site with clojure...";\

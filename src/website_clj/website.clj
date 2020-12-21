@@ -114,7 +114,7 @@
   "compile a list of all the pages for search engines."
   [v]
   (apply str (for [x v]
-               (str "http://nickgeorge.net" x "\n" "https://nickgeorge.net" x "\n"))))
+               (str "https://nickgeorge.net" x "\n"))))
 
 (defn get-pages!
   "read pages from disk and separate them into a map for further processing"
