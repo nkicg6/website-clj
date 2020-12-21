@@ -2,26 +2,19 @@
 
 gitlabpath="/Users/nick/personal_projects/nkicg6.gitlab.io/"
 
+
 update:
-# this will only update the cite by converting emacs files to html
+# this will only update the site by converting emacs files to html
 	@echo "updating site..."
 	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
-deploy:
-	@echo "deploying site."
-	@echo "Updating now from emacs..."
-	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
-# this will build and deploy the entire site
-	@echo "building and pushing via git..."
-	lein build-site;git add .;git commit -m "content update";git push;cd target/nickgeorge.net/; git add .;git commit -m "automated commit."; git push
-	@echo "Done!"
+
 view:
 	@echo "updating site..."
 	emacs -batch --load publish.el --eval '(org-publish "clj-site")'
 	@echo "Starting server to view website"
 	lein ring server
 
-
-gitlabdeploy:
+deploy:
 	@echo "building and moving to gitlab..."
 	@echo "Removing dir rm -r $(gitlabpath)public/* ..."; \
 	rm -rf $(gitlabpath)public/*; \
@@ -37,4 +30,8 @@ gitlabdeploy:
 	echo "converting site with emacs...";\
 	emacs -batch --load publish.el --eval '(org-publish "clj-site")';\
 	echo "Building site with clojure...";\
-	lein build-site;
+	lein build-site;\
+	echo "Pushing to gitlab...";\
+	cd $(gitlabpath);\
+	git add .;git commit -m "Automated post push";git push;\
+	echo "Done!"
