@@ -1,7 +1,9 @@
+;; TODO need more work on this. This is too inflexible. Need to be able to apply formatting to certain sites.
+;; think about how you want this to work. Especially the cache bust css. separate all io from the functions that do work. 
+
 (ns website-clj.website
   "main namespace for building and exporting the website"
   (:require [clojure.string :as str]
-            [me.raynes.fs :as fs]
             [stasis.core :as stasis]
             [optimus.assets :as assets]
             [hiccup.core :refer [html]]
@@ -29,6 +31,7 @@
 (defn get-copyright-date []
   (.format (java.text.SimpleDateFormat. "yyyy")
            (new java.util.Date)))
+
 
 (defn cache-bust-css [path]
   "md5 hash css text, rename file with first 8 digist of digest. Return a map of css-renmaed-path, css-val."
@@ -175,6 +178,8 @@
       :css css-hashed
       :robots {"/robots.txt" "User-agent: *\nDisallow:\nSITEMAP: http://nickgeorge.net/sitemap.txt"}
       :sitemap {"/sitemap.txt" (make-site-map all-page-keys)}})))
+
+
 
 (defn make-site!
   "main site building"
