@@ -36,7 +36,7 @@ deploy:
 	echo "Copying font-awesome-4.7.0 logos";\
 	cp -R "$(gitlabpath)font-awesome-4.7.0/" "$(gitlabpath)public/font-awesome-4.7.0";\
 	echo "Pandoc convert resume...";\
-	pandoc -s "$(resumepath)org/nicholasmgeorge-resume-html.org" -o "$(gitlabpath)resumetmp.html"
+	pandoc -s "$(resumepath)org/nicholasmgeorge-resume-html.org" -o "$(gitlabpath)resumetmp.html";\
 	echo "Add css to resume...";\
 	python3 resume.py -body "$(gitlabpath)resumetmp.html" -headerfooter "$(gitlabpath)websiteresume_header.html" -out "$(gitlabpath)public/nicholasmgeorge-resume.html";\
 	echo "removing temp resume...";\
@@ -45,3 +45,15 @@ deploy:
 	cd $(gitlabpath);\
 	git add .;git commit -m "Automated post push";git push;\
 	echo "Done!"
+
+resume:
+	@echo "Adding resume...";\
+	echo "Copying font-awesome-4.7.0 logos";\
+	cp -R "$(gitlabpath)font-awesome-4.7.0/" "$(gitlabpath)public/font-awesome-4.7.0";\
+	echo "Pandoc convert resume...";\
+	pandoc -s "$(resumepath)org/nicholasmgeorge-resume-html.org" -o "$(gitlabpath)resumetmp.html";\
+	echo "Add css to resume...";\
+	python3 resume.py -body "$(gitlabpath)resumetmp.html" -headerfooter "$(gitlabpath)websiteresume_header.html" -out "$(gitlabpath)public/nicholasmgeorge-resume.html";\
+	echo "removing temp resume...";\
+	rm "$(gitlabpath)resumetmp.html";\
+	echo "Done."
