@@ -40,7 +40,7 @@ deploy:
 	echo "Add css to resume...";\
 	python3 resume.py -body "$(gitlabpath)resumetmp.html" -headerfooter "$(gitlabpath)websiteresume_header.html" -out "$(gitlabpath)public/nicholasmgeorge-resume.html";\
 	echo "removing temp resume...";\
-	rm "$(gitlabpath)resumetmp.html"
+	rm "$(gitlabpath)resumetmp.html";\
 	echo "Pushing to gitlab...";\
 	cd $(gitlabpath);\
 	git add .;git commit -m "Automated post push";git push;\
