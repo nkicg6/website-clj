@@ -17,28 +17,28 @@ view:
 
 deploy:
 	@echo "building and moving to gitlab...";\
-	echo "Removing dir rm -r $(gitlabpath)public/* ..."; \
+	echo "Clearing public directory..."; \
 	rm -rf $(gitlabpath)public/*; \
-	echo "Adding font dir $(gitlabpath)public/fonts..."; \
+	echo "Adding fonts and image directory..."; \
 	mkdir $(gitlabpath)public/fonts;\
 	mkdir $(gitlabpath)public/img;\
 	mkdir $(gitlabpath)public/font-awesome-4.7.0;\
-	echo "Copying fonts $(gitlabpath)font-backup/ to $(gitlabpath)public/fonts/ ..."; \
+	echo "Copying fonts..."; \
 	cp -R "$(gitlabpath)font-backup/" "$(gitlabpath)public/fonts/";\
 	echo "Copying images...";\
 	cp -R "resources/public/img/" "$(gitlabpath)public/img/";\
-	echo "converting site with emacs...";\
+	echo "Org->html with org-mode...";\
 	emacs -batch --load publish.el --eval '(org-publish "clj-site")';\
-	echo "Building site with clojure...";\
+	echo "Building site with Clojure...";\
 	lein build-site;\
 	echo "Adding resume...";\
 	echo "Copying font-awesome-4.7.0 logos";\
 	cp -R "$(gitlabpath)font-awesome-4.7.0/" "$(gitlabpath)public/font-awesome-4.7.0";\
-	echo "Pandoc convert resume...";\
+	echo "Convert org-resume -> html with pandoc...";\
 	pandoc -s "$(resumepath)org/nicholasmgeorge-resume-html.org" -o "$(gitlabpath)resumetmp.html";\
 	echo "Add css to resume...";\
 	python3 resume.py -body "$(gitlabpath)resumetmp.html" -headerfooter "$(gitlabpath)websiteresume_header.html" -out "$(gitlabpath)public/nicholasmgeorge-resume.html";\
-	echo "removing temp resume...";\
+	echo "Removing temp resume...";\
 	rm "$(gitlabpath)resumetmp.html";\
 	echo "Pushing to gitlab...";\
 	cd $(gitlabpath);\
@@ -56,3 +56,8 @@ resume:
 	echo "removing temp resume...";\
 	rm "$(gitlabpath)resumetmp.html";\
 	echo "Done."
+
+clean:
+	@echo "Cleaning...";\
+	rm -f $(wildcard resources/programming/*~);\
+	rm -f $(wildcard resources/science/*~);
