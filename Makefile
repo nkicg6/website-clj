@@ -16,17 +16,16 @@ view:
 	lein ring server
 
 deploy:
-	@echo "building and moving to gitlab..."
-	@echo "Removing dir rm -r $(gitlabpath)public/* ..."; \
+	@echo "building and moving to gitlab...";\
+	echo "Removing dir rm -r $(gitlabpath)public/* ..."; \
 	rm -rf $(gitlabpath)public/*; \
 	echo "Adding font dir $(gitlabpath)public/fonts..."; \
 	mkdir $(gitlabpath)public/fonts;\
 	mkdir $(gitlabpath)public/img;\
 	mkdir $(gitlabpath)public/font-awesome-4.7.0;\
 	echo "Copying fonts $(gitlabpath)font-backup/ to $(gitlabpath)public/fonts/ ..."; \
-
 	cp -R "$(gitlabpath)font-backup/" "$(gitlabpath)public/fonts/";\
-	echo "Copying images..."; \
+	echo "Copying images...";\
 	cp -R "resources/public/img/" "$(gitlabpath)public/img/";\
 	echo "converting site with emacs...";\
 	emacs -batch --load publish.el --eval '(org-publish "clj-site")';\
