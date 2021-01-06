@@ -1,0 +1,543 @@
+#+HTML: <div id="edn">
+#+HTML: {:topic "programming" :title "Building static website with Clojure: an update" :date "2021-01-05" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "static-website" "learning" "projects"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2021-01-05 Tue
+#+HTML:<h1 id="mainTitle">programming</h1>
+#+TOC: headlines 1
+#+HTML:<div id="article">
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+Projects are a great way to learn a new skill. When I was first learning Clojure, I wrote a post about building my new static website using Clojure. I have learned a lot in the interim, so I wanted to clear up some of my meandering and ignorance in my last post here. Let's go over what a static website is, and how to build a website generator in Clojure from scratch and host it on GitHub pages. 
+
+* What is a static website?
+
+[[https://en.wikipedia.org/wiki/Static_web_page][Wikipedia]] defines a static web pages as an "web page delivered to a user exactly as it is stored."  
+
+To expand on that, a static website is a collection of web pages (HTML documents, CSS, JavaScript code, movies, images, etc.) that link together and are served on the internet. The defining feature of a static website is that it does not connect to a database or generate dynamic content. So the home page is the same for everyone who requests it, rather than something like your Amazon homepage which will be different depending on if you are logged in and what you bought.
+
+* What does a static website generator do?
+
+It really depends on the generator and what you need/want. Typically, they transform your documents (typically written in some simple markup language like [[https://en.wikipedia.org/wiki/Markdown][Markdown]]), to valid HTML (typically using HTML/CSS templates), and output them in a structured way as your website. They generate all the standard content that a web server then serves to users requesting your site. 
+
+Depending on what you want/need, they can do a lot of other things too, such as:
+- Adding search features
+- Categorizing articles
+- Organize posts/pages in a [[https://jekyllrb.com/docs/permalinks/#global][structured way]]
+- [[https://gohugo.io/content-management/syntax-highlighting/][syntax highlighting]] (usually with [[https://pygments.org/][pygments]])
+- and more...
+
+* Lots of options
+
+So what you need to do is take some directory structure (written in the markdown format of your choice or HTML), apply some conversions, and output it somewhere. All the other stuff is nice but extra. You can write your own code to do it somewhere between the conversion (after reading) step and the output step (writing as HTML). 
+
+Writing your own is typically a bad idea, there are tons of good, well-used generators (especially [[https://gohugo.io/content-management/syntax-highlighting/][Hugo]] (Go), [[https://jekyllrb.com/docs/permalinks/#global][Jekyll]] (Ruby), [[https://rstudio.github.io/distill/][Distill]] (R), and [[https://blog.getpelican.com/][Pelican]] (Python)). They will all impose some [[https://gohugo.io/getting-started/directory-structure/][structure on you]], and you will have to learn [[https://jekyllrb.com/docs/configuration/options/][a lot of configuration]] options and rules for the specific generator. If you want the flexibility to do whatever you want and you need a side project, writing your own can be a great way to learn. 
+
+* Write your own with Clojure
+
+I was learning Clojure, so I wanted to write my own. I started using [[https://github.com/magnars/stasis][Stasis]], using this [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][excellent tutorial]] by Christian Johansen. Here are the basics:
+Stasis provides a few simple functions to make reading and writing easier, as well as a server so you can get a preview of what the finished product will look like. The only Stasis functions I will use for this example are:
+- =slurp-directory= (read everything in a directory and return a map of ={:path "string-of-file-content"}=)
+- =merge-page-sources= (ensure there are no path conflicts)
+- =export-pages= (write the pages)
+- =serve-pages= (web server to show you a sample)
+
+* Starting the project
+We'll use [[https://leiningen.org/][Leiningen]] to manage this project. Install it and type the following:
+
+#+BEGIN_SRC bash
+lein new example-static-website
+cd example-static-website
+#+END_SRC
+
+Next, let's add a few dependencies to our project. We will need a markdown to HTML converter ([[https://github.com/yogthos/markdown-clj][markdown-clj]]), an HTML generation library for the header/footer ([[https://github.com/weavejester/hiccup][hiccup]]), and an http server to view our files ([[https://github.com/ring-clojure/ring][ring]]). We will also add stasis, which has our helper functions for input-output as a dependency to =project.clj=:
+
+#+BEGIN_SRC clojure 
+  (defproject example-static-website "0.1.0-SNAPSHOT"
+    :description "FIXME: write description"
+    :url "http://example.com/FIXME"
+    :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
+              :url "https://www.eclipse.org/legal/epl-2.0/"}
+    :dependencies [[org.clojure/clojure "1.9.0"]
+                   [stasis "2.5.0"]
+                   [markdown-clj "1.10.5"]
+                   [hiccup "1.0.5"]
+                   [ring "1.8.2"]]
+    :repl-options {:init-ns example-static-website.core})
+#+END_SRC
+
+And in your shell:
+
+#+BEGIN_SRC bash
+lein deps
+#+END_SRC
+
+* Build the structure
+
+I told you a static website was a mapping of markup-content -> HTML website. When learning a new tool, it is always nice to have a minimal working project to play with. Let's use the current directory of our Leiningen project:
+
+#+BEGIN_EXAMPLE
+.
+├── CHANGELOG.md
+├── LICENSE
+├── README.md
+├── doc
+│   └── intro.md
+├── project.clj
+├── resources
+│   └── index.md
+├── src
+│   └── example_static_website
+│       └── core.clj
+├── target
+│   |
+│   ... 
+│ 
+└── test
+    |
+    ...
+#+END_EXAMPLE
+
+I added our homepage, =index.md= to the resources directory. The markdown homepage looks like this:
+
+#+BEGIN_EXAMPLE
+# Here is the homepage!
+
+Markdown should be converted *italic* properly and **bold**
+
+Here is a:
+- list
+- of
+- stuff
+
+#+END_EXAMPLE
+
+In this case, we will use the resources directory to build the source for our site, and we will publish in a new directory called =website=. 
+Let's got to =src/example_static_website/core.clj= and start working on reading and writing it. 
+
+#+BEGIN_SRC clojure 
+    ;; core.clj
+    (ns example-static-website.core
+      (:require [clojure.string :as str]
+                [stasis.core :as stasis]
+                [markdown.core :as md]
+                [hiccup.page :as hiccup]))
+
+    (def source-dir "resources")
+
+    (stasis/slurp-directory source-dir #".*\.md$")
+#+END_SRC
+
+We defined the =source-dir= (relative to project root =example_static_website=), and then we used stasis to read the contents of that directory. 
+
+In this case, stasis will return:
+
+#+BEGIN_EXAMPLE
+{"/index.md" "# Here is the homepage!\n\nMarkdown should be converted *italic* properly and **bold**\n\nHere is a:\n- list\n- of\n- stuff\n\n\n"}
+#+END_EXAMPLE
+
+This is a map of the paths (in this case, =index.md= is at the root =/=) to a string of the content. If there were more paths or more nesting, those would be read too. For example, let's make a =posts= directory in resources and put a sample post in it. 
+
+#+BEGIN_SRC bash :results verbatim 
+# currently in example_static_website
+mkdir resources/posts
+#+END_SRC
+
+This file:
+#+BEGIN_EXAMPLE
+# This is my first post
+
+A blogpost will go *here*
+#+END_EXAMPLE
+
+And an index (homepage) for the posts:
+
+#+BEGIN_EXAMPLE
+# Home page for posts. 
+
+Your posts should be displayed here. 
+
+
+POSTSHERE
+#+END_EXAMPLE
+
+So the directory structure now looks like this:
+
+#+BEGIN_EXAMPLE
+.
+├── CHANGELOG.md
+├── LICENSE
+├── README.md
+├── doc
+│   └── intro.md
+├── project.clj
+├── resources
+│   ├── index.md
+│   └── posts
+│       ├── first_post.md
+│       └── index.md
+├── src
+│   └── example_static_website
+│       └── core.clj
+...
+#+END_EXAMPLE
+
+Now if we re-run the =slurp-directory= command (but only look at keys, for brevity):
+
+#+BEGIN_SRC clojure 
+  (keys (stasis/slurp-directory source-dir #".*\.md$"))
+  ;; ("/posts/first_post.md" "/posts/index.md" "/index.md")
+#+END_SRC
+you can see both posts were read, and we have a list of paths and files. 
+
+* Markdown to HTML
+
+Browsers don't really understand markdown, so we still need to convert this to HTML, and we need to re-name the files from =.md= to =.html=. 
+
+First thing's first, let's see how to work with the markdown conversion library ([[https://github.com/yogthos/markdown-clj][markdown-clj]]) we decided to use.
+
+From the docs, it looks like =md-to-html-string= is the function we want to use. Here is how it works:
+
+#+BEGIN_SRC clojure 
+  (md/md-to-html-string "# This should be h1")
+  ;; "<h1>This should be h1</h1>"
+#+END_SRC
+
+Great! Now, we know =slurp-directory= return a map of paths to a string of content, so let's write a function to read the data, break it into keys and values, then apply our conversion function:
+
+#+BEGIN_SRC clojure 
+  (defn read-and-convert! [src]
+    (let [data  (stasis/slurp-directory src #".*\.md$")
+          paths (keys data)
+          md-content (vals data)]
+      (map md/md-to-html-string md-content)))
+
+#+END_SRC
+
+Clojure programs typically use a bang (=!= ) in the function name if we are doing a side-effecty thing (in this case reading files). Then we are using a =let= to break up the map into keys and values, which we will operate on separately.  
+
+You can use this function like so:
+
+#+BEGIN_SRC clojure 
+  (read-and-convert! source-dir)
+  ;; ("<h1>This is my first post</h1><p>A blogpost will go <em>here</em></p>" "<h1>Home page for posts.</h1><p>Your posts should be displayed here. </p><p>POSTSHERE</p>" "<h1>Here is the homepage!</h1><p>Markdown should be converted <em>italic</em> properly and <strong>bold</strong></p><p>Here is a:</p><ul><li>list</li><li>of</li><li>stuff</li></ul>")
+
+#+END_SRC
+
+That looks great, we applied the =md-to-html-string= function to each item in the =seq= returned by =(vals data)= and returned the HTML content of the string. That's half the stuff we want to do in this funtion. The last part involves replacing the =.md= file endings with =.html= and returning a new map of the pages. 
+
+* Fix the paths
+
+Let's use the clojure string library to replace the ".md" with ".html". 
+#+BEGIN_SRC clojure 
+  (str/replace "index.md" #".md" ".html")
+  ;;index.html
+#+END_SRC
+
+This function takes three arguments and operates on a string. We will be mapping it over the =seq= of keys, so let's wrap it in a function to make that easier 
+
+#+BEGIN_SRC clojure 
+  (defn key-to-html [s]
+    (str/replace s #".md" ".html"))
+#+END_SRC
+ 
+Now, We can modify our original function and make sure everything works:
+
+#+BEGIN_SRC clojure 
+
+  (defn read-and-convert! [src]
+    (let [data  (stasis/slurp-directory src #".*\.md$")
+          paths (keys data)
+          html-content (map md/md-to-html-string (vals data))]
+      (map key-to-html paths)))
+
+  (read-and-convert! source-dir)
+  ;; ("/posts/first_post.html" "/posts/index.html" "/index.html")
+#+END_SRC
+
+Looks great! Notice how I did the markdown conversion in the let statement that splits the values from data. Since we never use the markdown data again in that function, this is a nice way to make the function more compact. Let's now do the same for keys, and use a =zipmap= to re-join the new keys and values into a map to return:
+
+#+BEGIN_SRC clojure 
+  (defn read-and-convert! [src]
+    (let [data  (stasis/slurp-directory src #".*\.md$")
+          html-paths (map key-to-html (keys data))
+          html-content (map md/md-to-html-string (vals data))]
+      (zipmap html-paths html-content)))
+
+  (read-and-convert! source-dir)
+  ;;{"/posts/first_post.html" "<h1>This is my first post</h1><p>A blogpost will go <em>here</em></p>",
+  ;; "/posts/index.html" "<h1>Home page for posts.</h1><p>Your posts should be displayed here. </p><p>POSTSHERE</p>",
+  ;; "/index.html" "<h1>Here is the homepage!</h1><p>Markdown should be converted <em>italic</em> properly and <strong>bold</strong></p><p>Here is a:</p><ul><li>list</li><li>of</li><li>stuff</li></ul>}
+
+#+END_SRC
+
+Great, we are well on our way!
+
+* Adding a template header/footer
+
+We've done the conversion, but the pages are not yet valid HTML. Let's define a simple header and footer using hiccup:
+
+#+BEGIN_SRC clojure 
+
+  (defn apply-header-footer [page]
+    (hiccup/html5 {:lang "en"}
+                  [:head
+                   [:title "Static website!"]
+                   [:meta {:charset "utf-8"}]
+                   [:meta {:name "viewport"
+                           :content "width=device-width, initial-scale=1.0"}]
+                   [:body
+                    [:div {:class "header"}
+                     [:div {:class "name"}
+                      [:a {:href "/"} "Home page"]
+                      [:div {:class "header-right"}
+                       [:a {:href "/posts"} "Posts"]]]]
+                    page]
+                   [:footer
+                    [:p "This is the footer"]]]))
+
+  (apply-header-footer "here is some content!")
+  ;; "<!DOCTYPE html>\n<html lang=\"en\"><head><title>Static website!</title><meta charset=\"utf-8\"><meta content=\"width=device-width, initial-scale=1.0\" name=\"viewport\"><body><div class=\"header\"><div class=\"name\"><a href=\"/\">Home page</a><div class=\"header-right\"><a href=\"/posts\">Posts</a></div></div></div>Here is some content</body><footer><p>This is the footer</p></footer></head></html>"
+
+#+END_SRC
+
+[[https://github.com/weavejester/hiccup][Hiccup]] is a abbreviated html markup. One cool thing about hiccup is that you can embed Clojure forms/functions within the markup, but here we will just be inserting the text (=page=). In this case, the header and footer are simple, so I just wrote them right in hiccup.
+
+Now, let's write another function to apply the header to the values:
+
+#+BEGIN_SRC clojure 
+  (defn format-pages [m]
+    (let [html-keys (keys m)
+          page-data (map apply-header-footer (vals m))]
+      (zipmap html-keys page-data)))
+
+#+END_SRC
+
+This function is similar to =read-and-convert!=. It takes in a map, breaks apart the pieces, applies the formatting, then outputs the map. 
+
+We could use it like so:
+
+#+BEGIN_SRC clojure 
+  (format-pages (read-and-convert! source-dir))
+  ;; {"/posts/first_post.html" "<!DOCTYPE html>\n<html lang=\"en\"> ..."}
+  ;; ...
+#+END_SRC
+
+Returning all of our formatted pages as a map. Now would be a good time to commit your work to a version control system like git. 
+
+* Seeing your progress with a local server
+
+Typically we will be making changes as we go and will want to see how they will look as a website. We can use Stasis and =ring= to set up a server and do this live. This code is based on [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian's tutorial]]:
+
+#+BEGIN_SRC clojure 
+(def server
+  (stasis/serve-pages (format-pages (read-and-convert! source-dir))))
+#+END_SRC
+
+The server variable contains our website so far. Now, let's go to =project.clj= at the root of our project and define a command telling =ring= to serve it. 
+
+#+BEGIN_SRC clojure 
+(defproject example-static-website "0.1.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
+  :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
+            :url "https://www.eclipse.org/legal/epl-2.0/"}
+  :dependencies [[org.clojure/clojure "1.9.0"]
+                 [stasis "2.5.0"]
+                 [markdown-clj "1.10.5"]
+                 [hiccup "1.0.5"]
+                 [ring "1.8.2"]]
+  :ring {:handler example-static-website.core/server}
+  :profiles {:dev {:plugins [[lein-ring "0.12.5"]]}}
+  :repl-options {:init-ns example-static-website.core})
+#+END_SRC
+
+Now we will have to close our repl connection and run =lein deps= in our shell. Now, let's test it out:
+
+#+BEGIN_SRC bash :results verbatim 
+lein ring server
+#+END_SRC
+
+You should see something like this:
+
+[[file:~/personal_projects/website_clj/resources/public/img/unformatted-website.png]]
+
+clicking the link for =Posts= should take you to the posts homepage too. 
+
+So this looks functional. However, there is virtually no style so it looks bad. Let's add some custom =CSS=. 
+
+* Add some css
+
+#+BEGIN_SRC bash :results verbatim 
+mkdir resources/css
+#+END_SRC
+
+Let's write some basic CSS:
+
+#+BEGIN_SRC css
+    /* /css/style.css */
+     html{
+         font-size: 16px;
+         font-family: "sans-serif";
+         line-height: 1.35;
+     }
+
+     body{
+         max-width: 600px;
+         margin-left: 25%;
+         margin-top: 10px;
+         margin-bottom: 10px;
+     }
+    /* and so on... */
+    /* see /css/style.css for full css */ 
+
+#+END_SRC
+
+Now we have to add this css to our header function. 
+
+#+BEGIN_SRC clojure 
+  (defn apply-header-footer [page]
+    (hiccup/html5 {:lang "en"}
+                  [:head
+                   [:title "Static website!"]
+                   [:meta {:charset "utf-8"}]
+                   [:meta {:name "viewport"
+                           :content "width=device-width, initial-scale=1.0"}]
+                   [:link {:type "text/css" :href "/css/style.css" :rel "stylesheet"}] ;; new!
+                   [:body
+                    [:div {:class "header"}
+                     [:div {:class "name"}
+                      [:a {:href "/"} "Home page"]
+                      [:div {:class "header-right"}
+                       [:a {:href "/posts"} "Posts"]]]]
+                    page]
+                   [:footer
+                    [:p "This is the footer"]]]))
+
+#+END_SRC
+
+And add a function to read the CSS with stasis:
+
+#+BEGIN_SRC clojure 
+  (defn get-css [src]
+    (stasis/slurp-directory src #".*\.css$"))
+#+END_SRC
+
+and then merge this map with our other pages map (/after/ formatting) in a new function called merge-website-sources:
+
+#+BEGIN_SRC clojure 
+  (defn merge-website-assets! [root-dir]
+    (let [page-map (format-pages (read-and-convert! root-dir))
+          css-map (get-css source-dir)]
+      (stasis/merge-page-sources {:css css-map
+                                  :pages page-map})))
+
+#+END_SRC
+
+=stasis/merge-page-sources= works just like Clojure's merge but let's you know if there are any path (key) conflicts. We then combined the page reading and css reading in one function. Later, we could add images or JavaScript reading here too and just add new =let='s and new keys for our website.
+
+We can then change the server to:
+
+#+BEGIN_SRC clojure 
+  (def server
+    (stasis/serve-pages (merge-website-assets! source-dir)))
+#+END_SRC
+
+And refresh the page to get:
+
+[[file:~/personal_projects/website_clj/resources/public/img/formatted-page.png]]
+
+Much better!
+
+*Note* Obviously we can do better than hard-coding the CSS path in the header (as we did in =apply-header-footer=). We could add additional parameters to =apply-header-footer= for the links, or have another function transform the header before applying the page. That is left as an exercise for those interested since this is mostly to serve as an example, so we will take the easy, less flexible way and hard code it for now. 
+* Images and other things
+
+You can't read images with =stasis/slurp-directory=, since it uses Clojure's =slurp= under the hood, which only works for text. See [[https://github.com/magnars/stasis#but-what-about-stylesheets-images-and-javascript][the stasis docs]] or Christian Johansen's [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis#asset-optimization][tutorial]] for info about using optimus for that. In the simplest case, you could just copy the image directory to the output directory using a Makefile and shell commands if you don't want to use Optimus. 
+
+* Generating your website
+
+We are almost done! Now we can easily make a local website and experiment with using CSS to make it look nice. Let's write it out so we can put it on the internet
+
+Let's define an output variable called =out-dir= as the string =docs=. 
+
+#+BEGIN_SRC clojure 
+;; core.clj
+(def out-dir "docs")
+#+END_SRC
+
+Now, we will use basically the same code as we did for the =server= var in an =export!= function. 
+
+#+BEGIN_SRC clojure 
+  (defn export! []
+    (stasis/empty-directory! out-dir)
+    (stasis/export-pages (merge-website-assets! source-dir) out-dir)
+    (println "Website is ready!"))
+#+END_SRC
+
+=stasis/empty-directory!= will delete *everything* in the =out-dir= (consider yourself warned), then it will re-build the updated website for us. 
+
+At this point, we would push the =website= directory up to whatever is hosting our static website, and we would be done!
+
+We can set up an extra =lein= command so we can build the website from the command line as well:
+
+#+BEGIN_SRC clojure 
+  ;; project.clj
+  (defproject example-static-website "0.1.0-SNAPSHOT"
+    :description "FIXME: write description"
+    :url "http://example.com/FIXME"
+    :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
+              :url "https://www.eclipse.org/legal/epl-2.0/"}
+    :dependencies [[org.clojure/clojure "1.9.0"]
+                   [stasis "2.5.0"]
+                   [markdown-clj "1.10.5"]
+                   [hiccup "1.0.5"]
+                   [ring "1.8.2"]]
+    :ring {:handler example-static-website.core/server}
+    :profiles {:dev {:plugins [[lein-ring "0.12.5"]]}}
+    :repl-options {:init-ns example-static-website.core}
+    :aliases {"build-site" ["run" "-m" "example-static-website.core/export!"]})
+#+END_SRC
+
+* Hosting on GitHub pages
+
+[[https://pages.github.com/][GitHub pages]] is a nice option for hosting your personal website for free. Once you've built your website using =lein build-site= from the command line or =(export!)= from the REPL, push the whole thing up to GitHub in a repository named =your-user-name.github.io=. 
+
+On GitHub, it will look something like this:
+
+[[file:~/personal_projects/website_clj/resources/public/img/gh-example-repo-website.png]]
+
+Next, go to the settings tab and scroll to Pages, and choose to serve the website from (from your =main= or =master= branch) the =docs/= directory:
+
+[[file:~/personal_projects/website_clj/resources/public/img/gh-example-repo-website-settings.png]]
+
+And that's it! You should now see your website show up at =your-user-name.github.io=!
+
+Need a =CNAME= for a custom domain? Just add it to your map:
+
+#+BEGIN_SRC clojure 
+  (defn write-cname [out]
+    (spit (str out "/CNAME") "website-url"))
+
+  (defn export! []
+    (stasis/empty-directory! out-dir)
+    (stasis/export-pages (merge-website-assets! source-dir) out-dir)
+    (write-cname out-dir)
+    (println "Website is done!"))
+#+END_SRC
+
+Same goes for any extra text file.
+
+* What else?
+
+That's a custom static website generator in under 60 lines of code! What else can you do? Well, whatever you want! You could add syntax highlighting, or generate a list of your articles to link to from the posts homepage (a good idea)... Most of it is just simple text manipulation (replace something in the HTML text, or use something fancy like [[https://github.com/cgrand/enlive][Enlive]] to do some HTML transformations). Just use the same process we used above:
+
+- figure out what you want to do for one string/page (for example, =apply-header-footer=)
+- map that function across all your pages
+- chain the function into your main pipeline
+
+
+#+HTML:</div>

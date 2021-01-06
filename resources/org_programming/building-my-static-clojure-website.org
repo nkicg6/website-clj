@@ -17,8 +17,9 @@
 /last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
 
-/quick note/ 
-I made some changes, mostly to align this with what I know now and get rid of some sloppy code. I don't have /everything/ about my website explained here (robots.txt, five links on the home page, and my site map are not included), but I think the hard parts are covered. The most up-to-date and complete version will be the source code https://github.com/nkicg6/website-clj. If I do anything else that I think is interesting or hard, I will add it here in the future. Hopefully it is becoming better-formed and simpler as I go! 
+* Please see my updated version! 
+
+I wrote an updated version of this https://nickgeorge.net/programming/custom-static-clojure-websites-an-update/ that is much more clear. Please see that post, I've learned a lot since I wrote this one. 
 
 * Learning through projects
 :PROPERTIES:
