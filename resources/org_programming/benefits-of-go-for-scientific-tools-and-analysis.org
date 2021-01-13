@@ -38,10 +38,10 @@ For me, there are two big ones:
 1. Lack of static binaries
 2. Lack of type safety
 
-#1 addresses the distribution problem. I'm not going to name names, but take a look at any large, open source, scientific tool or project. Chances are there are pages of documentation and troubleshooting for all the different platforms and shells and drivers, and dependencies that you need to set up before script X will work.
+The lack of static binaries in Python/R is the crux of the distribution problem. I'm not going to name names, but take a look at any large, open source, scientific tool or project. Chances are there are pages and pages of installation instructions and troubleshooting for all the different platforms and shells and drivers, as well as dependencies that you need to set up before script X will work.
+#+HTML: <aside>This is not to say that it can't be done well. <a href="https://github.com/napari/napari">Narpari</a> is an excellent Python GUI that you can easily install with pip (you'll still need Microsoft Visual C++ for Windows and Python installed) or a pre bundled app. I'd argue that this is very much an exception and it took a lot of effort and is built by professionals.</aside>
 
-Since most researchers aren't programmers (and don't care to be), I'd like to have the ability to build things that they can use without having to know what a terminal or python interpreter or a C compiler is. 
-
+Since most researchers aren't programmers (and don't care to be), I'd like to have the ability to build things that they can use without having to know what a terminal or python interpreter or a C compiler is.
 I am just starting to explore two languages that address these two limitations.
 
 * Go and static type checking
