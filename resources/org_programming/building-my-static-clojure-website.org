@@ -17,9 +17,9 @@
 /last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
 
-* Please see my updated version! 
+* Please see my [[https://nickgeorge.net/programming/custom-static-clojure-websites-an-update/][UPDATED VERSION]] and not this one! 
 
-I wrote an updated version of this https://nickgeorge.net/programming/custom-static-clojure-websites-an-update/ that is much more clear. Please see that post, I've learned a lot since I wrote this one. 
+I wrote an updated version of this https://nickgeorge.net/programming/custom-static-clojure-websites-an-update/ that is much more clear and better organized. Please see that post, I've learned a lot since I wrote this one. 
 
 * Learning through projects
 :PROPERTIES:

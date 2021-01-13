@@ -1,10 +1,10 @@
 #+HTML: <div id="edn">
-#+HTML: {:topic "programming" :title "Building static website with Clojure: an update" :date "2021-01-05" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "static-website" "learning" "projects"]}
+#+HTML: {:topic "programming" :title "Building static websites with Clojure: an update" :date "2021-01-05" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["clojure" "static-website" "learning" "projects"]}
 #+HTML: </div>
 #+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
 #+PROPERTY: header-args :eval never-export
 #+DATE: 2021-01-05 Tue
-#+HTML:<h1 id="mainTitle">programming</h1>
+#+HTML:<h1 id="mainTitle">Building static websites with Clojure: an update</h1>
 #+TOC: headlines 1
 #+HTML:<div id="article">
 #+HTML:<div id="timedate">
@@ -12,15 +12,23 @@
 /Last updated: {{{time(%Y-%m-%d %a)}}}/
 #+HTML:</div>
 
-Projects are a great way to learn a new skill. When I was first learning Clojure, I wrote a post about building my new static website using Clojure. I have learned a lot in the interim, so I wanted to clear up some of my meandering and ignorance in my last post here. Let's go over what a static website is, and how to build a website generator in Clojure from scratch and host it on GitHub pages. 
+Projects are a great way to learn a new skill. When I was first learning Clojure, I wrote a post about building my new static website using Clojure. I have learned a lot in the interim, so I wanted to clear up some of the meandering and confusion in my last post here. Let's go over what a static website is, and how to build a website generator in Clojure from scratch, and how to host it on GitHub pages. 
+
+The source code for this website is [[https://github.com/nkicg6/nkicg6.github.io][here]] and you can see the example static website [[https://nkicg6.github.io/][here]]
 
 * What is a static website?
+:PROPERTIES:
+:CUSTOM_ID: what-is-a-static-website
+:END:
 
 [[https://en.wikipedia.org/wiki/Static_web_page][Wikipedia]] defines a static web pages as an "web page delivered to a user exactly as it is stored."  
 
 To expand on that, a static website is a collection of web pages (HTML documents, CSS, JavaScript code, movies, images, etc.) that link together and are served on the internet. The defining feature of a static website is that it does not connect to a database or generate dynamic content. So the home page is the same for everyone who requests it, rather than something like your Amazon homepage which will be different depending on if you are logged in and what you bought.
 
 * What does a static website generator do?
+:PROPERTIES:
+:CUSTOM_ID: static-website-generator
+:END:
 
 It really depends on the generator and what you need/want. Typically, they transform your documents (typically written in some simple markup language like [[https://en.wikipedia.org/wiki/Markdown][Markdown]]), to valid HTML (typically using HTML/CSS templates), and output them in a structured way as your website. They generate all the standard content that a web server then serves to users requesting your site. 
 
@@ -32,12 +40,18 @@ Depending on what you want/need, they can do a lot of other things too, such as:
 - and more...
 
 * Lots of options
+:PROPERTIES:
+:CUSTOM_ID: some-current-options
+:END:
 
 So what you need to do is take some directory structure (written in the markdown format of your choice or HTML), apply some conversions, and output it somewhere. All the other stuff is nice but extra. You can write your own code to do it somewhere between the conversion (after reading) step and the output step (writing as HTML). 
 
 Writing your own is typically a bad idea, there are tons of good, well-used generators (especially [[https://gohugo.io/content-management/syntax-highlighting/][Hugo]] (Go), [[https://jekyllrb.com/docs/permalinks/#global][Jekyll]] (Ruby), [[https://rstudio.github.io/distill/][Distill]] (R), and [[https://blog.getpelican.com/][Pelican]] (Python)). They will all impose some [[https://gohugo.io/getting-started/directory-structure/][structure on you]], and you will have to learn [[https://jekyllrb.com/docs/configuration/options/][a lot of configuration]] options and rules for the specific generator. If you want the flexibility to do whatever you want and you need a side project, writing your own can be a great way to learn. 
 
 * Write your own with Clojure
+:PROPERTIES:
+:CUSTOM_ID: write-your-own-with-clojure
+:END:
 
 I was learning Clojure, so I wanted to write my own. I started using [[https://github.com/magnars/stasis][Stasis]], using this [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][excellent tutorial]] by Christian Johansen. Here are the basics:
 Stasis provides a few simple functions to make reading and writing easier, as well as a server so you can get a preview of what the finished product will look like. The only Stasis functions I will use for this example are:
@@ -47,6 +61,10 @@ Stasis provides a few simple functions to make reading and writing easier, as we
 - =serve-pages= (web server to show you a sample)
 
 * Starting the project
+:PROPERTIES:
+:CUSTOM_ID: starting-the-project
+:END:
+
 We'll use [[https://leiningen.org/][Leiningen]] to manage this project. Install it and type the following:
 
 #+BEGIN_SRC bash
@@ -77,6 +95,9 @@ lein deps
 #+END_SRC
 
 * Build the structure
+:PROPERTIES:
+:CUSTOM_ID: building-the-structure
+:END:
 
 I told you a static website was a mapping of markup-content -> HTML website. When learning a new tool, it is always nice to have a minimal working project to play with. Let's use the current directory of our Leiningen project:
 
@@ -195,6 +216,9 @@ Now if we re-run the =slurp-directory= command (but only look at keys, for brevi
 you can see both posts were read, and we have a list of paths and files. 
 
 * Markdown to HTML
+:PROPERTIES:
+:CUSTOM_ID: markdown-to-html
+:END:
 
 Browsers don't really understand markdown, so we still need to convert this to HTML, and we need to re-name the files from =.md= to =.html=. 
 
@@ -231,6 +255,9 @@ You can use this function like so:
 That looks great, we applied the =md-to-html-string= function to each item in the =seq= returned by =(vals data)= and returned the HTML content of the string. That's half the stuff we want to do in this funtion. The last part involves replacing the =.md= file endings with =.html= and returning a new map of the pages. 
 
 * Fix the paths
+:PROPERTIES:
+:CUSTOM_ID: fix-the-paths
+:END:
 
 Let's use the clojure string library to replace the ".md" with ".html". 
 #+BEGIN_SRC clojure 
@@ -278,6 +305,9 @@ Looks great! Notice how I did the markdown conversion in the let statement that 
 Great, we are well on our way!
 
 * Adding a template header/footer
+:PROPERTIES:
+:CUSTOM_ID: header-footer-template
+:END:
 
 We've done the conversion, but the pages are not yet valid HTML. Let's define a simple header and footer using hiccup:
 
@@ -330,6 +360,9 @@ We could use it like so:
 Returning all of our formatted pages as a map. Now would be a good time to commit your work to a version control system like git. 
 
 * Seeing your progress with a local server
+:PROPERTIES:
+:CUSTOM_ID: local-server
+:END:
 
 Typically we will be making changes as we go and will want to see how they will look as a website. We can use Stasis and =ring= to set up a server and do this live. This code is based on [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis/][Christian's tutorial]]:
 
@@ -371,6 +404,9 @@ clicking the link for =Posts= should take you to the posts homepage too.
 So this looks functional. However, there is virtually no style so it looks bad. Let's add some custom =CSS=. 
 
 * Add some css
+:PROPERTIES:
+:CUSTOM_ID: css
+:END:
 
 #+BEGIN_SRC bash :results verbatim 
 mkdir resources/css
@@ -455,10 +491,16 @@ Much better!
 
 *Note* Obviously we can do better than hard-coding the CSS path in the header (as we did in =apply-header-footer=). We could add additional parameters to =apply-header-footer= for the links, or have another function transform the header before applying the page. That is left as an exercise for those interested since this is mostly to serve as an example, so we will take the easy, less flexible way and hard code it for now. 
 * Images and other things
+:PROPERTIES:
+:CUSTOM_ID: images-and-other-things
+:END:
 
 You can't read images with =stasis/slurp-directory=, since it uses Clojure's =slurp= under the hood, which only works for text. See [[https://github.com/magnars/stasis#but-what-about-stylesheets-images-and-javascript][the stasis docs]] or Christian Johansen's [[https://cjohansen.no/building-static-sites-in-clojure-with-stasis#asset-optimization][tutorial]] for info about using optimus for that. In the simplest case, you could just copy the image directory to the output directory using a Makefile and shell commands if you don't want to use Optimus. 
 
 * Generating your website
+:PROPERTIES:
+:CUSTOM_ID: generating-the-website
+:END:
 
 We are almost done! Now we can easily make a local website and experiment with using CSS to make it look nice. Let's write it out so we can put it on the internet
 
@@ -503,6 +545,9 @@ We can set up an extra =lein= command so we can build the website from the comma
 #+END_SRC
 
 * Hosting on GitHub pages
+:PROPERTIES:
+:CUSTOM_ID: hosting-on-gh-pages
+:END:
 
 [[https://pages.github.com/][GitHub pages]] is a nice option for hosting your personal website for free. Once you've built your website using =lein build-site= from the command line or =(export!)= from the REPL, push the whole thing up to GitHub in a repository named =your-user-name.github.io=. 
 
@@ -532,6 +577,9 @@ Need a =CNAME= for a custom domain? Just add it to your map:
 Same goes for any extra text file.
 
 * What else?
+:PROPERTIES:
+:CUSTOM_ID: more
+:END:
 
 That's a custom static website generator in under 60 lines of code! What else can you do? Well, whatever you want! You could add syntax highlighting, or generate a list of your articles to link to from the posts homepage (a good idea)... Most of it is just simple text manipulation (replace something in the HTML text, or use something fancy like [[https://github.com/cgrand/enlive][Enlive]] to do some HTML transformations). Just use the same process we used above:
 
