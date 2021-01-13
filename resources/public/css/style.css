@@ -170,6 +170,20 @@ footer {
 }
 /* end footer */
 
+/* aside */
+aside{
+  background-color: var(--code-background);
+  display: block;
+  margin-left: 1.5px;
+  float: right;
+  max-width: 250px;
+  position: relative;
+  font-style: italic;
+  border-radius: 4px;
+  padding: 1em;
+  
+}
+
 /* main layout */
 
 #table-of-contents {
@@ -187,6 +201,9 @@ footer {
 
 #table-of-contents ul {
   list-style-type:none;
+  margin-left: 0em;
+  padding-left: 0em;
+  margin-top: 8px;
 }
 
 #table-of-contents h1 {
@@ -244,8 +261,8 @@ a:hover{
    }
 
 ol, ul, li {
-  margin-left: 0em;
-  padding-left: 0vw;
+  margin-left: 0.5em;
+  padding-left: 0.5em;
   margin-top: 8px;
 }
 
@@ -301,6 +318,12 @@ img {
     margin-right: auto;
     max-width: var(--max-reading-width);
     min-width: var(--min-size-width);
+  }
+
+  aside{
+    float: inherit;
+    width: 90%;
+    max-width: 90%;
   }
   
   footer {

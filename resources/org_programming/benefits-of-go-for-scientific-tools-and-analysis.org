@@ -1,0 +1,260 @@
+#+HTML: <div id="edn">
+#+HTML: {:topic "programming" :title "Is Go (or Rust) a better language for scientific tools than Python?" :date "2021-01-12" :updated "{{{time(%Y-%m-%d %a)}}}" :tags ["go" "science" "tools"]}
+#+HTML: </div>
+#+OPTIONS: \n:1 toc:nil num:0 todo:nil ^:{} title:nil
+#+PROPERTY: header-args :eval never-export
+#+DATE: 2021-01-12 Tue
+#+HTML:<h1 id="mainTitle">Is Go (or Rust) a better language for scientific tools than Python?</h1>
+#+TOC: headlines 1
+#+HTML:<div id="article">
+#+HTML:<div id="timedate">
+/First published: {{{date}}}/
+/Last updated: {{{time(%Y-%m-%d %a)}}}/
+#+HTML:</div>
+
+My formal training is in Cellular and Systems Neuroscience, but what I really enjoy is writing tools to help my peers automate silly things that we shouldn't be wasting our time on anyways. I learned early on about a problem: while I could easily write a script to re-name a thousand files for analysis, I couldn't easily share it with my peers. 
+
+* The problem
+:PROPERTIES:
+:CUSTOM_ID: the-problem
+:END:
+
+If you think writing code is hard, wait until you have to share it. Interpreted languages like Python take this difficult task and add another layer to it. For every program written in a dynamically typed, interpreted language (Python/R), you need two programs to run it: the interpreter (Python + libraries) and the code. So not only do you have to know what a terminal is, but you have to also know what "having the correct Python version in your =$PATH=" means. You have to have Python 3 and basic dependencies installed (don't use the system version!). Oh, we are doing some number crunching and analysis, so you will need to install [[https://numpy.org/][numpy]], [[https://www.scipy.org/][scipy]], [[https://matplotlib.org/][matplotlib]], and [[https://pandas.pydata.org/][pandas]].
+Here are some common problems and questions that come up when you try to explain how to use your program to someone who doesn't use Python:
+- Should you I use =pip= or =conda=? Some projects tell me to use both, is that OK?
+- A tutorial told me to install Anaconda, is that Python?
+- I installed Anaconda, but my windows terminal doesn't know what Python is. What is an Anaconda terminal?
+- What's a terminal? 
+- Oh no you are using Windows? Do you have a C and Fortran compiler installed? Here let's check, open your terminal.
+- Wait, what's a terminal? 
+- What's a virtual environment?
+- ...
+
+Not a lot of scientists are also programmers. Both things are hard, and people make careers out of each one separately, so why should they be? If researchers are interested, they can learn Python or R easily, but when I write a tool (to blind files or something), I want to be able to share that tool with the people I work with even if they don't want to spend time learning Python. 
+
+I spent most of my scientific life learning and writing in R and Python because I truly enjoyed using them and they make my work a lot easier. I think they are both excellent languages for what they do. Python in particular is flexible, easy to learn, has dynamic typing, and is multi-paradigm (functional, object oriented, etc.). The use of Python is exploding in academic environments and industry alike, largely because it is a general purpose language that has excellent libraries for scientific data analysis (the aforementioned [[https://numpy.org/][numpy]], [[https://www.scipy.org/][scipy]], [[https://matplotlib.org/][matplotlib]], and of course [[https://pandas.pydata.org/][pandas]], among many others). I think that overall this is a good thing (certainly better than people burning more research dollars in the matlab walled garden). However, there are downsides, and it is important to acknowledge them. 
+For me, there are two big ones:
+
+1. Lack of static binaries
+2. Lack of type safety
+
+#1 addresses the distribution problem. I'm not going to name names, but take a look at any large, open source, scientific tool or project. Chances are there are pages of documentation and troubleshooting for all the different platforms and shells and drivers, and dependencies that you need to set up before script X will work.
+
+Since most researchers aren't programmers (and don't care to be), I'd like to have the ability to build things that they can use without having to know what a terminal or python interpreter or a C compiler is. 
+
+I am just starting to explore two languages that address these two limitations.
+
+* Go and static type checking
+:PROPERTIES:
+:CUSTOM_ID: go-and-static-types
+:END:
+
+I'm just starting to learn [[https://golang.org/][Go]]. Go seems to address both points: it is a compiled, statically typed language that compiles to a fast executable. Not only that, but you can cross compile from whatever your platform is to other [[https://golangdocs.com/building-applications-in-golang][supported platforms]]!
+
+Learning Go has been an interesting experience because it is my first time using a compiled language with static type checking. What is static type checking?
+
+Well, for example, this Go program won't compile:
+
+#+BEGIN_SRC go
+  // Doesn't compile
+  package main
+
+  import "fmt"
+
+  func mult(a int, b float64) float64 {
+          return a * b
+  }
+
+  func main() {
+          val := mult(4, 12.4)
+          fmt.Printf("value is %v\n", val)
+  }
+//  invalid operation: a * b (mismatched types int and float64)
+#+END_SRC
+
+Because you are trying to multiply a floating point number and an integer. How do you multiply a floating point number by an integer? You can't. They have different internal representations and must be treated differently (see [[https://indico.cern.ch/event/814979/contributions/3401175/attachments/1831476/3107964/FloatingPointArithmetic.pdf][floating point arithmetic is not real]] by Bei Wang, and [[https://en.wikipedia.org/wiki/Floating-point_arithmetic][wikipedia]]). 
+#+HTML:<aside>The Python docs have an excellent explanation of <a href="https://docs.python.org/3/tutorial/floatingpoint.html">floating point arithmetic</a></aside>
+Python would convert the integer to a floating point number implicitly and return a float (most languages, especially dynamic ones would do this too). However, in strongly typed languages you have to be more explicit.  
+
+Seem pedantic? I used to agree with [[https://youtu.be/2V1FtfBDsLU?t=4081][Rich Hickey]] that they were pedantic for their own sake and not very useful, but at this point I think I'm a convert, and I'll try to show you why. 
+* Benefits of static type checks for code
+:PROPERTIES:
+:CUSTOM_ID: benefits-of-type-checks
+:END:
+
+#+HTML: <aside>Dropbox started building core services in <a href="https://about.sourcegraph.com/go/go-reliability-and-durability-at-dropbox-tammy-butow/">Go</a> and <a href="https://news.ycombinator.com/item?id=11283758">Rust</a>, moving away from Python</aside>
+
+The explicit, compiler-checked properties seem to be favored by developers who make complicated, fast applications for many reasons. For one, it makes you think more carefully about what you are doing and the structure of the data structures that you are working with. Python and R do a lot for you behind the scenes when you do something like multiply a float by an integer. I never thought much about this in the past, but the extra work can make your Python program much slower and more error prone than a strongly typed one. 
+
+* An example problem
+:PROPERTIES:
+:CUSTOM_ID: example-problem
+:END:
+
+I am using [[https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html][scipy.signal.find_peaks]] in a current analysis pipeline. The goal is to find the *first* peak in an electrophysiology trace (if there is one), and add it to a python dictionary along with other metadata. This index is used in a later function to subset an array and extract the value.
+
+#+BEGIN_SRC python :session new :results output
+  import numpy as np
+  import scipy.signal as sig
+
+  # sample data
+  data_dict = {}
+  # lots of other keys...
+  data_dict["data"] = np.asarray([1, 1, 1, 1, 5, 1, 1, 1, 1])
+
+
+  def get_peaks_from_data(d):
+      peak_arr, _ = sig.find_peaks(d["data"])
+      d["peaks"] = peak_arr
+      return d
+
+
+  data_dict = get_peaks_from_data(data_dict)
+  print(data_dict)
+  # {'data': array([1, 1, 1, 1, 5, 1, 1, 1, 1]), 'peaks': array([4])}
+#+END_SRC
+
+No problems there (best case scenario). However, what if there are multiple peaks?
+
+#+BEGIN_SRC python :session new :results output
+  # sample data
+  data_dict = {}
+  # lots of other keys...
+  data_dict["data"] = np.asarray([1, 1, 5, 1, 1, 1, 5, 1, 1])
+  data_dict = get_peaks_from_data(data_dict)
+  print(data_dict)
+  # {'data': array([1, 1, 5, 1, 1, 1, 5, 1, 1]), 'peaks': array([2, 6])}
+#+END_SRC
+
+I only want the first, I'll just index into the =peak_arr= to get the first value in my . We should probably just return an integer if the array is =len == 1= or =None=, right? Right, but unfortunately, I've been working on functions far away at this point, and I noticed this problem and added this to some downstream functions do this:
+
+#+BEGIN_SRC python :session new :results output
+  data_dict = {}
+  data_dict["data"] = np.asarray([1, 1, 1, 1, 5, 1, 1, 1, 1])
+
+  data_dict = get_peaks_from_data(data_dict)
+
+  # Some downstream function...
+
+
+  def get_value_from_index(d):
+      ind = d["peaks"][0]
+      val = d["data"][ind]
+      return val
+
+
+  print(get_value_from_index(data_dict))
+  # 5
+#+END_SRC
+
+That works for one peak (best case scenario), and the multiple peaks case. But what if the empty array was returned because there were no peaks?
+
+#+BEGIN_SRC python :session new :results output
+  # no peaks here
+  data_dict["data"] = np.asarray([1, 1, 1, 1, 1, 1, 1, 1, 1])
+
+  data_dict = get_peaks_from_data(data_dict)
+  print(get_value_from_index(data_dict))
+  
+  # Traceback (most recent call last):
+  #   File "testing.py", line 48, in <module>
+  #     print(get_value_from_index(data_dict))
+  #   File "testing.py", line 37, in get_value_from_index
+  #     ind = d["peaks"][0]
+  # IndexError: index 0 is out of bounds for axis 0 with size 0
+#+END_SRC
+
+Oops! If I, as a scientist-coder, was using solid test-driven-development practices (spoiler, you probably [[https://nickgeorge.net/science/scientists-dont-test-their-code/][weren't]]), then this would be trivial to catch (it is a sort-of contrived example, but hopefully you can envision in a large analysis pipeline you are putting together ad hoc, you can see how this would happen). I might realize that maybe I should do the check for multiple peaks and return that field as an integer in the first =get_peaks_from_data= function, then I wouldn't have to worry about it again. But then I would likely have runtime errors in the downstream functions whenever I tried to index into an integer, or take the length of an integer. That'll be a lot of debugging, and I'll probably miss something if I didn't set up good test cases the first time around. 
+
+* How static types help with refactoring and design
+:PROPERTIES:
+:CUSTOM_ID: how-static-types-help
+:END:
+
+A statically typed language like Go forces you to confront this possibility when you are writing your functions. 
+
+In Go, I'd have to write a function return signature for the =get_peaks_from_data=, and define the types of the pieces in the input dictionary. With my limited knowledge, I'd define a new =struct= type that holds an array of integer (or floating point numbers), and the target index:
+
+#+BEGIN_SRC go
+
+  type dataStruct struct {
+          data     []int
+          ind      int
+  }
+
+#+END_SRC
+
+Then I'd probably run into the same error as before when I have no peaks or multiple peaks, and I'd have to think about how to handle that. So maybe I'd add an error field:
+
+#+BEGIN_SRC go
+  import "errors"
+
+  type dataStruct struct {
+          data     []int
+          ind      int
+          hasError error
+  }
+
+#+END_SRC
+
+The [[https://tour.golang.org/basics/12][zero value]] for an integer is 0, but I don't want to confuse that with a peak at index 0, so I'd use multiple returns from my =get_peaks_from_data= function to handle that case:
+
+#+BEGIN_SRC go
+  func getPeaksFromData(data dataStruct) (ind, error) {
+          // some code here to find peaks, stored in peaks var
+          if len(peaks) >= 1 {
+                  return peaks[0], nil
+          }
+          return 0, errors.New("no index")
+  }
+#+END_SRC
+
+And in the later function, I can check that error before using it. 
+
+#+BEGIN_SRC go
+  func getValueFromIndex(data dataStruct) dataStruct {
+          newd, err := getPeaksFromData(data)
+          if err != nil {
+                  // handle normal case, assign and move on
+                  return data
+          }
+          // handle error case, use 0 as the int value
+          // and add the error to the error field for downstream functions
+          // to check
+          return data
+
+  }
+#+END_SRC
+
+In this simple case, the power comes from knowing what you broke with this change at *compile time* rather than depending on writing a test case that would catch it at *run time.* This has made refactoring a lot easier and more reliable as I build bigger programs and pipelines. 
+
+* You could do that in Python...
+:PROPERTIES:
+:CUSTOM_ID: python-too
+:END:
+
+*You can definitely use this pattern in Python*. Python also allows multiple return values, and you can write a bunch of =is_instance()= checks to verify output. 
+But that's a lot to remember. You are basically writing your own type checker that only gives you information at run time anyways. You probably can't remember all the places you used that =struct=, but the compiler will!
+
+So rather than running into this error (hopefully) during testing or (more likely) halfway though a data analysis pipeline's run, the static types would force you to address this in the code before it will even run.
+
+* Use the right tool for the job
+:PROPERTIES:
+:CUSTOM_ID: right-tool-for-the-job
+:END:
+
+I am interested in building resilient, efficient tools that everyone (especially non-programmer scientists) can use. The more I learn about statically type checked and compiled languages, the more I realize that they are probably better tools for this goal than Python.
+
+I'm not saying drop Python/R for Go. I probably won't be switching my primary quick and dirty data analysis to Go in the near future, but I will definitely lean on it as I go forward for new tools and applications. I think, for example, my [[https://github.com/nkicg6/ABF_Explorer][ABF Explorer]] GUI would be greatly improved using a language like Go rather than Python. I've had to re-factor it several times now, and despite having a good amount of unit tests, I still struggle with silly runtime errors that a type checked language would catch. It would be a lot easier to distribute that program if I could compile it without running [[https://github.com/pyinstaller/pyinstaller/wiki/FAQ#features][PyInstaller]] separately on each platform as well. 
+
+* Wrapping up
+:PROPERTIES:
+:CUSTOM_ID: wrapping-up
+:END:
+
+There are some [[https://fasterthanli.me/articles/i-want-off-mr-golangs-wild-ride][drawbacks for Go]], and I don't yet know if it is the best answer for the tool building and high performance computing that I am interested in learning. Some would say that one drawback of Go is that it is garbage collected. Compiled Go binaries will bring a [[https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/][decently sized runtime]] along for the ride in your final application. Garbage collection is great for the type of work that I am used to doing, because it typically isn't performance critical and it lets you develop code faster without worrying about memory management. 
+However I also have my eye on [[https://www.rust-lang.org/][Rust]]. Rust provides good abstractions, type checking, and compilation with no garbage collection. As I wrap up my PhD work, I will be exploring Rust more as well. 
+
+I think I am sold on using type checked, compiled languages for building scientific tools. I am currently using [[http://www.kytrinyx.com/][Kartina Owen's]] [[https://exercism.io/][Exercism]] project to learn Go and Rust. I'd highly recommend that project.
+
+#+HTML:</div>
