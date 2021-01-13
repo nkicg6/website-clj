@@ -126,7 +126,7 @@ No problems there (best case scenario). However, what if there are multiple peak
   # {'data': array([1, 1, 5, 1, 1, 1, 5, 1, 1]), 'peaks': array([2, 6])}
 #+END_SRC
 
-I only want the first, I'll just index into the =peak_arr= to get the first value in my . We should probably just return an integer if the array is =len == 1= or =None=, right? Right, but unfortunately, I've been working on functions far away at this point, and I noticed this problem and added this to some downstream functions do this:
+I only want the first, I'll just index into the =peak_arr= to get the first value. We should probably just return an integer if the array is length 1 or =None=, right? I think that makes sense, but unfortunately, I've been working on functions far away at this point, and I noticed this problem and added the indexing to some downstream functions:
 
 #+BEGIN_SRC python :session new :results output
   data_dict = {}
@@ -197,7 +197,7 @@ Then I'd probably run into the same error as before when I have no peaks or mult
 
 #+END_SRC
 
-The [[https://tour.golang.org/basics/12][zero value]] for an integer is 0, but I don't want to confuse that with a peak at index 0, so I'd use multiple returns from my =get_peaks_from_data= function to handle that case:
+The [[https://tour.golang.org/basics/12][zero value]] for an integer is 0, but I don't want to confuse that with a peak at index 0, so I'd use multiple returns from my =getPeaksFromData= (analogous to the python version =get_peaks_from_data=) function to handle that case:
 
 #+BEGIN_SRC go
   func getPeaksFromData(data dataStruct) (ind, error) {
@@ -234,7 +234,7 @@ In this simple case, the power comes from knowing what you broke with this chang
 :END:
 
 *You can definitely use this pattern in Python*. Python also allows multiple return values, and you can write a bunch of =is_instance()= checks to verify output. 
-But that's a lot to remember. You are basically writing your own type checker that only gives you information at run time anyways. You probably can't remember all the places you used that =struct=, but the compiler will!
+But that's a lot to remember. You are basically writing your own type checker that only gives you information at run time anyways. You probably can't remember all the places you used that =struct=, but if you try to assign to a non-existent field in that =struct=, or assign a different type (maybe a =float64= rather than =int=), then the compiler will let you know!
 
 So rather than running into this error (hopefully) during testing or (more likely) halfway though a data analysis pipeline's run, the static types would force you to address this in the code before it will even run.
 
@@ -243,7 +243,7 @@ So rather than running into this error (hopefully) during testing or (more likel
 :CUSTOM_ID: right-tool-for-the-job
 :END:
 
-I am interested in building resilient, efficient tools that everyone (especially non-programmer scientists) can use. The more I learn about statically type checked and compiled languages, the more I realize that they are probably better tools for this goal than Python.
+I am interested in building resilient, efficient tools that everyone (especially non-programmer scientists) can use. The more I learn about statically type checked and compiled languages, the more I realize that they are probably better tools for this goal than Python. The static type checks make me less likely to make mistakes and make refactoring a lot easier. The ability to compile static binaries to distribute rather than python files and instructions for using a terminal, is a game changer.
 
 I'm not saying drop Python/R for Go. I probably won't be switching my primary quick and dirty data analysis to Go in the near future, but I will definitely lean on it as I go forward for new tools and applications. I think, for example, my [[https://github.com/nkicg6/ABF_Explorer][ABF Explorer]] GUI would be greatly improved using a language like Go rather than Python. I've had to re-factor it several times now, and despite having a good amount of unit tests, I still struggle with silly runtime errors that a type checked language would catch. It would be a lot easier to distribute that program if I could compile it without running [[https://github.com/pyinstaller/pyinstaller/wiki/FAQ#features][PyInstaller]] separately on each platform as well. 
 
@@ -252,8 +252,8 @@ I'm not saying drop Python/R for Go. I probably won't be switching my primary qu
 :CUSTOM_ID: wrapping-up
 :END:
 
-There are some [[https://fasterthanli.me/articles/i-want-off-mr-golangs-wild-ride][drawbacks for Go]], and I don't yet know if it is the best answer for the tool building and high performance computing that I am interested in learning. Some would say that one drawback of Go is that it is garbage collected. Compiled Go binaries will bring a [[https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/][decently sized runtime]] along for the ride in your final application. Garbage collection is great for the type of work that I am used to doing, because it typically isn't performance critical and it lets you develop code faster without worrying about memory management. 
-However I also have my eye on [[https://www.rust-lang.org/][Rust]]. Rust provides good abstractions, type checking, and compilation with no garbage collection. As I wrap up my PhD work, I will be exploring Rust more as well. 
+There are some [[https://fasterthanli.me/articles/i-want-off-mr-golangs-wild-ride][drawbacks for Go]], and I don't yet know if it is the best answer for the tool building and high performance computing that I am interested in learning. Some would say that one drawback of Go is that it is garbage collected. Compiled Go binaries will bring a [[https://blog.filippo.io/shrink-your-go-binaries-with-this-one-weird-trick/][decently sized runtime]] along for the ride in your final application. In my case, I currently think Go's garbage collector is a benefit. Most of the quick statistical analysis work on smaller data sets that I am used to doing aren't that performance sensitive, and the garbage collector lets me focus on developing code faster without worrying about memory management.
+However, as I continue to "move down the stack" of higher level languages, I also have my eye on [[https://www.rust-lang.org/][Rust]]. Rust provides good abstractions, type checking, and compilation with no garbage collection. These properties let you make smaller, faster binaries, with a much lower chance of memory leaks/unsafe behavior. As I wrap up my PhD work, I will be exploring Rust much more as well. 
 
 I think I am sold on using type checked, compiled languages for building scientific tools. I am currently using [[http://www.kytrinyx.com/][Kartina Owen's]] [[https://exercism.io/][Exercism]] project to learn Go and Rust. I'd highly recommend that project.
 
